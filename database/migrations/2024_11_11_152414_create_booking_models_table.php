@@ -19,7 +19,7 @@ return new class extends Migration
             $table->unsignedBigInteger('model_id');
             $table->unsignedInteger('offer_id');
             $table->string('name_en', 40);
-            $table->string('name_en', 40);
+            $table->string('name_kh', 40);
             $table->double('amount', 10, 2);
             $table->double('deposit', 10, 2);
             $table->double('balance', 10, 2);
