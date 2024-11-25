@@ -8,9 +8,8 @@
     <div class="navbar-nav-right d-flex align-items-center" id="navbar-collapse">
         <div class="collapse navbar-collapse" id="navbar-ex-3">
             <div class="navbar-nav me-auto">
-                <a class="nav-item nav-link active">Him Rayina</a>
-                {{-- <a class="nav-item nav-link active">{{ auth('user')->user()->full_name}}</a> --}}
-                {{-- <a class="nav-item nav-link">{{ auth('user')->user()->username}}</a> --}}
+                <a class="nav-item nav-link active">{{ auth('users')->user()->full_name}}</a>
+                <a class="nav-item nav-link">{{ auth('users')->user()->username}}</a>
             </div>
         </div>
 
@@ -24,8 +23,7 @@
             <li class="nav-item navbar-dropdown dropdown-user dropdown">
                 <a class="nav-link dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="dropdown">
                     <div class="avatar avatar-online">
-                        <img src="backend/assets/img/avatars/1.png" alt="" class="w-px-40 h-auto rounded-circle">
-                        {{-- <img src="{{ url(auth('user')->user()->picture == '' ? 'backend/assets/img/avatars/1.png': '/userProfile/' . auth('user')->user()->picture) }}" alt="" class="w-px-40 h-auto rounded-circle"> --}}
+                        <img src="{{ url(auth('users')->user()->profile_pic == '' ? 'backend/assets/img/avatars/1.png': 'storage/' . auth('users')->user()->profile_pic) }}" alt="" class="w-px-40 h-auto rounded-circle">
                     </div>
                 </a>
                 <ul class="dropdown-menu dropdown-menu-end">
@@ -33,8 +31,8 @@
                         <a class="dropdown-item" href="#">
                             <div class="d-flex">
                                 <div class="flex-grow-1">
-                                    <span class="fw-semibold d-block">asdsdsd</span>
-                                    <small class="text-muted">Username | sadsd</small>
+                                    <span class="fw-semibold d-block">{{ auth('users')->user()->full_name}}</span>
+                                    <small class="text-muted">Username | {{ auth('users')->user()->username}}</small>
                                 </div>
                             </div>
                         </a>

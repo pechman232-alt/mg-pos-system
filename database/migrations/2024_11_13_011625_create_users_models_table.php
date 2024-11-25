@@ -16,17 +16,18 @@ return new class extends Migration
             $table->string('user_id', 20);
             $table->string('username', 50);
             $table->string('full_name',50);
+            $table->string('password');
             $table->string('gender', 6);
-            $table->string('email', length: 50)->unique();
+            $table->string('email', 50)->unique();
             $table->unsignedInteger('branch_id');
             $table->unsignedBigInteger('department_id');
-            $table->unsignedBigInteger(column: 'position_id');
+            $table->unsignedBigInteger('position_id');
             $table->string('phone_number', 20)->nullable();
             $table->string('profile_pic','150')->nullable();
             $table->date('start_work_date')->nullable();
             $table->string('created_by', 50)->nullable();
             $table->string('updated_by', 50)->nullable();
-            $table->integer('status');
+            $table->integer('status')->default(1);
             $table->timestamps();
         });
     }

@@ -11,9 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('menu_models', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
+        Schema::table('users', function (Blueprint $table) {
+            //
+            $table->rememberToken()->after('password');
         });
     }
 
@@ -22,6 +22,9 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('menu_models');
+        Schema::table('users', function (Blueprint $table) {
+            //
+            $table->dropColumn('remember_token');
+        });
     }
 };
