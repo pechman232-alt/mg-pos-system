@@ -1,3 +1,10 @@
+@php
+    
+    $activeSubMenus = session()->get('activeSubMenus');
+    $activeMenus = session()->get('activeMenus');
+
+@endphp
+
 <style>
     .logo-center img {
         /* padding: 10px; */
@@ -30,7 +37,15 @@
         background: #DEAA5E;
     }
 
-    
+    .menu-link.logout-btn {
+        color: #fff;
+        background: #DEAA5E;
+    }
+
+    .menu-link.logout-btn:hover {
+        color: #fff;
+        background: red !important;
+    }
 
 </style>
 
@@ -44,11 +59,10 @@
         </div>
     </div>
 
-
     <ul class="menu-inner py-1">
 
         <li class="menu-item active">
-            <a href="" class="menu-link">
+            <a href="/" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-home-circle"></i>
                 <div data-i18n="Analytics">Dashboard</div>
             </a>
@@ -58,82 +72,7 @@
             <span class="menu-header-text">View Pages</span>
         </li>
 
-        <li class="menu-item" style="">
-            <a href="javascript:void(0);" class="menu-link menu-toggle">
-                <i class="menu-icon tf-icons bx bxs-user-rectangle"></i>
-                <div data-i18n="Layouts">Users</div>
-            </a>
-
-            <ul class="menu-sub">
-                <li class="menu-item">
-                    <a href="layouts-container.html" class="menu-link">
-                        <div data-i18n="Container">Container</div>
-                    </a>
-                </li>
-            </ul>
-        </li>
-
-        <li class="menu-item" style="">
-            <a href="javascript:void(0);" class="menu-link menu-toggle">
-                <i class="menu-icon tf-icons bx bxs-user-check"></i>
-                <div data-i18n="Layouts">User Role</div>
-            </a>
-
-            <ul class="menu-sub">
-                <li class="menu-item">
-                    <a href="layouts-container.html" class="menu-link">
-                        <div data-i18n="Container">Container</div>
-                    </a>
-                </li>
-            </ul>
-        </li>
-
-        <li class="menu-item" style="">
-            <a href="javascript:void(0);" class="menu-link menu-toggle">
-                <i class="menu-icon tf-icons bx bxs-buildings"></i>
-                <div data-i18n="Layouts">Department</div>
-            </a>
-
-            <ul class="menu-sub">
-                <li class="menu-item">
-                    <a href="layouts-container.html" class="menu-link">
-                        <div data-i18n="Container">Container</div>
-                    </a>
-                </li>
-            </ul>
-        </li>
-
-        <li class="menu-item" style="">
-            <a href="javascript:void(0);" class="menu-link menu-toggle">
-                <i class="menu-icon tf-icons bx bx-layout"></i>
-                <div data-i18n="Layouts">Position</div>
-            </a>
-
-            <ul class="menu-sub">
-                <li class="menu-item">
-                    <a href="layouts-container.html" class="menu-link">
-                        <div data-i18n="Container">Container</div>
-                    </a>
-                </li>
-            </ul>
-        </li>
-
-        <li class="menu-item" style="">
-            <a href="javascript:void(0);" class="menu-link menu-toggle">
-                <i class="menu-icon tf-icons bx bx-cog"></i>
-                <div data-i18n="Layouts">Settings</div>
-            </a>
-
-            <ul class="menu-sub">
-                <li class="menu-item">
-                    <a href="layouts-container.html" class="menu-link">
-                        <div data-i18n="Container">Container</div>
-                    </a>
-                </li>
-            </ul>
-        </li>
-
-        {{-- @foreach ($activeMenus as $activeMenu)
+        @foreach ($activeMenus as $activeMenu)
             <li class="menu-item">
                 <a href="{{ $activeMenu->route }}"
                     class="menu-link @if ($activeMenu->route == '#')menu-toggle @endif">
@@ -152,16 +91,16 @@
                     @endforeach
                 </ul>
             </li>
-        @endforeach --}}
+        @endforeach
 
-        {{-- <script>
+        <script>
             $('.active').parent('ul').parent('li').addClass('open');
-        </script> --}}
+        </script>
 
         {{-- ------------------------------------------- Logouts ------------------------------------------------ --}}
         <li class="menu-header small text-uppercase"><span class="menu-header-text">Logout</span></li>
         <li class="menu-item">
-            <a href="{{ url('/logout') }}" class="menu-link" style="color: white; background-color: #DEAA5E;">
+            <a href="{{ url('/logout') }}" class="menu-link logout-btn">
                 <i class="menu-icon tf-icons bx bx-exit"></i>
                 <div data-i18n="Analytics" style="font-weight: bold">Logout</div>
             </a>

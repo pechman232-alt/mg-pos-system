@@ -156,11 +156,13 @@
     <main class="d-flex align-items-center min-vh-100 py-3 py-md-0">
         <img src="{{ asset('/assets/images/bg.jpg') }}" class="background-img">
         <div class="container">
-            {{-- @include('sms') --}}
-            <div class="alert alert-danger">
-                You do not have Username!
-                {{-- {{ session()->get('message') }} --}}
-            </div>
+
+            @if (Session::has('error'))
+                <div class="alert alert-danger">
+                    {{ session('error') }}
+                </div>
+            @endif
+
             <div class="card login-card">
                 <div class="row no-gutters">
                 <div class="col-md-5">
@@ -174,8 +176,8 @@
                         </a>
                     </div>
                     <p class="login-card-description">TF Motors | Admin Login</p>
-                        <form method="POST" action="">
-                            {{-- @csrf --}}
+                        <form method="POST" action="{{ url('login') }}" enctype="multipart/form-data">
+                            @csrf
                             <div class="form-group">
                                 <label for="email" class="sr-only">Email</label>
                                 <input type="text" name="username" class="form-control" placeholder="Username">

@@ -22,7 +22,7 @@ return new class extends Migration
             $table->string('first_name_kh', 30);
             $table->string('last_name_kh', 30);
             $table->string('gender', 6);
-            $table->integer('age', 2);
+            $table->integer('age');
             $table->date('dob')->nullable();
             $table->string('user_id', 20);
             $table->unsignedInteger('branch_id');
@@ -40,7 +40,7 @@ return new class extends Migration
             $table->string('rapp_pass', 15)->nullable();
             $table->string('user_id_data_sheet', 20)->nullable();
             $table->string('data_sheet_pass', 20)->nullable();
-            $table->ingetger('extension_id', 4)->nullable();
+            $table->integer('extension_id')->nullable();
             $table->string('register_pass', 15)->nullable();
             $table->string('note', 50)->nullable();
             $table->date('activate', 15)->nullable();

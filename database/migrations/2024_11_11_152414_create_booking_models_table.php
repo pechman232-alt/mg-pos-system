@@ -24,7 +24,7 @@ return new class extends Migration
             $table->double('deposit', 10, 2);
             $table->double('balance', 10, 2);
             $table->string('payment_type', 15);
-            $table->intger('special_discount')->nullable();
+            $table->integer('special_discount')->nullable();
             $table->string('contract_number', 40)->nullable();
             $table->string('phone_number', 45)->nullable();
             $table->date('date_order')->nullable();

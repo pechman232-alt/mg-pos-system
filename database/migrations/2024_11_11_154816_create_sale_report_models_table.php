@@ -15,11 +15,11 @@ return new class extends Migration
             $table->id();
             $table->string('image', 200);
             $table->unsignedInteger('branch_id');
-            $table->stirng('member_card', 10);
-            $table->stirng('brand_name', 10);
-            $table->stirng('customer_name', 30);
-            $table->stirng('phone_number', 45);
-            $table->stirng('gender', 6);
+            $table->string('member_card', 10);
+            $table->string('brand_name', 10);
+            $table->string('customer_name', 30);
+            $table->string('phone_number', 45);
+            $table->string('gender', 6);
             $table->date('dob');
             $table->integer('age');
             $table->unsignedBigInteger('source_id');
