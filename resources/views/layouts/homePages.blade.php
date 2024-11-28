@@ -23,7 +23,13 @@
 
     <link rel="shortcut icon" href="{{ asset('/assets/images/logo.png') }}">
 
+    {{-- select2 --}}
+    <link href="{{ asset('/assets/select2/css/select2.min.css') }}" rel="stylesheet" />
+    <script src="{{ url('/assets/select2/js/select2.min.js') }}"></script>
+    {{-- select2 --}}
+
     <title>Home | TF Motors</title>
+
 </head>
 <body>
     <div class="layout-wrapper layout-content-navbar">
@@ -32,6 +38,12 @@
             <div class="layout-page">
                 @include('layouts.header')
                 <div class="content-wrapper">
+                    {{-- <select class="js-example-basic-single" name="state">
+                        <option value="AL">Alabama</option>
+                        <option value="WY">Wyoming</option>
+                        <option value="WY">Wyoming</option>
+                        <option value="WY">Hello</option>
+                      </select> --}}
 
                     @yield('content')
 
@@ -40,7 +52,28 @@
             </div>
         </div>
     </div>
-    
+
+    <script>
+        $('.js-example-basic-single').select2();
+
+        // on change
+        $('.js-example-basic-single').on('select2:open', function() {
+        let searchBox = document.querySelector('.select2-search__field');
+        if (searchBox) {
+            searchBox.addEventListener('input', function(event) {
+                console.log('Search query:', event.target.value);
+                // Add your logic here for each search input change
+            });
+        }
+    });
+
+    // on selected
+    $('.js-example-basic-single').on('change', function() {
+        let selectedOptions = $(this).val();
+        console.log('Selected options:', selectedOptions);
+    });
+    </script>
+
     {{---------------------------- Style Scrip --------------------------------}}
     <script src="{{ asset('backend/assets/vendor/libs/jquery/jquery.js') }}"></script>
     <script src="{{ asset('backend/assets/vendor/libs/popper/popper.js') }}"></script>
