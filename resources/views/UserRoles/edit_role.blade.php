@@ -27,8 +27,6 @@
 
     <div class="container-xxl flex-grow-1 container-p-y">
 
-        @include('Helps.alert')
-
         <div class="row">
             <div class="col-md-12">
                 <div class="card mb-4">

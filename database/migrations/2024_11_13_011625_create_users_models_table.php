@@ -22,6 +22,7 @@ return new class extends Migration
             $table->unsignedInteger('branch_id');
             $table->unsignedBigInteger('department_id');
             $table->unsignedBigInteger('position_id');
+            $table->unsignedBigInteger('role_id');
             $table->string('phone_number', 20)->nullable();
             $table->string('profile_pic','150')->nullable();
             $table->date('start_work_date')->nullable();

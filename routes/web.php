@@ -14,12 +14,12 @@ Route::post('login', [LoginController::class, 'fnLogin']);
 Route::middleware(['user_is_login'])->group(function () {
     // Route HomePage
     Route::get('',[HomeController::class, 'homePage']);
-
     // Route Logout
     Route::get('logout', [LoginController::class, 'fnLogout']);
 
     // Route Users
     Route::get('/users', [UsersController::class, 'usersIndex']);
+
     Route::get('/users/create', [UsersController::class, 'formUsers']);
     Route::post('/users/store', [UsersController::class, 'storeUsers']);
 
@@ -36,7 +36,7 @@ Route::middleware(['user_is_login'])->group(function () {
     Route::get('/logistics/store',[LogisticController::class, 'storeLogistics']);
 
     // todo ----------------------- Route Setting -----------------------------------
-    // Route Departments 
+    // Route Departments
     Route::get('/departments', [SettingController::class, 'departIndex']);
     Route::get('/departments/create', [SettingController::class, 'formDepart']);
     Route::post('/departments/store', [SettingController::class, 'createDepart']);

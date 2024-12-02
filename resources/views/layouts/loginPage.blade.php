@@ -19,18 +19,18 @@
             min-height: 100vh;
         }
         .brand-wrapper {
-            margin-bottom: 19px; 
+            margin-bottom: 19px;
         }
 
         .brand-wrapper .logo {
-            height: 130px; 
+            height: 130px;
         }
 
         .login-card {
             border: 0;
             border-radius: 10.5px;
             box-shadow: 0 10px 30px 0 rgba(172, 168, 168, 0.43);
-            overflow: hidden; 
+            overflow: hidden;
         }
 
         .login-card-img {
@@ -39,7 +39,7 @@
             width: 100%;
             height: 100%;
             -o-object-fit: cover;
-            object-fit: cover; 
+            object-fit: cover;
         }
 
         .background-img {
@@ -54,25 +54,25 @@
         }
 
         .login-card .card-body {
-            padding: 85px 60px 60px; 
+            padding: 85px 60px 60px;
             text-align: -webkit-center;
         }
 
         @media (max-width: 422px) {
             .login-card .card-body {
-                padding: 35px 24px; 
-            } 
+                padding: 35px 24px;
+            }
         }
 
         .login-card-description {
             font-size: 18px;
             color: #000;
             font-weight: 600;
-            margin-bottom: 23px; 
+            margin-bottom: 23px;
         }
 
         .login-card form {
-            max-width: 326px; 
+            max-width: 326px;
             padding-bottom: 65px;
         }
 
@@ -83,27 +83,27 @@
             min-height: 45px;
             font-size: 13px;
             line-height: 15;
-            font-weight: normal; 
+            font-weight: normal;
         }
 
         .login-card .form-control::-webkit-input-placeholder {
-            color: #919aa3; 
+            color: #919aa3;
         }
 
         .login-card .form-control::-moz-placeholder {
-            color: #919aa3; 
+            color: #919aa3;
         }
 
         .login-card .form-control:-ms-input-placeholder {
-            color: #919aa3; 
+            color: #919aa3;
         }
 
         .login-card .form-control::-ms-input-placeholder {
-            color: #919aa3; 
+            color: #919aa3;
         }
 
         .login-card .form-control::placeholder {
-            color: #919aa3; 
+            color: #919aa3;
         }
 
         .login-card .login-btn {
@@ -114,36 +114,36 @@
             font-weight: bold;
             line-height: 20px;
             color: #fff;
-            margin-bottom: 24px; 
+            margin-bottom: 24px;
         }
-        
+
         .login-card .login-btn:hover {
             border: 1px solid #A68048;
             background-color: #A68048;
-            color: #ffffff; 
+            color: #ffffff;
         }
 
         .login-card .forgot-password-link {
             font-size: 14px;
             color: #919aa3;
-            margin-bottom: 12px; 
+            margin-bottom: 12px;
         }
 
         .login-card-footer-text {
             font-size: 16px;
             color: #0d2366;
-            margin-bottom: 60px; 
+            margin-bottom: 60px;
         }
 
         @media (max-width: 767px) {
             .login-card-footer-text {
-                margin-bottom: 24px; 
-            } 
+                margin-bottom: 24px;
+            }
         }
 
         .login-card-footer-nav a {
             font-size: 14px;
-            color: #919aa3; 
+            color: #919aa3;
         }
 
         .alert-danger {
@@ -157,11 +157,7 @@
         <img src="{{ asset('/assets/images/bg.jpg') }}" class="background-img">
         <div class="container">
 
-            @if (Session::has('error'))
-                <div class="alert alert-danger">
-                    {{ session('error') }}
-                </div>
-            @endif
+            @include('Helps.toast')
 
             <div class="card login-card">
                 <div class="row no-gutters">
@@ -189,7 +185,7 @@
                             <button class="btn btn-block login-btn mb-4" type="submit">Login</button>
                         </form>
                         <nav class="login-card-footer-nav">
-                            &copy; <a href="">TF Motors</a> -  rights reserved 
+                            &copy; <a href="">TF Motors</a> -  rights reserved
                         </nav>
                         <a href="#" class="forgot-password-link">Version 2.0.0 | 2024</a>
                     </div>
