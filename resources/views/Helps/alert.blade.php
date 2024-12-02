@@ -1,5 +1,5 @@
-<style>
-    
+{{-- <style>
+
     .alert-success {
         background-color: #98e5aa;
         color: white;
@@ -18,16 +18,20 @@
         border-color: red;
     }
 
-</style>
+</style> --}}
 
+{{-- <script>
+    $success = true;
+    console.log($success);
+    if($success){
+        createToast('update', "Sersrfrsafa");
+    }
+</script> --}}
 
-@if (Session::has('success'))
-    <div class="alert alert-success alert-dismissible" role="alert">
-        {{ session('success') }}
-        <button type="success" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
-@endif
-
+{{-- @if (Session::has('success'))
+{{ session('success') }}
+@endif --}}
+{{--
 @if (Session::has('update'))
     <div class="alert alert-primary alert-dismissible" role="alert">
         {{ session('update') }}
@@ -36,6 +40,7 @@
 @endif
 
 @if (Session::has('error'))
+
     <div class="alert alert-warning alert-dismissible" role="alert">
         {{ session('error') }}
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
@@ -47,4 +52,4 @@
         {{ session('delete') }}
         <button type="delete" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
-@endif
+@endif --}}

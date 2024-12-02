@@ -28,22 +28,25 @@
     <script src="{{ url('/assets/select2/js/select2.min.js') }}"></script>
     {{-- select2 --}}
 
+
     <title>Home | TF Motors</title>
 
 </head>
 <body>
+    @include('Helps.toast')
     <div class="layout-wrapper layout-content-navbar">
         <div class="layout-container">
             @include('layouts.navbar')
             <div class="layout-page">
                 @include('layouts.header')
                 <div class="content-wrapper">
-                    {{-- <select class="js-example-basic-single" name="state">
+
+                    <select class="js-example-basic-single" name="state">
                         <option value="AL">Alabama</option>
                         <option value="WY">Wyoming</option>
                         <option value="WY">Wyoming</option>
                         <option value="WY">Hello</option>
-                      </select> --}}
+                      </select>
 
                     @yield('content')
 

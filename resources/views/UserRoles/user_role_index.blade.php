@@ -55,14 +55,12 @@
 
     <div class="container-xxl flex-grow-1 container-p-y">
 
-        {{-- @include('alert') --}}
-
         <div class="card">
             <nav class="navbar navbar-example navbar-expand-lg bg-light">
                 <div class="container-fluid">
                     <div class="collapse navbar-collapse" id="navbar-ex-3">
                         <div class="navbar-nav me-auto">
-                            <a class="nav-item nav-link active" href="" style="font-size: 18px;"> 
+                            <a class="nav-item nav-link active" href="" style="font-size: 18px;">
                                 <i class='bx bx-package'></i> List of User Roles
                             </a>
                         </div>
