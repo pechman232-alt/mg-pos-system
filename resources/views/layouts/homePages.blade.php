@@ -41,12 +41,12 @@
                 @include('layouts.header')
                 <div class="content-wrapper">
 
-                    <select class="js-example-basic-single" name="state">
+                    {{-- <select class="js-example-basic-single" name="state">
                         <option value="AL">Alabama</option>
                         <option value="WY">Wyoming</option>
                         <option value="WY">Wyoming</option>
                         <option value="WY">Hello</option>
-                      </select>
+                      </select> --}}
 
                     @yield('content')
 

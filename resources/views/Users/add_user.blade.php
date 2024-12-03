@@ -154,13 +154,13 @@
 
                                 <div class="mb-3 col-md-4">
                                     <label class="form-label" for="basic-default-fullname">UserRole</label>
-                                    <select name="user_role_id" class="form-select @error('user_role_id') border-danger @enderror">
+                                    <select name="role_id" class="form-select @error('role_id') border-danger @enderror">
                                         <option value="" disabled selected>UserRoles select</option>
                                         @foreach ($userRole as $item)
-                                            <option value="{{ $item->id }} @if (old('user_role_id') == $item->id){{ 'selected' }} @endif">{{ $item->name }}</option>
+                                            <option value="{{ $item->id }}" @if (old('role_id') == $item->id){{ 'selected' }} @endif>{{ $item->name }}</option>
                                         @endforeach
                                     </select>
-                                    @error('user_role_id')
+                                    @error('role_id')
                                         <small class="text-danger">{{ $message }}</small>
                                     @enderror
                                 </div>

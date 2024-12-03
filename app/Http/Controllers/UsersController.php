@@ -43,21 +43,25 @@ class UsersController extends Controller
         return view('Users.add_user',['branchs'=>$branchs, 'departs'=>$departs, 'positions'=>$positions, 'userRole'=>$userRole]);
     }
 
-    public function storeUsers(UsersRequest $request){
+    public function storeUsers(UsersRequest $request)
+    {
         try {
             $validated = $request->validated();
             $validated['password'] = Hash::make($request->password);
-            $file = $validated->file('profile_pic');
-            if ($file) {
+
+            if ($request->hasFile('profile_pic')) {
+                $file = $request->file('profile_pic');
                 $name = md5($file->getFilename() . time()) . '.' . $file->getClientOriginalExtension();
                 $file_dir = 'userProfile';
                 $file->move(storage_path("app/public/$file_dir"), $name);
-                $validated->profile_pic = "$file_dir/$name";
+                $validated['profile_pic'] = "$file_dir/$name";
             }
             UsersModel::create($validated);
-            return redirect('create/users')->with('success','The User is created Succesfully.');
+
+            return redirect('create/users')->with('success', 'The User is created successfully.');
         } catch (\Throwable $th) {
-            return $this->errorResponse($th->getMessage());
+            return redirect()->back()->with('error', $th->getMessage());
         }
     }
+
 }
