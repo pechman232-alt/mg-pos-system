@@ -39,6 +39,7 @@ class SettingController extends Controller
 
     // ------------- Position Controller -------------------
     public function positionIndex(){
+
         $positions = PositionModel::where('status', '=', '1')->get();
         return view('Settings.Positions.position_index',['positions'=>$positions]);
     }

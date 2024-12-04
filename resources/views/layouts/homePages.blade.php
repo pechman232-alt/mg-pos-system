@@ -41,12 +41,12 @@
                 @include('layouts.header')
                 <div class="content-wrapper">
 
-                    <select class="js-example-basic-single" name="state">
+                    {{-- <select class="js-example-basic-single" name="state">
                         <option value="AL">Alabama</option>
                         <option value="WY">Wyoming</option>
                         <option value="WY">Wyoming</option>
                         <option value="WY">Hello</option>
-                      </select>
+                    </select> --}}
 
                     @yield('content')
 
@@ -56,7 +56,7 @@
         </div>
     </div>
 
-    <script>
+    {{-- <script>
         $('.js-example-basic-single').select2();
 
         // on change
@@ -75,7 +75,7 @@
         let selectedOptions = $(this).val();
         console.log('Selected options:', selectedOptions);
     });
-    </script>
+    </script> --}}
 
     {{---------------------------- Style Scrip --------------------------------}}
     <script src="{{ asset('backend/assets/vendor/libs/jquery/jquery.js') }}"></script>

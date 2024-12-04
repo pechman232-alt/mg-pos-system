@@ -19,7 +19,7 @@ Route::middleware(['user_is_login'])->group(function () {
 
     // Route Users
     Route::get('/users', [UsersController::class, 'usersIndex']);
-
+    
     Route::get('/users/create', [UsersController::class, 'formUsers']);
     Route::post('/users/store', [UsersController::class, 'storeUsers']);
 

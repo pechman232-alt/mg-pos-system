@@ -35,10 +35,18 @@ class UsersController extends Controller
         return view('Users.user_index',['users'=>$users]);
     }
 
-    public function formUsers(){
+    public function formUsers(Request $request){
         $branchs = BranchModel::get();
         $departs = DepartmentModel::get();
+
+        if ($request->ajax()) {
+            // Return data for Select2
+            // $positions = PositionModel::where('status', '=', '1')->select('id', 'name')->get();
+            $positions = PositionModel::get();
+            return response()->json($positions);
+        }
         $positions = PositionModel::get();
+
         $userRole = UserRolesModel::get();
         return view('Users.add_user',['branchs'=>$branchs, 'departs'=>$departs, 'positions'=>$positions, 'userRole'=>$userRole]);
     }
@@ -49,7 +57,7 @@ class UsersController extends Controller
             $validated['password'] = Hash::make($request->password);
             $file = $validated->file('profile_pic');
             if ($file) {
-                $name = md5($file->getFilename() . time()) . '.' . $file->getClientOriginalExtension();
+                $name = md5(string: $file->getFilename() . time()) . '.' . $file->getClientOriginalExtension();
                 $file_dir = 'userProfile';
                 $file->move(storage_path("app/public/$file_dir"), $name);
                 $validated->profile_pic = "$file_dir/$name";

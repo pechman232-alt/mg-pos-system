@@ -120,7 +120,7 @@
 
                                 <div class="mb-3 col-md-4">
                                     <label class="form-label" for="basic-default-fullname">Position</label>
-                                    <select name="position_id" class="form-select @error('position_id') border-danger @enderror">
+                                    {{-- <select name="position_id" class="form-select @error('position_id') border-danger @enderror">
                                         <option value="" disabled selected>Position select</option>
                                         @foreach ($positions as $item)
                                             <option value="{{ $item->id }}" @if (old('position_id') == $item->id){{ 'selected' }} @endif>{{ $item->name }}</option>
@@ -128,8 +128,16 @@
                                     </select>
                                     @error('position_id')
                                         <small class="text-danger">{{ $message }}</small>
-                                    @enderror
+                                    @enderror --}}
+                                    <select id="position-select" class="form-select @error('position_id') border-danger @enderror" name="position_id">
+                                        <option value="">Select Position</option>
+                                    </select>
                                 </div>
+
+                                {{-- <select class="js-example-basic-single" class="form-select @error('position_id') border-danger @enderror">
+                                    <option value="">Select Position</option>
+                                </select> --}}
+                                
                             </div>
 
                             <div class="row">
@@ -226,5 +234,32 @@
             }
         }
     </script>
+
+    {{-- function select2 --}}
+    <script>
+        $('#position-select').select2({
+            placeholder: 'Select a position',
+            ajax: {
+                url: '/users/create', // Replace with your actual route
+                dataType: 'json',
+                delay: 250, // Add delay to avoid rapid requests
+                processResults: function (data) {
+                    return {
+                        results: data.map(function (item) {
+                            return { id: item.id, text: item.name };
+                        })
+                    };
+                },
+                cache: true
+            }
+        });
+    
+        // On select change
+        $('#position-select').on('change', function () {
+            let selectedOption = $(this).val();
+            console.log('Selected position ID:', selectedOption);
+        });
+    </script>    
+    {{-- function select2 --}}
 
 @endsection
