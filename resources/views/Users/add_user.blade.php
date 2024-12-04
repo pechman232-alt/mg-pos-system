@@ -129,14 +129,19 @@
                                     @error('position_id')
                                         <small class="text-danger">{{ $message }}</small>
                                     @enderror --}}
-                                    <select id="position-select" class="form-select @error('position_id') border-danger @enderror" name="position_id">
+
+                                    <input type="hidden" id="old-position-id" value="{{ old('position_id') }}">
+                                    <select id="position-select" class="form-select border-danger" name="position_id">
                                         <option value="">Select Position</option>
+                                        @if (old('position_id'))
+                                            <option value="{{ old('position_id') }}" selected>
+                                                <!-- Fetch and display the name of the selected option if possible -->
+                                                {{ optional(App\Models\PositionModel::find(old('position_id')))->name }}
+                                            </option>
+                                        @endif
                                     </select>
                                 </div>
 
-                                {{-- <select class="js-example-basic-single" class="form-select @error('position_id') border-danger @enderror">
-                                    <option value="">Select Position</option>
-                                </select> --}}
                                 
                             </div>
 
@@ -162,13 +167,13 @@
 
                                 <div class="mb-3 col-md-4">
                                     <label class="form-label" for="basic-default-fullname">UserRole</label>
-                                    <select name="user_role_id" class="form-select @error('user_role_id') border-danger @enderror">
+                                    <select name="role_id" class="form-select @error('role_id') border-danger @enderror">
                                         <option value="" disabled selected>UserRoles select</option>
                                         @foreach ($userRole as $item)
-                                            <option value="{{ $item->id }} @if (old('user_role_id') == $item->id){{ 'selected' }} @endif">{{ $item->name }}</option>
+                                            <option value="{{ $item->id }}" @if (old('role_id') == $item->id){{ 'selected' }} @endif>{{ $item->name }}</option>
                                         @endforeach
                                     </select>
-                                    @error('user_role_id')
+                                    @error('role_id')
                                         <small class="text-danger">{{ $message }}</small>
                                     @enderror
                                 </div>
@@ -238,28 +243,54 @@
     {{-- function select2 --}}
     <script>
         $('#position-select').select2({
-            placeholder: 'Select a position',
+            placeholder: "Select Position",
+            allowClear: true,
             ajax: {
-                url: '/users/create', // Replace with your actual route
+                url: "{{ url('/users/create') }}", // Replace with the correct route
+                type: "GET",
                 dataType: 'json',
-                delay: 250, // Add delay to avoid rapid requests
+                delay: 250, // Delay to reduce server load
+                data: function (params) {
+                    return {
+                        search: params.term // Search query
+                    };
+                },
                 processResults: function (data) {
                     return {
-                        results: data.map(function (item) {
-                            return { id: item.id, text: item.name };
+                        results: $.map(data, function (item) {
+                            return {
+                                id: item.id,
+                                text: item.name
+                            };
                         })
                     };
                 },
                 cache: true
             }
         });
-    
-        // On select change
+
+         // Preselect the old value if it exists
+        let oldPositionId = $('#old-position-id').val();
+        if (oldPositionId) {
+            $.ajax({
+                url: "{{ url('/users/create') }}", // Use the same endpoint
+                type: "GET",
+                data: { search: '' }, // Adjust this if needed
+                success: function (data) {
+                    let selectedItem = data.find(item => item.id == oldPositionId);
+                    if (selectedItem) {
+                        let option = new Option(selectedItem.name, selectedItem.id, true, true);
+                        $('#position-select').append(option).trigger('change');
+                    }
+                }
+            });
+        }
+
+        // Event listener for selection
         $('#position-select').on('change', function () {
             let selectedOption = $(this).val();
-            console.log('Selected position ID:', selectedOption);
+            console.log('Selected option:', selectedOption);
         });
-    </script>    
-    {{-- function select2 --}}
+    </script>
 
 @endsection

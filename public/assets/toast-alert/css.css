@@ -19,14 +19,14 @@
   position: fixed;
   top: 30px;
   right: 20px;
-  z-index: 99;
+  z-index: 99999;
 }
 .my_custom_toast_alert :where(.my_toast, .column) {
   display: flex;
   align-items: center;
 }
 .my_custom_toast_alert .my_toast {
-  z-index: 99;
+  z-index: 99999;
   width: 400px;
   position: relative;
   overflow: hidden;

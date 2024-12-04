@@ -40,32 +40,38 @@ class UsersController extends Controller
         $departs = DepartmentModel::get();
 
         if ($request->ajax()) {
-            // Return data for Select2
-            // $positions = PositionModel::where('status', '=', '1')->select('id', 'name')->get();
-            $positions = PositionModel::get();
+            $search = $request->input('search');
+            $positions = PositionModel::where('status', '=', '1')
+                ->where('name', 'LIKE', "%{$search}%")
+                ->select('id', 'name')
+                ->get();
             return response()->json($positions);
         }
+        
         $positions = PositionModel::get();
 
         $userRole = UserRolesModel::get();
         return view('Users.add_user',['branchs'=>$branchs, 'departs'=>$departs, 'positions'=>$positions, 'userRole'=>$userRole]);
     }
 
-    public function storeUsers(UsersRequest $request){
+    public function storeUsers(UsersRequest $request)
+    {
         try {
             $validated = $request->validated();
             $validated['password'] = Hash::make($request->password);
             $file = $validated->file('profile_pic');
             if ($file) {
-                $name = md5(string: $file->getFilename() . time()) . '.' . $file->getClientOriginalExtension();
+                $name = md5($file->getFilename() . time()) . '.' . $file->getClientOriginalExtension();
                 $file_dir = 'userProfile';
                 $file->move(storage_path("app/public/$file_dir"), $name);
-                $validated->profile_pic = "$file_dir/$name";
+                $validated['profile_pic'] = "$file_dir/$name";
             }
             UsersModel::create($validated);
-            return redirect('create/users')->with('success','The User is created Succesfully.');
+
+            return redirect('create/users')->with('success', 'The User is created successfully.');
         } catch (\Throwable $th) {
-            return $this->errorResponse($th->getMessage());
+            return redirect()->back()->with('error', $th->getMessage());
         }
     }
+
 }

@@ -47,7 +47,7 @@
                         <option value="WY">Wyoming</option>
                         <option value="WY">Hello</option>
                     </select> --}}
-
+                    
                     @yield('content')
 
                 </div>
