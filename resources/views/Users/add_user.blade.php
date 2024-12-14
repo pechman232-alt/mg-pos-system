@@ -23,6 +23,29 @@
             background: #f5e2c5;
         }
 
+        .select2-container .select2-selection--single {
+            height: 40px !important;
+        }
+
+        .select2-container .select2-selection--single .select2-selection__rendered {
+            padding: 0.4375rem 1.875rem 0.4375rem 0.875rem !important;
+        }
+
+        .select2-container--default .select2-selection--single .select2-selection__rendered {
+            line-height: 1.53 !important;
+        }
+
+        .select2-container--default .select2-selection--single .select2-selection__arrow {
+            top: 0px !important;
+            right: 10px !important;
+            height: 40px !important;
+        }
+
+        .select2-container--default .select2-selection--single .select2-selection__clear {
+            height: 40px !important;
+            margin-right: 30px !important;
+        }
+
     </style>
 
     <div class="container-xxl flex-grow-1 container-p-y">
@@ -131,7 +154,7 @@
                                     @enderror --}}
 
                                     <input type="hidden" id="old-position-id" value="{{ old('position_id') }}">
-                                    <select id="position-select" class="form-select border-danger" name="position_id">
+                                    <select id="position-select" class="form-select" name="position_id">
                                         <option value="">Select Position</option>
                                         @if (old('position_id'))
                                             <option value="{{ old('position_id') }}" selected>
@@ -140,9 +163,10 @@
                                             </option>
                                         @endif
                                     </select>
+                                    @error('position_id')
+                                        <small class="text-danger">{{ $message }}</small>
+                                    @enderror
                                 </div>
-
-                                
                             </div>
 
                             <div class="row">

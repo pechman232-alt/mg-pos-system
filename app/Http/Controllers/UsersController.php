@@ -59,16 +59,25 @@ class UsersController extends Controller
         try {
             $validated = $request->validated();
             $validated['password'] = Hash::make($request->password);
-            $file = $validated->file('profile_pic');
-            if ($file) {
+            // $file = $validated->file('profile_pic');
+            // if ($file) {
+            //     $name = md5($file->getFilename() . time()) . '.' . $file->getClientOriginalExtension();
+            //     $file_dir = 'userProfile';
+            //     $file->move(storage_path("app/public/$file_dir"), $name);
+            //     $validated['profile_pic'] = "$file_dir/$name";
+            // }
+
+            if ($request->hasFile('profile_pic')) {
+                $file = $request->file('profile_pic'); // Use $request, not $validated
                 $name = md5($file->getFilename() . time()) . '.' . $file->getClientOriginalExtension();
                 $file_dir = 'userProfile';
                 $file->move(storage_path("app/public/$file_dir"), $name);
                 $validated['profile_pic'] = "$file_dir/$name";
             }
+
             UsersModel::create($validated);
 
-            return redirect('create/users')->with('success', 'The User is created successfully.');
+            return redirect('users/create')->with('success', 'The User is created successfully.');
         } catch (\Throwable $th) {
             return redirect()->back()->with('error', $th->getMessage());
         }

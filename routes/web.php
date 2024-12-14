@@ -33,7 +33,9 @@ Route::middleware(['user_is_login'])->group(function () {
     // Route Logistics
     Route::get('/logistics', [LogisticController::class, 'logisticIndex']);
     Route::get('/logistics/create',[LogisticController::class, 'createLogistics']);
-    Route::get('/logistics/store',[LogisticController::class, 'storeLogistics']);
+    Route::post('/logistics/store',[LogisticController::class, 'storeLogistics']);
+
+    Route::post('/logistics/import', [LogisticController::class, 'importLogistic']);
 
     // todo ----------------------- Route Setting -----------------------------------
     // Route Departments

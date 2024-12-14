@@ -47,11 +47,22 @@
         #datatable thead tr th, #datatable tbody tr td{
             text-align: center;
         }
+
+        .mr-1 {
+            margin-right: 0.25rem !important; 
+        }
+        .mr-2 {
+            margin-right: 0.45rem !important; 
+        }
+
+        .btn-outline-import {
+            color: #696cff;
+            border-color: #696cff;
+            background: transparent;
+        }
     </style>
 
     <div class="container-xxl flex-grow-1 container-p-y">
-
-        {{-- @include('alert') --}}
 
         <div class="card">
             <nav class="navbar navbar-example navbar-expand-lg bg-light">
@@ -62,6 +73,15 @@
                                 <i class='bx bx-package'></i> List of Logistics
                             </a>
                         </div>
+
+                        <form action="{{ url('/logistics/import') }}" method="POST" enctype="multipart/form-data">
+                            @csrf
+                            <input type="file" name="file" class="form-control">
+                            <button class="btn btn-outline-danger mr-1">Import Excel</button>
+                            {{-- <a href="" class="btn btn-outline-danger mr-1">Import Excel</a> --}}
+                        </form>
+
+                        <a href="" class="btn btn-outline-success mr-2">Export Excel</a>
                         <a href="{{ url('/logistics/create') }}" class="btn btn-outline-primary">Add Logistics</a>
                     </div>
                 </div>
@@ -82,12 +102,17 @@
                                 <th>Actions</th>
                             </tr>
                         </thead>
-                        {{-- <tbody>
-                            @foreach ($branchs as $index => $branch)
+                        <tbody>
+                            @foreach ($logistics as $index => $logistic)
                                 <tr>
                                     <td style="text-align: center;">{{ $index + 1 }}</td>
-                                    <td style="text-align: start">{{ $branch->branch_name }}</td>
-                                    <td>{{ $branch->created_at }}</td>
+                                    <td style="text-align: start">{{ $logistic->model_name }}</td>
+                                    <td style="text-align: start">{{ $logistic->exterior_color }}</td>
+                                    <td style="text-align: start">{{ $logistic->interior_color }}</td>
+                                    <td style="text-align: start">{{ $logistic->model_year }}</td>
+                                    <td style="text-align: start">{{ $logistic->vin_number }}</td>
+                                    <td style="text-align: start">{{ $logistic->engine_number }}</td>
+                                    <td style="text-align: start">{{ $logistic->remark }}</td>
                                     <td style="width: 100px">
                                         <div class="btn-group" role="group" aria-label="First group">
                                             <a href="" class="btn btn-outline-secondary"><i class="tf-icons bx bx-edit"></i></a>
@@ -96,7 +121,7 @@
                                     </td>
                                 </tr>
                             @endforeach
-                        </tbody> --}}
+                        </tbody>
                     </table>
                 </div>
             </div>

@@ -35,9 +35,8 @@
                     <h5 class="card-header">Add Logistics</h5>
                     <hr class="my-0">
                     <div class="card-body">
-                        <form action="{{ url('/branchs/store') }}" method="POST" action="/upload" enctype="multipart/form-data">
+                        <form action="{{ url('/logistics/store') }}" method="POST" action="/upload" enctype="multipart/form-data">
                             @csrf
-
                             <div class="row mb-6">
                                 <label class="col-sm-2 col-form-label" for="basic-default-name">Model Name</label>
                                 <div class="col-sm-10">
