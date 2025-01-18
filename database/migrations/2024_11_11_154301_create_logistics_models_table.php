@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('vin_number', 40);
             $table->string('engine_number', 40);
             $table->string('remark', 150);
+            $table->integer('status')->default(1);
             $table->timestamps();
         });
     }
