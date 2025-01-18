@@ -14,6 +14,7 @@ class LogisticsModel extends Model
         'model_year',
         'vin_number',
         'engine_number',
-        'remark'
+        'remark',
+        'status'
     ];
 }

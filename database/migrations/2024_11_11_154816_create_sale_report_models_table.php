@@ -47,6 +47,7 @@ return new class extends Migration
             $table->date('vihicle_battery')->nulable();
             $table->string('remark_sa')->nullable();
             $table->string('attach_file', 200);
+            $table->integer('status')->default(1);
             $table->timestamps();
         });
     }

@@ -47,7 +47,7 @@ return new class extends Migration
             $table->date('deactivate', 15)->nullable();
             $table->string('phone_number', 20)->nullable();
             $table->integer('access_door')->nullable();
-            $table->integer('status');
+            $table->integer('status')->default(1);
             $table->timestamps();
         });
     }

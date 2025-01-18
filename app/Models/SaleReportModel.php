@@ -41,7 +41,8 @@ class SaleReportModel extends Model
         'pro_offer_oil_date',
         'vihicle_battery',
         'remark_sa',
-        'attach_file'
+        'attach_file',
+        'status'
     ];
     protected $dates = ['created_at', 'updated_at'];
 
