@@ -24,21 +24,38 @@ class LogisticController extends Controller
     public function storeLogistics(LogisticRequest $request){
         try {
             $validated = $request->validated();
-
-            // LogisticsModel::created($validated);
+            $validated['remark'] = $request->input('remark');
+            LogisticsModel::create($validated);
+            return redirect('logistics/create')->with('success', 'The Logistic is created successfully.');
         } catch (\Throwable $th) {
             return redirect()->back()->with('error', $th->getMessage());
         }
     }
 
-    // Import and Export Logistic
-    public function importLogistic(LogisticFileRequest $logisticFileRequest){
+    public function editLogistics($id){
         try {
+            $ID = decrypt($id);
+            $logistics = LogisticsModel::where('id' , $ID)->first();
+            return $logistics;
+        } catch (\Throwable $th){
+            return redirect()->back()->with('error', $th->getMessage());
+        }
+    }
 
-            // if (!$logisticFileRequest->hasFile('file')) {
-            //     return redirect()->back()->with('error', 'Please import a file.');
-            // }
-            
+    public function updateLogistics(Request $request, $id){
+    
+    }
+
+    public function destroyLogistics($id){
+    
+    }
+
+    // Import and Export Logistic
+    public function importLogistic(Request $logisticFileRequest){
+        try {
+            if (!$logisticFileRequest->hasFile('file')) {
+                return redirect()->back()->with('error', 'Please Import File Excel!');
+            }
             Excel::import(new LogisticImport, $logisticFileRequest->file('file'));
             return redirect('logistics')->with('success', value: 'Logistics imported successfully.');
         } catch (\Exception $th){

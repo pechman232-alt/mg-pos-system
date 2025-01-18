@@ -94,6 +94,7 @@
                                             <div class="avatar-wrapper">
                                                 <div class="avatar me-2">
                                                     <img src="{{ url($user->profile_pic == '' ? 'backend/assets/img/avatars/1.png' : 'storage/' . $user->profile_pic) }}" alt="Avatar" class="rounded-circle">
+                                                    {{-- <img src="{{ $user->profile_pic ? asset('storage/' . $user->profile_pic) : asset('backend/assets/img/avatars/1.png') }}" alt="Avatar" class="rounded-circle"> --}}
                                                 </div>
                                             </div>
                                             <div class="d-flex flex-column">

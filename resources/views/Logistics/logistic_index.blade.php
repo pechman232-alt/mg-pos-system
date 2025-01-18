@@ -74,18 +74,43 @@
                             </a>
                         </div>
 
-                        <form action="{{ url('/logistics/import') }}" method="POST" enctype="multipart/form-data">
-                            @csrf
-                            <input type="file" name="file" class="form-control">
-                            <button class="btn btn-outline-danger mr-1">Import Excel</button>
-                            {{-- <a href="" class="btn btn-outline-danger mr-1">Import Excel</a> --}}
-                        </form>
+                        <button type="button" class="btn btn-success mr-1" data-bs-toggle="modal" data-bs-target="#basicModal">Import Excel</button>
 
-                        <a href="" class="btn btn-outline-success mr-2">Export Excel</a>
+                        <div class="modal fade" id="basicModal" tabindex="-1" style="display: none;" aria-hidden="true">
+                            <form action="{{ url('/logistics/import') }}" method="POST" enctype="multipart/form-data">
+                                @csrf
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                        <h5 class="modal-title" id="exampleModalLabel1">Modal title</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="row">
+                                            <div class="col mb-6">
+                                                <a href="{{ url('/download-template-logistic') }}" class="btn btn-outline-primary">Download Template Excel</a>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col mb-6">
+                                                <label for="nameBasic" class="form-label">Upload File Excel</label>
+                                                <input type="file" name="file" class="form-control">
+                                            </div>
+                                        </div>
+                                    </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+                                            <button class="btn btn-primary">Save changes</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
                         <a href="{{ url('/logistics/create') }}" class="btn btn-outline-primary">Add Logistics</a>
                     </div>
                 </div>
             </nav>
+            
             <div class="card-body">
                 <div class="table-responsive text-nowrap">
                     <table id="datatable" class="display">
@@ -115,7 +140,7 @@
                                     <td style="text-align: start">{{ $logistic->remark }}</td>
                                     <td style="width: 100px">
                                         <div class="btn-group" role="group" aria-label="First group">
-                                            <a href="" class="btn btn-outline-secondary"><i class="tf-icons bx bx-edit"></i></a>
+                                            <a href="{{ url('/logistics/edit', encrypt($logistic->id)) }}" class="btn btn-outline-secondary"><i class="tf-icons bx bx-edit"></i></a>
                                             <a onclick="return confirm('Are you sure, you want to delete?')" href="" class="btn btn-outline-secondary" style="background-color: red; color:white"><i class="tf-icons bx bx-trash"></i></a>
                                         </div>
                                     </td>

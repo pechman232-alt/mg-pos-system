@@ -50,8 +50,8 @@
                             <div class="row mb-6">
                                 <label class="col-sm-2 col-form-label" for="basic-default-name">Exterior Color</label>
                                 <div class="col-sm-10">
-                                    <input type="text" placeholder="enter exterior color" class="form-control @error('model_name') border-danger @enderror" name="model_name" value="{{ old('model_name') }}">
-                                    @error('model_name')
+                                    <input type="text" placeholder="enter exterior color" class="form-control @error('exterior_color') border-danger @enderror" name="exterior_color" value="{{ old('exterior_color') }}">
+                                    @error('exterior_color')
                                         <small class="text-danger">{{ $message }}</small>
                                     @enderror
                                 </div>
@@ -60,8 +60,8 @@
                             <div class="row mb-6">
                                 <label class="col-sm-2 col-form-label" for="basic-default-name">Interior Color</label>
                                 <div class="col-sm-10">
-                                    <input type="text" placeholder="enter interior color" class="form-control @error('model_name') border-danger @enderror" name="model_name" value="{{ old('model_name') }}">
-                                    @error('model_name')
+                                    <input type="text" placeholder="enter interior color" class="form-control @error('interior_color') border-danger @enderror" name="interior_color" value="{{ old('interior_color') }}">
+                                    @error('interior_color')
                                         <small class="text-danger">{{ $message }}</small>
                                     @enderror
                                 </div>
@@ -70,8 +70,8 @@
                             <div class="row mb-6">
                                 <label class="col-sm-2 col-form-label" for="basic-default-name">Model Year</label>
                                 <div class="col-sm-10">
-                                    <input type="text" placeholder="enter model year" class="form-control @error('model_name') border-danger @enderror" name="model_name" value="{{ old('model_name') }}">
-                                    @error('model_name')
+                                    <input type="text" placeholder="enter model year" class="form-control @error('model_year') border-danger @enderror" name="model_year" value="{{ old('model_year') }}">
+                                    @error('model_year')
                                         <small class="text-danger">{{ $message }}</small>
                                     @enderror
                                 </div>
@@ -80,8 +80,8 @@
                             <div class="row mb-6">
                                 <label class="col-sm-2 col-form-label" for="basic-default-name">Vin Number</label>
                                 <div class="col-sm-10">
-                                    <input type="text" placeholder="enter vin number" class="form-control @error('model_name') border-danger @enderror" name="model_name" value="{{ old('model_name') }}">
-                                    @error('model_name')
+                                    <input type="text" placeholder="enter vin number" class="form-control @error('vin_number') border-danger @enderror" name="vin_number" value="{{ old('vin_number') }}">
+                                    @error('vin_number')
                                         <small class="text-danger">{{ $message }}</small>
                                     @enderror
                                 </div>
@@ -90,8 +90,8 @@
                             <div class="row mb-6">
                                 <label class="col-sm-2 col-form-label" for="basic-default-name">Engine Number</label>
                                 <div class="col-sm-10">
-                                    <input type="text" placeholder="enger engine number" class="form-control @error('model_name') border-danger @enderror" name="model_name" value="{{ old('model_name') }}">
-                                    @error('model_name')
+                                    <input type="text" placeholder="enger engine number" class="form-control @error('engine_number') border-danger @enderror" name="engine_number" value="{{ old('engine_number') }}">
+                                    @error('engine_number')
                                         <small class="text-danger">{{ $message }}</small>
                                     @enderror
                                 </div>
@@ -100,11 +100,8 @@
                             <div class="row mb-6">
                                 <label class="col-sm-2 col-form-label" for="basic-default-name">Remarks</label>
                                 <div class="col-sm-10">
-                                    {{-- <input type="text" placeholder="enter remarks" class="form-control @error('model_name') border-danger @enderror" name="model_name" value="{{ old('model_name') }}"> --}}
-                                    <textarea id="basic-default-message" class="form-control" placeholder="enter remarks" aria-label="Hi, Do you have a moment to talk Joe?" aria-describedby="basic-icon-default-message2" style="height: 103px;"></textarea>
-                                    @error('model_name')
-                                        <small class="text-danger">{{ $message }}</small>
-                                    @enderror
+                                    <textarea name="remark" class="form-control" placeholder="Enter remarks" style="height: 103px;"></textarea>
+                                    {{-- <textarea name="remark" class="form-control" placeholder="enter remarks" aria-label="Hi, Do you have a moment to talk Joe?" aria-describedby="basic-icon-default-message2" style="height: 103px;"></textarea> --}}
                                 </div>
                             </div>
 

@@ -36,8 +36,10 @@ class LogisticImport implements ToModel, WithHeadingRow ,WithValidation
             'exterior_color' => 'required',
             'interior_color' => 'required',
             'model_year' => 'required',
-            'vin_number' => 'required',
-            'engine_number' => 'required',
+            // 'vin_number' => 'required',
+            // 'engine_number' => 'required',
+            'vin_number' => 'required|string|max:255|unique:logistics,vin_number',
+            'engine_number' => 'required|string|max:255|unique:logistics,engine_number',
         ];
     }
 }

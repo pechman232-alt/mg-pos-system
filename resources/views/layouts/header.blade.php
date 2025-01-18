@@ -9,7 +9,8 @@
         <div class="collapse navbar-collapse" id="navbar-ex-3">
             <div class="navbar-nav me-auto">
                 <a class="nav-item nav-link active">{{ auth('users')->user()->full_name}}</a>
-                <a class="nav-item nav-link">{{ auth('users')->user()->username}}</a>
+                <p>|</p>
+                <a class="nav-item nav-link">{{ auth('users')->user()->email}}</a>
             </div>
         </div>
 

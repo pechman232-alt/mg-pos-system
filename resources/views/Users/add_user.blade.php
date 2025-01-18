@@ -143,22 +143,11 @@
 
                                 <div class="mb-3 col-md-4">
                                     <label class="form-label" for="basic-default-fullname">Position</label>
-                                    {{-- <select name="position_id" class="form-select @error('position_id') border-danger @enderror">
-                                        <option value="" disabled selected>Position select</option>
-                                        @foreach ($positions as $item)
-                                            <option value="{{ $item->id }}" @if (old('position_id') == $item->id){{ 'selected' }} @endif>{{ $item->name }}</option>
-                                        @endforeach
-                                    </select>
-                                    @error('position_id')
-                                        <small class="text-danger">{{ $message }}</small>
-                                    @enderror --}}
-
                                     <input type="hidden" id="old-position-id" value="{{ old('position_id') }}">
                                     <select id="position-select" class="form-select" name="position_id">
                                         <option value="">Select Position</option>
                                         @if (old('position_id'))
                                             <option value="{{ old('position_id') }}" selected>
-                                                <!-- Fetch and display the name of the selected option if possible -->
                                                 {{ optional(App\Models\PositionModel::find(old('position_id')))->name }}
                                             </option>
                                         @endif

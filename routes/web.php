@@ -1,13 +1,18 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Response;
+
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\UsersController;
 use App\Http\Controllers\UserRoleController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\SettingController;
 use App\Http\Controllers\LogisticController;
+use App\Http\Controllers\EmployeeController;
+use App\Http\Controllers\SaleReportController;
 
+// Route Login
 Route::get('login', [LoginController::class , 'loginPage']);
 Route::post('login', [LoginController::class, 'fnLogin']);
 
@@ -34,8 +39,24 @@ Route::middleware(['user_is_login'])->group(function () {
     Route::get('/logistics', [LogisticController::class, 'logisticIndex']);
     Route::get('/logistics/create',[LogisticController::class, 'createLogistics']);
     Route::post('/logistics/store',[LogisticController::class, 'storeLogistics']);
-
     Route::post('/logistics/import', [LogisticController::class, 'importLogistic']);
+    Route::get('/logistics/edit/{id}', [LogisticController::class, 'editLogistics']);
+    Route::post('/logistics/update/{id}', [LogisticController::class, 'updateLogistics']);
+    Route::get('/logistics/destroy/{id}', [LogisticController::class, 'destroyLogistics']);
+    Route::get('/download-template-logistic', function(){
+        $filePath = public_path('templates/logistic_excel_template.xlsx');
+        return Response::download($filePath, 'logistic_excel_template.xlsx');
+    });
+
+    // Route Employee
+    Route::get('/employees',[EmployeeController::class, 'employeeIndex']);
+    Route::get('/employees/create',[EmployeeController::class, 'createEmployee']);
+    Route::post('/employees/store', [EmployeeController::class, 'storeEmployee']);
+
+    // Route SaleReport
+    Route::get('/sale-reports', [SaleReportController::class, 'saleReportIndex']);
+    Route::get('/sale-reports/create', [SaleReportController::class, 'createSaleReport']);
+    Route::get('/sale-reports/store', [SaleReportController::class, 'storeSaleReport']);
 
     // todo ----------------------- Route Setting -----------------------------------
     // Route Departments

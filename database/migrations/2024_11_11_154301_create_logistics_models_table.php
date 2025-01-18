@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('model_year', 4);
             $table->string('vin_number', 40);
             $table->string('engine_number', 40);
-            $table->string('remark', 150);
+            $table->text('remark')->nullable();
             $table->timestamps();
         });
     }
