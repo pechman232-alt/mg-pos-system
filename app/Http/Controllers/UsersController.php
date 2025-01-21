@@ -47,8 +47,6 @@ class UsersController extends Controller
                 ->get();
             return response()->json($positions);
         }
-        
-        // $positions = PositionModel::get();
 
         $userRole = UserRolesModel::get();
         return view('Users.add_user',['branchs'=>$branchs, 'departs'=>$departs, 'userRole'=>$userRole]);

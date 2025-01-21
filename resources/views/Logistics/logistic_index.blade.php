@@ -123,7 +123,7 @@
                                 <th style="text-align: start">Model Year</th>
                                 <th style="text-align: start">Vin Number</th>
                                 <th style="text-align: start">Engine Number</th>
-                                <th style="text-align: start">Remark</th>
+                                <th style="text-align: center">Remark</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
@@ -137,11 +137,11 @@
                                     <td style="text-align: start">{{ $logistic->model_year }}</td>
                                     <td style="text-align: start">{{ $logistic->vin_number }}</td>
                                     <td style="text-align: start">{{ $logistic->engine_number }}</td>
-                                    <td style="text-align: start">{{ $logistic->remark }}</td>
+                                    <td style="text-align: start">{{ $logistic->remark == "" ? "---":$logistic->remark }}</td>
                                     <td style="width: 100px">
                                         <div class="btn-group" role="group" aria-label="First group">
                                             <a href="{{ url('/logistics/edit', encrypt($logistic->id)) }}" class="btn btn-outline-secondary"><i class="tf-icons bx bx-edit"></i></a>
-                                            <a onclick="return confirm('Are you sure, you want to delete?')" href="" class="btn btn-outline-secondary" style="background-color: red; color:white"><i class="tf-icons bx bx-trash"></i></a>
+                                            <a onclick="return confirm('Are you sure, you want to delete logistic?')" href="{{ url('/logistics/destroy', encrypt($logistic->id)) }}" class="btn btn-outline-secondary" style="background-color: red; color:white"><i class="tf-icons bx bx-trash"></i></a>
                                         </div>
                                     </td>
                                 </tr>

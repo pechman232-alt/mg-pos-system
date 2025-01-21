@@ -36,18 +36,40 @@ class LogisticController extends Controller
         try {
             $ID = decrypt($id);
             $logistics = LogisticsModel::where('id' , $ID)->first();
-            return $logistics;
+            return view('Logistics.edit_logistic',['logistics'=>$logistics]);
         } catch (\Throwable $th){
             return redirect()->back()->with('error', $th->getMessage());
         }
     }
 
-    public function updateLogistics(Request $request, $id){
-    
+    public function updateLogistics(Request $request,$id){
+        try {
+            $ID = decrypt($id);
+            // $request->validate([
+            //     'vin_number' => 'unique:logistics,vin_number',
+            //     'engine_number' => 'unique:logistics,engine_number'
+            // ],
+            //     [
+            //         'vin_number.unique' => 'the vin number already exists.',
+            //         'engine_number.unique' => 'the engine number already exists.',
+            //     ]
+            // );
+            $logistics = LogisticsModel::where('id' , $ID)->firstorfail();
+            $logistics->update($request->all());
+            return redirect('logistics')->with('info', 'The Logistic is Updated successfully.');
+        } catch (\Throwable $th){
+            return redirect()->back()->with('error', $th->getMessage());
+        }
     }
 
     public function destroyLogistics($id){
-    
+        try {
+            $ID = decrypt($id);
+            $logistics = LogisticsModel::where('id' , $ID)->firstorfail()->delete();
+            return redirect('logistics')->with('warning', 'The Logistic is Deleted successfully.');
+        } catch (\Throwable $th){
+            return redirect()->back()->with('error', $th->getMessage());
+        }
     }
 
     // Import and Export Logistic

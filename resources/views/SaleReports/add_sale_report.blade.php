@@ -56,6 +56,43 @@
             margin-right: 30px !important;
         }
 
+        .dataTables_filter {
+            margin-bottom: 20px;
+        }
+
+        .dataTables_paginate,
+        .dataTables_info {
+            margin-top: 20px;
+        }
+
+        table#datatable {
+            border: 1px solid #ccc;
+            width: 100%;
+        }
+
+        table.dataTable thead>tr>th.sorting:after,
+        table.dataTable thead>tr>th.sorting_asc:after {
+            display: none;
+        }
+
+        table.dataTable thead>tr>th.sorting:before,
+        table.dataTable thead>tr>th.sorting_asc:before {
+            display: none;
+        }
+
+        #datatable thead tr th {
+            height: 35px;
+            background-color: #DEAA5E;
+            color: white;
+        }
+
+        #datatable thead tr th, #datatable tbody tr td{
+            text-align: center;
+        }
+
+        .rounded-circle-custome {
+            border-radius: 10% !important;
+        }
     </style>
 
     <div class="container-xxl flex-grow-1 container-p-y">
@@ -71,17 +108,52 @@
                         <form action="#" method="POST" action="/upload" enctype="multipart/form-data">
                             @csrf
                             <div class="row mb-6">
-                                <label class="col-sm-2 col-form-label" for="basic-default-name">Image</label>
+                                <label class="col-sm-2 col-form-label" for="basic-default-name">Brand Model</label>
                                 <div class="col-sm-10">
                                     <div class="d-flex align-items-start align-items-sm-center gap-4">
-                                        <img src="{{ url('backend/assets/img/avatars/1.png') }}" alt="user-avatar" class="d-block rounded" height="100" width="100" id="target">
+                                        <img src="{{ url('backend/assets/img/avatars/1.png') }}" alt="user-avatar" class="rounded-circle-custome" width="150" id="target">
                                         <div class="button-wrapper">
-                                            <label for="select_image" class="btn btn-primary me-2 mb-1">
-                                                <span class="d-none d-sm-block">Upload new photo</span>
-                                                <i class="bx bx-upload d-block d-sm-none"></i>
-                                                <input type="file" name="image" id="select_image" onchange="selectImg()" hidden accept="image/png, image/jpeg">
-                                            </label>
-                                            <p class="text-muted mb-0">Allowed JPEG, JPG or PNG. Max size of 1024K</p>
+                                            <button type="button" class="btn btn-success mr-1" data-bs-toggle="modal" data-bs-target="#largeModal">Upload Brand Model</button>
+                                            <div class="modal fade" id="largeModal" tabindex="-1" style="display: none;" aria-hidden="true">
+                                                <div class="modal-dialog modal-lg" role="document">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <h5 class="modal-title" id="exampleModalLabel3">Model Name</h5>
+                                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                            <div class="table-responsive text-nowrap">
+                                                                <table id="datatable" class="display">
+                                                                    <thead>
+                                                                        <tr>
+                                                                            <th>No</th>
+                                                                            <th>Image</th>
+                                                                            <th style="text-align: start">Model Name</th>
+                                                                            <th style="text-align: start">Colors</th>
+                                                                        </tr>
+                                                                    </thead>
+                                                                    <tbody>
+                                                                        @foreach ($carImages as $index => $carImage)
+                                                                            <tr class="select-image" data-image="{{ url($carImage->image_name == '' ? 'backend/assets/img/avatars/1.png' : '/imageCar/' . $carImage->image_name) }}" data-model="{{ $carImage->modelName }}">
+                                                                                <td style="text-align: center; width: 20px">{{ $index + 1 }}</td>
+                                                                                <td>
+                                                                                    <img src="{{ url($carImage->image_name == '' ? 'backend/assets/img/avatars/1.png' : '/imageCar/' . $carImage->image_name) }}" alt="image" class="rounded-circle-custome" width="120">
+                                                                                </td>
+                                                                                <td style="text-align: start">{{ $carImage->modelName }}</td>
+                                                                                <td style="text-align: start">{{ $carImage->colorName }}</td>
+                                                                            </tr>
+                                                                        @endforeach
+                                                                    </tbody>
+                                                                </table>
+                                                            </div>
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <p class="text-muted mb-0">Model Name: <span id="modelName"></span></p>
                                             @error('image')
                                                 <small class="text-danger">{{ $message }}</small>
                                             @enderror
@@ -525,6 +597,30 @@
 
     <!------------- Script  ------------->
     <script>
+        $('#datatable').DataTable({
+            "iDisplayLength": 25
+        });
+
+        //
+        document.addEventListener("DOMContentLoaded", function() {
+            document.querySelectorAll(".select-image").forEach(row => {
+                row.addEventListener("click", function() {
+                    let imageUrl = this.getAttribute("data-image");
+                    let modelName = this.getAttribute("data-model");
+
+                    document.getElementById("target").src = imageUrl;
+                    document.getElementById("modelName").innerText = modelName;
+
+                    // Close the modal after selection
+                    let modal = document.getElementById('largeModal');
+                    let modalInstance = bootstrap.Modal.getInstance(modal);
+                    if (modalInstance) {
+                        modalInstance.hide();
+                    }
+                });
+            });
+        });
+
         // ------------------------ Calulator Age ------------------------
         function calculateAge() {
             const dobInput = document.getElementById('dob');

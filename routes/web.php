@@ -11,10 +11,13 @@ use App\Http\Controllers\SettingController;
 use App\Http\Controllers\LogisticController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\SaleReportController;
+use App\Http\Controllers\CarModelController;
 
 // Route Login
 Route::get('login', [LoginController::class , 'loginPage']);
 Route::post('login', [LoginController::class, 'fnLogin']);
+
+Route::get('/imageCar/{path}',[CarModelController::class, 'imageCar']);
 
 Route::middleware(['user_is_login'])->group(function () {
     // Route HomePage
@@ -95,4 +98,21 @@ Route::middleware(['user_is_login'])->group(function () {
     Route::post('/engineOils/store', [SettingController::class , 'storeEngineOil']);
 
     // todo ----------------------- End Route Setting -----------------------------------
+
+    // Route Car Model
+    Route::get('/car-models',[CarModelController::class, 'carModelIndex']);
+    Route::get('/car-models/create', [CarModelController::class, 'createCarModel']);
+    Route::post('/car-models/store',[CarModelController::class, 'storeCarModel']);
+
+    // Route Car Image
+    Route::get('/car-images',[CarModelController::class, 'carImageIndex']);
+    Route::get('/car-images/create',[CarModelController::class, 'createCarImage']);
+    Route::post('/car-images/store',[CarModelController::class, 'storeCarImage']);
+
+
+    // Route Colors
+    Route::get('/colors',[CarModelController::class, 'colorsIndex']);
+    Route::get('/colors/create', [CarModelController::class, 'createColor']);
+    Route::post('/colors/store', [CarModelController::class, 'storeColor']);
+
 });
