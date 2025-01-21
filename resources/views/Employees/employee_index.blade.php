@@ -106,7 +106,6 @@
                                 </div>
                             </form>
                         </div>
-
                         <a href="{{ url('/employees/create') }}" class="btn btn-outline-primary">Add Employees</a>
                     </div>
                 </div>
@@ -128,24 +127,24 @@
                             </tr>
                         </thead>
                         <tbody>
-                            {{-- @foreach ($logistics as $index => $logistic)
+                            @foreach ($employees as $index => $item)
                                 <tr>
                                     <td style="text-align: center;">{{ $index + 1 }}</td>
-                                    <td style="text-align: start">{{ $logistic->model_name }}</td>
-                                    <td style="text-align: start">{{ $logistic->exterior_color }}</td>
-                                    <td style="text-align: start">{{ $logistic->interior_color }}</td>
-                                    <td style="text-align: start">{{ $logistic->model_year }}</td>
-                                    <td style="text-align: start">{{ $logistic->vin_number }}</td>
-                                    <td style="text-align: start">{{ $logistic->engine_number }}</td>
-                                    <td style="text-align: start">{{ $logistic->remark }}</td>
+                                    <td style="text-align: start">{{ $item->full_name }}</td>
+                                    <td style="text-align: start">{{ $item->position_id }}</td>
+                                    <td style="text-align: start">{{ $item->gender }}</td>
+                                    <td style="text-align: start">{{ $item->user_id }}</td>
+                                    <td style="text-align: start">{{ $item->company_id }}</td>
+                                    <td style="text-align: start">{{ $item->department_id }}</td>
+                                    <td style="text-align: start">{{ $item->status }}</td>
                                     <td style="width: 100px">
                                         <div class="btn-group" role="group" aria-label="First group">
-                                            <a href="{{ url('/logistics/edit', encrypt($logistic->id)) }}" class="btn btn-outline-secondary"><i class="tf-icons bx bx-edit"></i></a>
+                                            <a href="" class="btn btn-outline-secondary"><i class="tf-icons bx bx-edit"></i></a>
                                             <a onclick="return confirm('Are you sure, you want to delete?')" href="" class="btn btn-outline-secondary" style="background-color: red; color:white"><i class="tf-icons bx bx-trash"></i></a>
                                         </div>
                                     </td>
                                 </tr>
-                            @endforeach --}}
+                            @endforeach
                         </tbody>
                     </table>
                 </div>

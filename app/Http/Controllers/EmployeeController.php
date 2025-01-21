@@ -13,8 +13,8 @@ use App\Models\EmployeeModel;
 class EmployeeController extends Controller
 {
     public function employeeIndex(){
-        
-        return view('Employees.employee_index');
+        $employees = EmployeeModel::get();
+        return view('Employees.employee_index',['employees'=>$employees]);
     }
 
     public function createEmployee(Request $request){
