@@ -45,15 +45,6 @@ class LogisticController extends Controller
     public function updateLogistics(Request $request,$id){
         try {
             $ID = decrypt($id);
-            // $request->validate([
-            //     'vin_number' => 'unique:logistics,vin_number',
-            //     'engine_number' => 'unique:logistics,engine_number'
-            // ],
-            //     [
-            //         'vin_number.unique' => 'the vin number already exists.',
-            //         'engine_number.unique' => 'the engine number already exists.',
-            //     ]
-            // );
             $logistics = LogisticsModel::where('id' , $ID)->firstorfail();
             $logistics->update($request->all());
             return redirect('logistics')->with('info', 'The Logistic is Updated successfully.');
