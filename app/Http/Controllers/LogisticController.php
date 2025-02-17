@@ -42,7 +42,7 @@ class LogisticController extends Controller
         }
     }
 
-    public function updateLogistics(Request $request,$id){
+    public function updateLogistics(Request $request, $id){
         try {
             $ID = decrypt($id);
             $logistics = LogisticsModel::where('id' , $ID)->firstorfail();

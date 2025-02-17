@@ -18,6 +18,9 @@ Route::get('login', [LoginController::class , 'loginPage']);
 Route::post('login', [LoginController::class, 'fnLogin']);
 
 Route::get('/imageCar/{path}',[CarModelController::class, 'imageCar']);
+Route::get('/imageUser/{path}',[UsersController::class, 'imageUser']);
+Route::get('/imageEmployee/{path}',[EmployeeController::class, 'imageEmployee']);
+
 
 Route::middleware(['user_is_login'])->group(function () {
     // Route HomePage
@@ -27,9 +30,12 @@ Route::middleware(['user_is_login'])->group(function () {
 
     // Route Users
     Route::get('/users', [UsersController::class, 'usersIndex']);
-    
     Route::get('/users/create', [UsersController::class, 'formUsers']);
     Route::post('/users/store', [UsersController::class, 'storeUsers']);
+    Route::get('/users/edit/{id}',[UsersController::class, 'editUsers']);
+    Route::post('/users/update/{id}',[UsersController::class, 'updateUsers']);
+    Route::get('/users/destroy/{id}',[UsersController::class, 'destroyUsers']);
+
 
     // Route UserRoles
     Route::get('/userRoles',[UserRoleController::class, 'userRoleIndex']);
@@ -55,11 +61,15 @@ Route::middleware(['user_is_login'])->group(function () {
     Route::get('/employees',[EmployeeController::class, 'employeeIndex']);
     Route::get('/employees/create',[EmployeeController::class, 'createEmployee']);
     Route::post('/employees/store', [EmployeeController::class, 'storeEmployee']);
+    Route::get('/employees/edit/{id}', [EmployeeController::class, 'editEmployee']);
+    Route::post('/employees/update/{id}',[EmployeeController::class, 'updateEmployee']);
+    Route::get('/employees/destroy/{id}',[EmployeeController::class, 'destroyEmployee']);
+    Route::get('/employees/details/{id}',[EmployeeController::class, 'viewEmployee']);
 
     // Route SaleReport
     Route::get('/sale-reports', [SaleReportController::class, 'saleReportIndex']);
     Route::get('/sale-reports/create', [SaleReportController::class, 'createSaleReport']);
-    Route::get('/sale-reports/store', [SaleReportController::class, 'storeSaleReport']);
+    Route::post('/sale-reports/store', [SaleReportController::class, 'storeSaleReport']);
 
     // todo ----------------------- Route Setting -----------------------------------
     // Route Departments

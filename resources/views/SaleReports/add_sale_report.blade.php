@@ -105,7 +105,7 @@
                     <h5 class="card-header">Add Sale Report</h5>
                     <hr class="my-0">
                     <div class="card-body">
-                        <form action="#" method="POST" action="/upload" enctype="multipart/form-data">
+                        <form action="{{ url('sale-reports/store') }}" method="POST" action="/upload" enctype="multipart/form-data">
                             @csrf
                             <div class="row mb-6">
                                 <label class="col-sm-2 col-form-label" for="basic-default-name">Brand Model</label>
@@ -165,12 +165,13 @@
                             <div class="row mb-6">
                                 <label class="col-sm-2 col-form-label" for="basic-default-name">Branch</label>
                                 <div class="col-sm-10">
-                                    <select name="gender" class="form-select @error('gender') border-danger @enderror">
+                                    <select name="branch_id" class="form-select @error('branch_id') border-danger @enderror">
                                         <option value="" disabled selected>select branch</option>
-                                        <option value="Male" @if (old('gender') == 'Male') selected @endif>Male</option>
-                                        <option value="Female" @if (old('gender') == 'Female') selected @endif>Female</option>
+                                        @foreach ($branchs as $item)
+                                            <option value="{{ $item->id }}" @if (old('branch_id') == $item->id){{ 'selected' }} @endif>{{ $item->branch_name }}</option>
+                                        @endforeach
                                     </select>
-                                    @error('gender')
+                                    @error('branch_id')
                                         <small class="text-danger">{{ $message }}</small>
                                     @enderror
                                 </div>
@@ -254,30 +255,49 @@
                             <div class="row mb-6">
                                 <label class="col-sm-2 col-form-label" for="basic-default-name">Source Customer</label>
                                 <div class="col-sm-10">
-                                    <select name="gender" class="form-select @error('gender') border-danger @enderror">
+                                    <select name="source_id" class="form-select @error('source_id') border-danger @enderror">
                                         <option value="" disabled selected>select source customer</option>
-                                        <option value="Male" @if (old('gender') == 'Male') selected @endif>Call In</option>
-                                        <option value="Female" @if (old('gender') == 'Female') selected @endif>Referral</option>
-                                        <option value="Female" @if (old('gender') == 'Female') selected @endif>Facebook Page</option>
-                                        <option value="Female" @if (old('gender') == 'Female') selected @endif>Walk In</option>
-                                        <option value="Female" @if (old('gender') == 'Female') selected @endif>Personal Page</option>
+                                        <option value="Call In" @if (old('source_id') == 'Call In') selected @endif>Call In</option>
+                                        <option value="Referral" @if (old('source_id') == 'Referral') selected @endif>Referral</option>
+                                        <option value="Facebook Page" @if (old('source_id') == 'Facebook Page') selected @endif>Facebook Page</option>
+                                        <option value="Walk In" @if (old('source_id') == 'Walk In') selected @endif>Walk In</option>
+                                        <option value="Personal Page" @if (old('source_id') == 'Personal Page') selected @endif>Personal Page</option>
                                     </select>
-                                    @error('gender')
+                                    @error('source_id')
                                         <small class="text-danger">{{ $message }}</small>
                                     @enderror
                                 </div>
                             </div>
 
                             <!-- select logistics_id -->
+                            {{-- <div class="row mb-6">
+                                <label class="col-sm-2 col-form-label" for="basic-default-name">Vehicle Model</label>
+                                <div class="col-sm-10">
+                                    <select name="logistics_id" class="form-select @error('logistics_id') border-danger @enderror">
+                                        <option value="" disabled selected>select vehicle model</option>
+                                        @foreach ($logistics as $item)
+                                            <option value="{{ $item->id }}" @if (old('logistics_id') == $item->id){{ 'selected' }} @endif>Model Name: {{ $item->model_name }} | Vin Number: {{ $item->vin_number }} | Engine Number: {{ $item->engine_number }}</option>
+                                        @endforeach
+                                    </select>
+                                    @error('logistics_id')
+                                        <small class="text-danger">{{ $message }}</small>
+                                    @enderror
+                                </div>
+                            </div> --}}
+
                             <div class="row mb-6">
                                 <label class="col-sm-2 col-form-label" for="basic-default-name">Vehicle Model</label>
                                 <div class="col-sm-10">
-                                    <select name="gender" class="form-select @error('gender') border-danger @enderror">
-                                        <option value="" disabled selected>select vehicle model</option>
-                                        <option value="Male" @if (old('gender') == 'Male') selected @endif>Male</option>
-                                        <option value="Female" @if (old('gender') == 'Female') selected @endif>Female</option>
+                                    <input type="hidden" id="old-logistic-id" value="{{ old('logistics_id') }}">
+                                    <select id="logistic-select" class="form-select" name="logistics_id">
+                                        <option value="">Select Logistioc</option>
+                                        @if (old('logistics_id'))
+                                            <option value="{{ old('logistics_id') }}" selected>
+                                                {{ optional(App\Models\LogisticsModel::find(old('logistics_id')))->model_name }}
+                                            </option>
+                                        @endif
                                     </select>
-                                    @error('gender')
+                                    @error('logistics_id')
                                         <small class="text-danger">{{ $message }}</small>
                                     @enderror
                                 </div>
@@ -336,12 +356,13 @@
                             <div class="row mb-6">
                                 <label class="col-sm-2 col-form-label" for="basic-default-name">Warranty</label>
                                 <div class="col-sm-10">
-                                    <select name="gender" class="form-select @error('gender') border-danger @enderror">
+                                    <select name="warranty_id" class="form-select @error('warranty_id') border-danger @enderror">
                                         <option value="" disabled selected>select warranty</option>
-                                        <option value="Male" @if (old('gender') == 'Male') selected @endif>Male</option>
-                                        <option value="Female" @if (old('gender') == 'Female') selected @endif>Female</option>
+                                        @foreach ($warrantys as $item)
+                                            <option value="{{ $item->id }}" @if (old('warranty_id') == $item->id){{ 'selected' }} @endif>{{ $item->name }}</option>
+                                        @endforeach
                                     </select>
-                                    @error('gender')
+                                    @error('warranty_id')
                                         <small class="text-danger">{{ $message }}</small>
                                     @enderror
                                 </div>
@@ -351,12 +372,13 @@
                             <div class="row mb-6">
                                 <label class="col-sm-2 col-form-label" for="basic-default-name">Sale Person</label>
                                 <div class="col-sm-10">
-                                    <select name="gender" class="form-select @error('gender') border-danger @enderror">
+                                    <select name="employee_id" class="form-select @error('employee_id') border-danger @enderror">
                                         <option value="" disabled selected>select employee id</option>
-                                        <option value="Male" @if (old('gender') == 'Male') selected @endif>Male</option>
-                                        <option value="Female" @if (old('gender') == 'Female') selected @endif>Female</option>
+                                        @foreach ($employees as $item)
+                                            <option value="{{ $item->id }}" @if (old('employee_id') == $item->id){{ 'selected' }} @endif>{{ $item->full_name }}</option>
+                                        @endforeach
                                     </select>
-                                    @error('gender')
+                                    @error('employee_id')
                                         <small class="text-danger">{{ $message }}</small>
                                     @enderror
                                 </div>
@@ -365,12 +387,13 @@
                             <div class="row mb-6">
                                 <label class="col-sm-2 col-form-label" for="basic-default-name">Address</label>
                                 <div class="col-sm-10">
-                                    <select name="gender" class="form-select @error('gender') border-danger @enderror">
+                                    <select name="province_id" class="form-select @error('province_id') border-danger @enderror">
                                         <option value="" disabled selected>select address</option>
-                                        <option value="Male" @if (old('gender') == 'Male') selected @endif>Male</option>
-                                        <option value="Female" @if (old('gender') == 'Female') selected @endif>Female</option>
+                                        @foreach ($provinces as $item)
+                                            <option value="{{ $item->id }}" @if (old('province_id') == $item->id){{ 'selected' }} @endif>{{ $item->name }}</option>
+                                        @endforeach
                                     </select>
-                                    @error('gender')
+                                    @error('province_id')
                                         <small class="text-danger">{{ $message }}</small>
                                     @enderror
                                 </div>
@@ -520,19 +543,19 @@
                                 <div class="col-sm-10">
                                     <select name="pro_offer_oil" class="form-select @error('pro_offer_oil') border-danger @enderror">
                                         <option value="" disabled selected>select pro offer oil</option>
-                                        <option value="Yes" @if (old('pro_offer_oil') == 'Yes') selected @endif>First</option>
-                                        <option value="Yes" @if (old('pro_offer_oil') == 'Yes') selected @endif>1</option>
-                                        <option value="Yes" @if (old('pro_offer_oil') == 'Yes') selected @endif>2</option>
-                                        <option value="Yes" @if (old('pro_offer_oil') == 'Yes') selected @endif>3</option>
-                                        <option value="Yes" @if (old('pro_offer_oil') == 'Yes') selected @endif>4</option>
-                                        <option value="Yes" @if (old('pro_offer_oil') == 'Yes') selected @endif>5</option>
-                                        <option value="Yes" @if (old('pro_offer_oil') == 'Yes') selected @endif>6</option>
-                                        <option value="Yes" @if (old('pro_offer_oil') == 'Yes') selected @endif>7</option>
-                                        <option value="Yes" @if (old('pro_offer_oil') == 'Yes') selected @endif>8</option>
-                                        <option value="Yes" @if (old('pro_offer_oil') == 'Yes') selected @endif>9</option>
-                                        <option value="Yes" @if (old('pro_offer_oil') == 'Yes') selected @endif>10</option>
-                                        <option value="Yes" @if (old('pro_offer_oil') == 'Yes') selected @endif>Completed</option>
-                                        <option value="Yes" @if (old('pro_offer_oil') == 'Yes') selected @endif>N/A</option>
+                                        <option value="First" @if (old('pro_offer_oil') == 'First') selected @endif>First</option>
+                                        <option value="1" @if (old('pro_offer_oil') == '1') selected @endif>1</option>
+                                        <option value="2" @if (old('pro_offer_oil') == '2') selected @endif>2</option>
+                                        <option value="3" @if (old('pro_offer_oil') == '3') selected @endif>3</option>
+                                        <option value="4" @if (old('pro_offer_oil') == '4') selected @endif>4</option>
+                                        <option value="5" @if (old('pro_offer_oil') == '5') selected @endif>5</option>
+                                        <option value="6" @if (old('pro_offer_oil') == '6') selected @endif>6</option>
+                                        <option value="7" @if (old('pro_offer_oil') == '7') selected @endif>7</option>
+                                        <option value="8" @if (old('pro_offer_oil') == '8') selected @endif>8</option>
+                                        <option value="9" @if (old('pro_offer_oil') == '9') selected @endif>9</option>
+                                        <option value="10" @if (old('pro_offer_oil') == '10') selected @endif>10</option>
+                                        <option value="Completed" @if (old('pro_offer_oil') == 'Completed') selected @endif>Completed</option>
+                                        <option value="N/A" @if (old('pro_offer_oil') == 'N/A') selected @endif>N/A</option>
                                     </select>
                                     @error('pro_offer_oil')
                                         <small class="text-danger">{{ $message }}</small>
@@ -643,6 +666,77 @@
                 ageInput.value = "";
             }
         }
+
+        // ------------------------ Get Position ---------------------
+        $('#logistic-select').select2({
+            placeholder: "Select Logistic",
+            allowClear: true,
+            ajax: {
+                url: "{{ url('/sale-reports/create') }}", // Replace with the correct route
+                type: "GET",
+                dataType: 'json',
+                delay: 250, // Delay to reduce server load
+                data: function (params) {
+                    return {
+                        search: params.term, // Search query
+                        type: 'logistic'
+
+                    };
+                },
+                processResults: function (data) {
+                    return {
+                        results: $.map(data, function (item) {
+                            return {
+                                id: item.id,
+                                text: item.model_name + ' - ' + item.vin_number + ' - ' + item.engine_number
+                            };
+                        })
+                    };
+                },
+                cache: true
+            }
+        });
+
+        // let oldLogisticId = $('#old-logistic-id').val();
+        // if (oldLogisticId) {
+        //     $.ajax({
+        //         url: "{{ url('/sale-reports/create') }}", // Use the same endpoint
+        //         type: "GET",
+        //         data: { search: '', type: 'logistic' }, // Adjust this if needed
+        //         success: function (data) {
+        //             let selectedItem = data.find(item => item.id == oldLogisticId);
+        //             if (selectedItem) {
+        //                 let option = new Option(selectedItem.name, selectedItem.id, true, true);
+        //                 $('#logistic-select').append(option).trigger('change');
+        //             }
+        //         }
+        //     });
+        // }
+
+        let oldLogisticId = $('#old-logistic-id').val();
+        if (oldLogisticId) {
+            $.ajax({
+                url: "{{ url('/sale-reports/create') }}", // Use the same endpoint
+                type: "GET",
+                data: { search: '', type: 'logistic' }, // Adjust this if needed
+                success: function (data) {
+                    let selectedItem = data.find(item => item.id == oldLogisticId);
+                    if (selectedItem) {
+                        let optionText = selectedItem.model_name + ' - ' + selectedItem.vin_number + ' - ' + selectedItem.engine_number;
+                        let option = new Option(optionText, selectedItem.id, true, true);
+                        $('#logistic-select').append(option).trigger('change');
+                    }
+                }
+            });
+        }
+
+
+        // Event listener for selection
+        $('#logistic-select').on('change', function () {
+            let selectedOption = $(this).val();
+            console.log('Selected option:', selectedOption);
+        });
+        // ------------------------ Get Position ---------------------
     </script>
 
 @endsection

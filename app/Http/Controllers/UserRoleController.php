@@ -151,6 +151,6 @@ class UserRoleController extends Controller
 
         session()->put('activeSubMenus', $activeSubMenus);
 
-        return redirect('userRoles')->with('update', 'The Role is updated successfully.');
+        return redirect('userRoles')->with('info', 'The Role is updated successfully.');
     }
 }

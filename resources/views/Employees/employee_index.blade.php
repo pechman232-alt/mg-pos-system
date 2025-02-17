@@ -122,7 +122,7 @@
                                 <th style="text-align: start">UserID</th>
                                 <th style="text-align: start">Company</th>
                                 <th style="text-align: start">Department</th>
-                                <th style="text-align: start">Status</th>
+                                <th style="text-align: start">Activate</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
@@ -130,13 +130,26 @@
                             @foreach ($employees as $index => $item)
                                 <tr>
                                     <td style="text-align: center;">{{ $index + 1 }}</td>
-                                    <td style="text-align: start">{{ $item->full_name }}</td>
-                                    <td style="text-align: start">{{ $item->position_id }}</td>
+                                    <td style="text-align: start">
+                                        <a href="{{ url('/employees/details', encrypt($item->id)) }}">
+                                            <div class="d-flex justify-content-start align-items-center user-name">
+                                                <div class="avatar-wrapper">
+                                                    <div class="avatar me-2">
+                                                        <img src="{{ url($item->image_employee == '' ? 'backend/assets/img/avatars/1.png' : '/imageEmployee/' . $item->image_employee) }}" alt="Avatar" class="rounded-circle">
+                                                    </div>
+                                                </div>
+                                                <div class="d-flex flex-column">
+                                                    <span class="emp_name text-truncate">{{ $item->full_name }}</span>
+                                                </div>
+                                            </div>
+                                        </a>
+                                    </td>
+                                    <td style="text-align: start">{{ $item->postionName }}</td>
                                     <td style="text-align: start">{{ $item->gender }}</td>
                                     <td style="text-align: start">{{ $item->user_id }}</td>
-                                    <td style="text-align: start">{{ $item->company_id }}</td>
-                                    <td style="text-align: start">{{ $item->department_id }}</td>
-                                    <td style="text-align: start">{{ $item->status }}</td>
+                                    <td style="text-align: start">{{ $item->companyName }}</td>
+                                    <td style="text-align: start">{{ $item->departmentName }}</td>
+                                    <td style="text-align: start">{{ $item->activate }}</td>
                                     <td style="width: 100px">
                                         <div class="btn-group" role="group" aria-label="First group">
                                             <a href="" class="btn btn-outline-secondary"><i class="tf-icons bx bx-edit"></i></a>

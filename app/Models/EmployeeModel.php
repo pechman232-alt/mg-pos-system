@@ -42,7 +42,8 @@ class EmployeeModel extends Model
         'deactivate',
         'phone_number',
         'access_door',
-        'status'
+        'status',
+        'image_employee'
     ];
     public function company()
     {

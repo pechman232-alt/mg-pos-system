@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('employees', function (Blueprint $table) {
             $table->id();
+            $table->string('image_employee', 200);
             $table->unsignedBigInteger('company_id');
             $table->unsignedBigInteger('department_id');
             $table->unsignedBigInteger('position_id');
@@ -29,7 +30,7 @@ return new class extends Migration
             $table->date('contract');
             $table->string('official_userid', 40)->nullable();
             $table->string('official_pass', 15)->nullable();
-            $table->string('group_domain', 15)->nullable();
+            $table->string('group_domain', 30)->nullable();
             $table->string('s_user_id', 40)->nullable();
             $table->string('s_pass', 15)->nullable();
             $table->string('m_user_id', 50)->nullable();

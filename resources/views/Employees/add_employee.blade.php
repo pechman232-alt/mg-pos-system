@@ -70,6 +70,24 @@
                     <div class="card-body">
                         <form action="{{ url('/employees/store') }}" method="POST" action="/upload" enctype="multipart/form-data">
                             @csrf
+
+                            <div class="mb-4 mt-3">
+                                <div class="d-flex align-items-start align-items-sm-center gap-4">
+                                    <img src="{{ url('backend/assets/img/avatars/1.png') }}" alt="user-avatar" class="d-block rounded" height="100" width="100" id="target">
+                                    <div class="button-wrapper">
+                                        <label for="select_image" class="btn btn-primary me-2 mb-1">
+                                            <span class="d-none d-sm-block">Upload new photo</span>
+                                            <i class="bx bx-upload d-block d-sm-none"></i>
+                                            <input type="file" name="image_employee" id="select_image" onchange="selectImg()" hidden accept="image/png, image/jpeg">
+                                        </label>
+                                        <p class="text-muted mb-0">Allowed JPEG, JPG or PNG. Max size of 1024K</p>
+                                        @error('image_employee')
+                                            <small class="text-danger">{{ $message }}</small>
+                                        @enderror
+                                    </div>
+                                </div>
+                            </div>
+
                             <div class="row mb-6">
                                 <label class="col-sm-2 col-form-label" for="basic-default-name">First Name</label>
                                 <div class="col-sm-10">
@@ -444,6 +462,21 @@
     </div>
 
     <script>
+        // ------------------------ Display image ---------------------
+        function showImage(src, target) {
+            var fr = new FileReader();
+            fr.onload = function() {
+                target.src = fr.result;
+            }
+            fr.readAsDataURL(src.files[0]);
+        }
+
+        function selectImg() {
+            var src = document.getElementById("select_image");
+            var target = document.getElementById("target");
+            showImage(src, target);
+        }
+
         // ------------------------ Get Position ---------------------
         $('#position-select').select2({
             placeholder: "Select Position",

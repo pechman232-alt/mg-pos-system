@@ -80,7 +80,7 @@
                                 <th>Branch</th>
                                 <th>Department</th>
                                 <th>Position</th>
-                                <th>Start Work</th>
+                                <th>UserRole</th>
                                 <th>Status</th>
                                 <th>Actions</th>
                             </tr>
@@ -93,8 +93,7 @@
                                         <div class="d-flex justify-content-start align-items-center user-name">
                                             <div class="avatar-wrapper">
                                                 <div class="avatar me-2">
-                                                    <img src="{{ url($user->profile_pic == '' ? 'backend/assets/img/avatars/1.png' : 'storage/' . $user->profile_pic) }}" alt="Avatar" class="rounded-circle">
-                                                    {{-- <img src="{{ $user->profile_pic ? asset('storage/' . $user->profile_pic) : asset('backend/assets/img/avatars/1.png') }}" alt="Avatar" class="rounded-circle"> --}}
+                                                    <img src="{{ url($user->profile_pic == '' ? 'backend/assets/img/avatars/1.png' : '/imageUser/' . $user->profile_pic) }}" alt="Avatar" class="rounded-circle">
                                                 </div>
                                             </div>
                                             <div class="d-flex flex-column">
@@ -109,21 +108,24 @@
                                     <td>{{ $user->branchName }}</td>
                                     <td>{{ $user->departName }}</td>
                                     <td>
+                                        {{ $user->positionName }}
+                                    </td>
+                                    <td>
                                         <span class="badge  bg-label-success">{{ $user->user_role_name }}</span>
                                     </td>
-                                    <td style="text-align: center;">{{ $user->start_work_date }}</td>
                                     <td>
-                                        <span class="badge  bg-label-success">{{ $user->status == '1' ? 'Active':'Unactive' }}</span>
+                                        <span class="badge  bg-label-{{$user->status == '1' ? 'success':'warning'}}">{{ $user->status == '1' ? 'Active':'Unactive' }}</span>
                                     </td>
                                     <td style="width: 100px">
                                         <div class="btn-group" role="group" aria-label="First group">
-                                            <a href="" class="btn btn-outline-secondary"><i class="tf-icons bx bx-edit"></i></a>
-                                            <a onclick="return confirm('Are you sure, you want to delete?')" href="" class="btn btn-outline-secondary" style="background-color: red; color:white"><i class="tf-icons bx bx-trash"></i></a>
+                                            <a href="{{ url('/users/edit', encrypt($user->id)) }}" class="btn btn-outline-secondary"><i class="tf-icons bx bx-edit"></i></a>
+                                            <a onclick="return confirm('Are you sure, you want to delete?')" href="{{ url('/users/destroy', encrypt($user->id)) }}" class="btn btn-outline-secondary" style="background-color: red; color:white"><i class="tf-icons bx bx-trash"></i></a>
                                         </div>
                                     </td>
                                 </tr>
                             @endforeach
                         </tbody>
+                        {{-- {{  auth('users')->user() }} --}}
                     </table>
                 </div>
             </div>

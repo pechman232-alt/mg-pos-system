@@ -24,7 +24,7 @@
             <li class="nav-item navbar-dropdown dropdown-user dropdown">
                 <a class="nav-link dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="dropdown">
                     <div class="avatar avatar-online">
-                        <img src="{{ url(auth('users')->user()->profile_pic == '' ? 'backend/assets/img/avatars/1.png': 'storage/' . auth('users')->user()->profile_pic) }}" alt="" class="w-px-40 h-auto rounded-circle">
+                        <img src="{{ url(auth('users')->user()->profile_pic == '' ? 'backend/assets/img/avatars/1.png': '/imageUser/' . auth('users')->user()->profile_pic) }}" alt="" class="w-px-40 h-auto rounded-circle">
                     </div>
                 </a>
                 <ul class="dropdown-menu dropdown-menu-end">

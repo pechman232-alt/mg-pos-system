@@ -47,6 +47,7 @@ class EmployeeRequest extends FormRequest
             'note' => 'nullable|string|max:1000',
             'full_name' => 'nullable|string|max:50',
             'status' => 'nullable|string|max:1',
+            'image_employee' => 'required',
         ];
     }
 
@@ -54,6 +55,7 @@ class EmployeeRequest extends FormRequest
     {
         return [
             'first_name.required' => 'Enter a valid Full Name!',
+            'image_employee.required' => 'Please upload a Image Users.',
         ];
     }
 }
