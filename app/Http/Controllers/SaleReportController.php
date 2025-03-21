@@ -10,6 +10,7 @@ use App\Models\LogisticsModel;
 use App\Models\WarrantyModel;
 use App\Models\EmployeeModel;
 use App\Models\ProvinceModel;
+use App\Models\MemberCard;
 use App\Http\Requests\SaleReportRequest;
 
 class SaleReportController extends Controller
@@ -45,6 +46,15 @@ class SaleReportController extends Controller
                     ->select('id', 'model_name', 'vin_number', 'engine_number')
                     ->get();
                 return response()->json($logistics);
+            }
+
+            if ($type === 'memberCard') {
+                $memberCard = MemberCard::where(function ($query) use ($search) {
+                    $query->where('member_card', 'LIKE', "%{$search}%");
+                    })
+                    ->select('id', 'member_card')
+                    ->get();
+                return response()->json($memberCard);
             }
 
         }

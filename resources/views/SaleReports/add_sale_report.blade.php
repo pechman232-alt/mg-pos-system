@@ -177,7 +177,9 @@
                                 </div>
                             </div>
 
-                            <div class="row mb-6">
+                            {{-- -------------------------------------------- --}}
+
+                            {{-- <div class="row mb-6">
                                 <label class="col-sm-2 col-form-label" for="basic-default-name">Member Card</label>
                                 <div class="col-sm-10">
                                     <input type="text" placeholder="enter member card" class="form-control @error('member_card') border-danger @enderror" name="member_card" value="{{ old('member_card') }}">
@@ -185,7 +187,27 @@
                                         <small class="text-danger">{{ $message }}</small>
                                     @enderror
                                 </div>
+                            </div> --}}
+
+                            <div class="row mb-6">
+                                <label class="col-sm-2 col-form-label" for="basic-default-name">Member Card</label>
+                                <div class="col-sm-10">
+                                    <input type="hidden" id="old-memberCard-id" value="{{ old('member_card') }}">
+                                    <select id="memberCard-select" class="form-select" name="member_card">
+                                        <option value="">Select Member Card</option>
+                                        @if (old('member_card'))
+                                            <option value="{{ old('member_card') }}" selected>
+                                                {{ optional(App\Models\MemberCard::find(old('member_card')))->member_card }}
+                                            </option>
+                                        @endif
+                                    </select>
+                                    @error('member_card')
+                                        <small class="text-danger">{{ $message }}</small>
+                                    @enderror
+                                </div>
                             </div>
+
+                            {{-- -------------------------------------------- --}}
 
                             <div class="row mb-6">
                                 <label class="col-sm-2 col-form-label" for="basic-default-name">Brand Name</label>
@@ -268,22 +290,6 @@
                                     @enderror
                                 </div>
                             </div>
-
-                            <!-- select logistics_id -->
-                            {{-- <div class="row mb-6">
-                                <label class="col-sm-2 col-form-label" for="basic-default-name">Vehicle Model</label>
-                                <div class="col-sm-10">
-                                    <select name="logistics_id" class="form-select @error('logistics_id') border-danger @enderror">
-                                        <option value="" disabled selected>select vehicle model</option>
-                                        @foreach ($logistics as $item)
-                                            <option value="{{ $item->id }}" @if (old('logistics_id') == $item->id){{ 'selected' }} @endif>Model Name: {{ $item->model_name }} | Vin Number: {{ $item->vin_number }} | Engine Number: {{ $item->engine_number }}</option>
-                                        @endforeach
-                                    </select>
-                                    @error('logistics_id')
-                                        <small class="text-danger">{{ $message }}</small>
-                                    @enderror
-                                </div>
-                            </div> --}}
 
                             <div class="row mb-6">
                                 <label class="col-sm-2 col-form-label" for="basic-default-name">Vehicle Model</label>
@@ -667,7 +673,7 @@
             }
         }
 
-        // ------------------------ Get Position ---------------------
+        // ------------------------ Get Logistic ---------------------
         $('#logistic-select').select2({
             placeholder: "Select Logistic",
             allowClear: true,
@@ -697,22 +703,6 @@
             }
         });
 
-        // let oldLogisticId = $('#old-logistic-id').val();
-        // if (oldLogisticId) {
-        //     $.ajax({
-        //         url: "{{ url('/sale-reports/create') }}", // Use the same endpoint
-        //         type: "GET",
-        //         data: { search: '', type: 'logistic' }, // Adjust this if needed
-        //         success: function (data) {
-        //             let selectedItem = data.find(item => item.id == oldLogisticId);
-        //             if (selectedItem) {
-        //                 let option = new Option(selectedItem.name, selectedItem.id, true, true);
-        //                 $('#logistic-select').append(option).trigger('change');
-        //             }
-        //         }
-        //     });
-        // }
-
         let oldLogisticId = $('#old-logistic-id').val();
         if (oldLogisticId) {
             $.ajax({
@@ -736,7 +726,62 @@
             let selectedOption = $(this).val();
             console.log('Selected option:', selectedOption);
         });
-        // ------------------------ Get Position ---------------------
+        // ------------------------ Get Logistic ---------------------
+
+         // ------------------------ Get Member Card ---------------------
+         $('#memberCard-select').select2({
+            placeholder: "Select Member Card",
+            allowClear: true,
+            ajax: {
+                url: "{{ url('/sale-reports/create') }}", // Replace with the correct route
+                type: "GET",
+                dataType: 'json',
+                delay: 250, // Delay to reduce server load
+                data: function (params) {
+                    return {
+                        search: params.term, // Search query
+                        type: 'memberCard'
+
+                    };
+                },
+                processResults: function (data) {
+                    return {
+                        results: $.map(data, function (item) {
+                            return {
+                                id: item.id,
+                                text: item.member_card
+                            };
+                        })
+                    };
+                },
+                cache: true
+            }
+        });
+
+        let oldMemberCardId = $('#old-memberCard-id').val();
+        if (oldMemberCardId) {
+            $.ajax({
+                url: "{{ url('/sale-reports/create') }}", // Use the same endpoint
+                type: "GET",
+                data: { search: '', type: 'memberCard' }, // Adjust this if needed
+                success: function (data) {
+                    let selectedItem = data.find(item => item.id == oldMemberCardId);
+                    if (selectedItem) {
+                        let optionText = selectedItem.member_card;
+                        let option = new Option(optionText, selectedItem.id, true, true);
+                        $('#memberCard-select').append(option).trigger('change');
+                    }
+                }
+            });
+        }
+
+
+        // Event listener for selection
+        $('#memberCard-select').on('change', function () {
+            let selectedOption = $(this).val();
+            console.log('Selected option:', selectedOption);
+        });
+        // ------------------------ Get Member Card ---------------------
     </script>
 
 @endsection
