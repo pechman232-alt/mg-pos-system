@@ -16,8 +16,6 @@ class LogisticImport implements ToModel, WithHeadingRow ,WithValidation
     */
     public function model(array $row)
     {
-        // dd($row);
-
         return new LogisticsModel([
             'model_name' => $row['model_name'],
             'exterior_color' => $row['exterior_color'],
@@ -36,8 +34,6 @@ class LogisticImport implements ToModel, WithHeadingRow ,WithValidation
             'exterior_color' => 'required',
             'interior_color' => 'required',
             'model_year' => 'required',
-            // 'vin_number' => 'required',
-            // 'engine_number' => 'required',
             'vin_number' => 'required|string|max:255|unique:logistics,vin_number',
             'engine_number' => 'required|string|max:255|unique:logistics,engine_number',
         ];

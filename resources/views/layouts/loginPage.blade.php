@@ -15,7 +15,7 @@
         body {
             /* font-family: "Karla", sans-serif; */
             font-family: "Kantumruy Pro", sans-serif;
-            background-color: #f5e2c5;
+            background-color: #2c8cc2;
             min-height: 100vh;
         }
         .brand-wrapper {
@@ -108,7 +108,7 @@
 
         .login-card .login-btn {
             padding: 13px 20px 12px;
-            background-color: #DEAA5E;
+            background-color: #2c8cc2;
             border-radius: 4px;
             font-size: 17px;
             font-weight: bold;
@@ -118,8 +118,8 @@
         }
 
         .login-card .login-btn:hover {
-            border: 1px solid #A68048;
-            background-color: #A68048;
+            border: 1px solid #20668f;
+            background-color: #20668f;
             color: #ffffff;
         }
 
@@ -154,7 +154,7 @@
 </head>
 <body>
     <main class="d-flex align-items-center min-vh-100 py-3 py-md-0">
-        <img src="{{ asset('/assets/images/bg.jpg') }}" class="background-img">
+        <img src="{{ asset('/assets/images/mg_7.jpg') }}" class="background-img">
         <div class="container">
 
             @include('Helps.toast')
@@ -162,7 +162,7 @@
             <div class="card login-card">
                 <div class="row no-gutters">
                 <div class="col-md-5">
-                    <img src="{{ asset('/assets/images/bg.jpg') }}" alt="login" class="login-card-img" sizes="20px">
+                    <img src="{{ asset('/assets/images/mg_7.jpg') }}" alt="login" class="login-card-img" sizes="20px">
                 </div>
                 <div class="col-md-7">
                     <div class="card-body">

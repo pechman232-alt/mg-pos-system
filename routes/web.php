@@ -12,6 +12,7 @@ use App\Http\Controllers\LogisticController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\SaleReportController;
 use App\Http\Controllers\CarModelController;
+use App\Http\Controllers\MemberCardController;
 
 // Route Login
 Route::get('login', [LoginController::class , 'loginPage']);
@@ -125,4 +126,11 @@ Route::middleware(['user_is_login'])->group(function () {
     Route::get('/colors/create', [CarModelController::class, 'createColor']);
     Route::post('/colors/store', [CarModelController::class, 'storeColor']);
 
+    //Route MemberCard
+    Route::get('/member-cards',[MemberCardController::class, 'memberCardIndex']);
+    Route::get('/member-cards/create',[MemberCardController::class, 'createMemberCard']);
+    Route::post('/member-cards/store',[MemberCardController::class, 'storeMemberCard']);
+    Route::get('/member-cards/edit/{id}',[MemberCardController::class, 'editMemberCard']);
+    Route::post('/member-cards/update/{id}',[MemberCardController::class, 'updateMemberCard']);
+    Route::get('/member-cards/destroy/{id}',[MemberCardController::class, 'destroyMemberCard']);
 });
