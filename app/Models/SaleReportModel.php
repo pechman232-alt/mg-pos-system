@@ -48,7 +48,7 @@ class SaleReportModel extends Model
 
     public function branch()
     {
-        return $this->belongsTo(BranchModel::class, 'branch_id', 'id');
+        return $this->belongsTo(BranchModel::class, 'branch_id', ownerKey: 'id');
     }
     public function source()
     {

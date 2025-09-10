@@ -5,7 +5,7 @@
             <script>
                 document.write(new Date().getFullYear());
             </script>
-            | Powerd By | TF Motors
+            | Powerd By | MG Cambodia
         </div>
     </div>
 </footer>

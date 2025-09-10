@@ -25,7 +25,6 @@
         .brand-wrapper .logo {
             height: 130px;
         }
-
         .login-card {
             border: 0;
             border-radius: 10.5px;
@@ -41,7 +40,6 @@
             -o-object-fit: cover;
             object-fit: cover;
         }
-
         .background-img {
             position: absolute;
             width: 100%;
@@ -52,7 +50,6 @@
             -webkit-filter: blur(3.5px);
             opacity: 60%;
         }
-
         .login-card .card-body {
             padding: 85px 60px 60px;
             text-align: -webkit-center;
@@ -63,19 +60,16 @@
                 padding: 35px 24px;
             }
         }
-
         .login-card-description {
             font-size: 18px;
             color: #000;
             font-weight: 600;
             margin-bottom: 23px;
         }
-
         .login-card form {
             max-width: 326px;
             padding-bottom: 65px;
         }
-
         .login-card .form-control {
             border: 1px solid #d5dae2;
             padding: 15px 25px;
@@ -154,7 +148,7 @@
 </head>
 <body>
     <main class="d-flex align-items-center min-vh-100 py-3 py-md-0">
-        <img src="{{ asset('/assets/images/mg_7.jpg') }}" class="background-img">
+        <img src="{{ asset('/assets/images/mg_7.jpgg') }}" class="background-img">
         <div class="container">
 
             @include('Helps.toast')

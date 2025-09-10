@@ -75,6 +75,7 @@ class LogisticController extends Controller
             Log::info($th);
             return redirect()->back()->with('error', $th->getMessage());
         }
+        
     }
 
 }

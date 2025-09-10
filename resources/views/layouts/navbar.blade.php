@@ -24,17 +24,17 @@
 
     .app-brand .layout-menu-toggle {
         background-color: #CE181E;
-        border: 7px solid #f5f5f9;
+        border: 7px solid #fff;
     }
 
     .bg-menu-theme .menu-inner>.menu-item.active>.menu-link {
         color: #DEAA5E;
         /* background-color: #fde9e9 !important; */
-        background-color: #f5e2c5 !important;
+        background-color: #fff !important;
     }
 
     .bg-menu-theme .menu-inner>.menu-item.active:before {
-        background: #DEAA5E;
+        background: #fff;
     }
 
     .menu-link.logout-btn {

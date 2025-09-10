@@ -40,7 +40,7 @@
 
         #datatable thead tr th {
             height: 25px;
-            background-color: #DEAA5E;
+            background-color: #f5e2c5;
             color: white;
         }
 

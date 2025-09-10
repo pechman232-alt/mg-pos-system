@@ -60,6 +60,7 @@
             border-color: #696cff;
             background: transparent;
         }
+       
     </style>
 
     <div class="container-xxl flex-grow-1 container-p-y">
@@ -88,7 +89,6 @@
                     </div>
                 </div>
                 <div class="card-body pt-4">
-
                     <div class="row g-6">
                         <div class="col-md-6">
                             <label for="firstName" class="form-label">Position</label>

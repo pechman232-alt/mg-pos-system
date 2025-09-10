@@ -105,13 +105,13 @@
                     <h5 class="card-header">Add Sale Report</h5>
                     <hr class="my-0">
                     <div class="card-body">
-                        <form action="{{ url('sale-reports/store') }}" method="POST" action="/upload" enctype="multipart/form-data">
+                        <form action="{{ asset(path: 'sale-reports/store') }}" method="POST" action="/upload" enctype="multipart/form-data">
                             @csrf
                             <div class="row mb-6">
                                 <label class="col-sm-2 col-form-label" for="basic-default-name">Brand Model</label>
                                 <div class="col-sm-10">
                                     <div class="d-flex align-items-start align-items-sm-center gap-4">
-                                        <img src="{{ url('backend/assets/img/avatars/1.png') }}" alt="user-avatar" class="rounded-circle-custome" width="150" id="target">
+                                        <img src="{{ asset('backend/assets/img/avatars/image.png') }}" alt="user-avatar" class="rounded-circle-custome" width="150" id="target">
                                         <div class="button-wrapper">
                                             <button type="button" class="btn btn-success mr-1" data-bs-toggle="modal" data-bs-target="#largeModal">Upload Brand Model</button>
                                             <div class="modal fade" id="largeModal" tabindex="-1" style="display: none;" aria-hidden="true">
