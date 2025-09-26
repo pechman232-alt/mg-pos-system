@@ -1,34 +1,6 @@
 @extends('layouts.homePages')
 @section('content')
-
-    <style>
-        .rounded-circle {
-            object-fit: fill;
-        }
-
-        .my-img {
-            background: black;
-            height: 200px;
-            width: 200px;
-            border-radius: 50%;
-        }
-
-        .my-img-2 {
-            height: 70px;
-            width: 70px;
-            object-fit: fill;
-        }
-
-        .card-header, .card-footer {
-            background: #f5e2c5;
-        }
-
-    </style>
-
     <div class="container-xxl flex-grow-1 container-p-y">
-
-        @include('Helps.alert')
-
         <div class="row">
             <div class="col-md-12">
                 <div class="card mb-4">
@@ -56,5 +28,4 @@
             </div>
         </div>
     </div>
-
 @endsection

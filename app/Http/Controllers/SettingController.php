@@ -24,22 +24,38 @@ class SettingController extends Controller
     }
 
     public function createDepart(Request $request){
-        $request->validate([
-            'name' => 'required',
-        ],
-    ['name' => 'Please Enter Departments Name!']
+        $request->validate(
+            ['name' => 'required'],
+            ['name' => 'Please Enter Departments Name!']
         );
         $depart = new DepartmentModel;
         $depart->name = $request->name;
         $depart->save();
-        
         return redirect('departments/create')->with('success', 'The Department is Created Succesfully!');
+    }
 
+    public function editDepart($id){
+        try {
+            $ID = decrypt($id);
+            $depart = DepartmentModel::where('id', $ID)->first();
+            return $depart;
+        } catch (\Throwable $th){
+            return redirect()->back()->with('error', $th->getMessage());
+        }        
+    }
+
+    public function updateDepart($id){
+        try {
+            $ID = decrypt($id);
+            $depart = DepartmentModel::where('id', $ID)->firstorfail();
+
+        } catch (\Throwable $th){
+            return redirect()->back()->with('error', $th->getMessage());
+        } 
     }
 
     // ------------- Position Controller -------------------
     public function positionIndex(){
-
         $positions = PositionModel::where('status', '=', '1')->get();
         return view('Settings.Positions.position_index',['positions'=>$positions]);
     }
@@ -49,16 +65,13 @@ class SettingController extends Controller
     }
 
     public function createPosition(Request $request){
-        $request->validate([
-            'name' => 'required',
-        ],
-    ['name' => 'Please Enter Position Name!']
+        $request->validate(
+            ['name' => 'required'],
+            ['name' => 'Please Enter Position Name!']
         );
-        
         $position = new PositionModel();
         $position->name = $request->name;
         $position->save();
-
         return redirect('positions/create')->with('success', 'The Position is Created Succesfully!');
     }
 
@@ -73,16 +86,14 @@ class SettingController extends Controller
     }
 
     public function createBranch(Request $request){
-        $request->validate([
-            'branch_name' => 'required',
-        ],
-    ['branch_name' => 'Please Enter Branch Name!']
+        $request->validate(
+            ['branch_name' => 'required'],
+            ['branch_name' => 'Please Enter Branch Name!']
         );
 
         $branchs = new BranchModel();
         $branchs->branch_name = $request->branch_name;
         $branchs->save();
-
         return redirect('branch/create')->with('success', 'The Branch is Created Succesfully!');
     }
 
@@ -97,17 +108,13 @@ class SettingController extends Controller
     }
 
     public function storeProvince(Request $request){
-        $request->validate([
-            'name' => 'required',
-        ],
-        ['name' => 'Please Enter Province Name!']
-
+        $request->validate(
+            ['name' => 'required'],
+            ['name' => 'Please Enter Province Name!']
         );
-        
         $province = new ProvinceModel();
         $province->name = $request->name;
         $province->save();
-
         return redirect('provinces/create')->with('success', 'The Province is Created Succesfully!');
     }
 
@@ -122,16 +129,13 @@ class SettingController extends Controller
     }
 
     public function storeCompany(Request $request){
-        $request->validate([
-            'company_name' => 'required'
-        ],
-        ['company_name' => 'Please Enter Company Name!']
+        $request->validate(
+            ['company_name' => 'required'],
+            ['company_name' => 'Please Enter Company Name!']
         );
-
         $company = new CompanyModel();
         $company->company_name = $request->company_name;
         $company->save();
-
         return redirect('companys/create')->with('success','The Company is Created Succesfully!');
     }
 
@@ -146,16 +150,13 @@ class SettingController extends Controller
     }
     
     public function storeWaranty(Request $request){
-        $request->validate([
-            'name' => 'required'
-        ],
-        ['name' => 'Please Enter Waranty.']
+        $request->validate(
+            ['name' => 'required'],
+            ['name' => 'Please Enter Waranty.']
         );
-
         $waranty = new WarrantyModel();
         $waranty->name = $request->name;
         $waranty->save();
-
         return redirect('warantys/create')->with('success','The Waranty is Created Succesfully!');
     }
 
@@ -183,18 +184,13 @@ class SettingController extends Controller
     }
 
     public function storeEngineOil(Request $request){
-        $request->validate([
-            'name' => 'required'
-        ],
-        ['name' => 'Please Enter Engine Oil.']
+        $request->validate(
+            ['name' => 'required'],
+            ['name' => 'Please Enter Engine Oil.']
         );
-
         $engine_oil = new EngineOilModel();
         $engine_oil->name = $request->name;
         $engine_oil->save();
-
         return redirect('engineOils/create')->with('success','The Engine Oil is Created Succesfully!');
     }
-
-    
 }

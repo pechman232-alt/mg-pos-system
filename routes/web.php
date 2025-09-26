@@ -77,6 +77,7 @@ Route::middleware(['user_is_login'])->group(function () {
     Route::get('/departments', [SettingController::class, 'departIndex']);
     Route::get('/departments/create', [SettingController::class, 'formDepart']);
     Route::post('/departments/store', [SettingController::class, 'createDepart']);
+    Route::get('/departments/edit/{id}', [SettingController::class, 'editDepart']);
 
     // Route Positions
     Route::get('/positions', [SettingController::class, 'positionIndex']);

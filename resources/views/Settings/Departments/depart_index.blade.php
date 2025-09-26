@@ -2,7 +2,6 @@
 @section('content')
     <style>
         .navbar.bg-light {
-            /* background-color: #fde9e9 !important; */
             background-color: #f5e2c5 !important;
             border-radius: 10px;
             margin-top: 15px;
@@ -50,9 +49,6 @@
     </style>
 
     <div class="container-xxl flex-grow-1 container-p-y">
-
-        {{-- @include('alert') --}}
-
         <div class="card">
             <nav class="navbar navbar-example navbar-expand-lg bg-light">
                 <div class="container-fluid">
@@ -87,7 +83,7 @@
                                     <td>{{ $depart_list->created_at }}</td>
                                     <td style="width: 100px">
                                         <div class="btn-group" role="group" aria-label="First group">
-                                            <a href="" class="btn btn-outline-secondary"><i class="tf-icons bx bx-edit"></i></a>
+                                            <a href="{{ url('/departments/edit', encrypt($depart_list->id)) }}" class="btn btn-outline-secondary"><i class="tf-icons bx bx-edit"></i></a>
                                             <a onclick="return confirm('Are you sure, you want to delete?')" href="" class="btn btn-outline-secondary" style="background-color: red; color:white"><i class="tf-icons bx bx-trash"></i></a>
                                         </div>
                                     </td>
@@ -104,8 +100,6 @@
         $('#datatable').DataTable({
             "iDisplayLength": 25
         });
-
-
         $(document).ready(function() {
             $('.offcanvasTop').click(function(e) {
                 e.preventDefault();

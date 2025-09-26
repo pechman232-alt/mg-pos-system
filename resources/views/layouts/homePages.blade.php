@@ -5,7 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
 
-    <link href="https://fonts.googleapis.com/css2?family=Kantumruy+Pro:ital,wght@0,100..700;1,100..700&display=swap" rel="stylesheet">
+    {{-- <link href="https://fonts.googleapis.com/css2?family=Kantumruy+Pro:ital,wght@0,100..700;1,100..700&display=swap" rel="stylesheet"> --}}
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Khmer:wght@100..900&family=Noto+Sans:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
 
     <link rel="stylesheet" href="{{ asset('backend/assets/vendor/fonts/boxicons.css') }}" />
     <link rel="stylesheet" href="{{ asset('backend/assets/vendor/css/core.css') }}" class="template-customizer-core-css" />
@@ -40,16 +41,7 @@
             <div class="layout-page">
                 @include('layouts.header')
                 <div class="content-wrapper">
-
-                    {{-- <select class="js-example-basic-single" name="state">
-                        <option value="AL">Alabama</option>
-                        <option value="WY">Wyoming</option>
-                        <option value="WY">Wyoming</option>
-                        <option value="WY">Hello</option>
-                    </select> --}}
-                    
                     @yield('content')
-
                 </div>
                 @include('layouts.footer')
             </div>
@@ -90,6 +82,5 @@
 
     <script async defer src="{{ url('/jquery/buttons.js') }}"></script>
     {{---------------------------- Style Scrip --------------------------------}}
-
 </body>
 </html>

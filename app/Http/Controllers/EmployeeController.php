@@ -155,6 +155,4 @@ class EmployeeController extends Controller
             return redirect()->back()->with('error', $th->getMessage());
         }
     }
-
-
 }
