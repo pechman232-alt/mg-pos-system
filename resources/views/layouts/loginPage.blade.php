@@ -170,7 +170,7 @@
                         </a>
                     </div>
 
-                    <p class="login-card-description">TF Motors | Admin Login  ាសដាសដសាាសដ</p>
+                    <p class="login-card-description">TF Motors | Admin Login</p>
                         <form method="POST" action="{{ url('login') }}" enctype="multipart/form-data">
                             @csrf
                             <div class="form-group">

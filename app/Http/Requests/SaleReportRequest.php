@@ -45,6 +45,7 @@ class SaleReportRequest extends FormRequest
             'pro_offer_oil' => 'required',
             'pro_offer_oil_date' => 'required',
             'vihicle_battery' => 'required',
+            'price' => 'required'
         ];
     }
 }

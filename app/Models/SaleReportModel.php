@@ -40,6 +40,7 @@ class SaleReportModel extends Model
         'pro_offer_oil',
         'pro_offer_oil_date',
         'vihicle_battery',
+        'price',
         'remark_sa',
         'attach_file',
         'status'

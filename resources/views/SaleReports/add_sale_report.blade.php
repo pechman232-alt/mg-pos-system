@@ -105,7 +105,7 @@
                     <h5 class="card-header">Add Sale Report</h5>
                     <hr class="my-0">
                     <div class="card-body">
-                        <form action="{{ asset(path: 'sale-reports/store') }}" method="POST" action="/upload" enctype="multipart/form-data">
+                        <form action="{{ url('/sale-reports/store') }}" method="POST" action="/upload" enctype="multipart/form-data">
                             @csrf
                             <div class="row mb-6">
                                 <label class="col-sm-2 col-form-label" for="basic-default-name">Brand Model</label>
@@ -128,20 +128,35 @@
                                                                         <tr>
                                                                             <th>No</th>
                                                                             <th>Image</th>
+                                                                            <th>ID</th>
                                                                             <th style="text-align: start">Model Name</th>
                                                                             <th style="text-align: start">Colors</th>
                                                                         </tr>
                                                                     </thead>
                                                                     <tbody>
                                                                         @foreach ($carImages as $index => $carImage)
-                                                                            <tr class="select-image" data-image="{{ url($carImage->image_name == '' ? 'backend/assets/img/avatars/1.png' : '/imageCar/' . $carImage->image_name) }}" data-model="{{ $carImage->modelName }}">
+                                                                            <tr class="select-image"
+                                                                                data-id="{{ $carImage->id }}"
+                                                                                data-image="{{ url($carImage->image_name == '' ? 'backend/assets/img/avatars/1.png' : '/imageCar/' . $carImage->image_name) }}"
+                                                                                data-model="{{ $carImage->modelName }}">
+                                                                                <td style="text-align: center; width: 20px">{{ $index + 1 }}</td>
+                                                                                <td>
+                                                                                    <img src="{{ url($carImage->image_name == '' ? 'backend/assets/img/avatars/1.png' : '/imageCar/' . $carImage->image_name) }}"
+                                                                                        alt="image" class="rounded-circle-custome" width="120">
+                                                                                </td>
+                                                                                <td style="text-align: start">{{ $carImage->id }}</td>
+                                                                                <td style="text-align: start">{{ $carImage->modelName }}</td>
+                                                                                <td style="text-align: start">{{ $carImage->colorName }}</td>
+                                                                            </tr>
+
+                                                                            {{-- <tr class="select-image"  data-image="{{ url($carImage->image_name == '' ? 'backend/assets/img/avatars/1.png' : '/imageCar/' . $carImage->image_name) }}" data-model="{{ $carImage->modelName }}">
                                                                                 <td style="text-align: center; width: 20px">{{ $index + 1 }}</td>
                                                                                 <td>
                                                                                     <img src="{{ url($carImage->image_name == '' ? 'backend/assets/img/avatars/1.png' : '/imageCar/' . $carImage->image_name) }}" alt="image" class="rounded-circle-custome" width="120">
                                                                                 </td>
                                                                                 <td style="text-align: start">{{ $carImage->modelName }}</td>
                                                                                 <td style="text-align: start">{{ $carImage->colorName }}</td>
-                                                                            </tr>
+                                                                            </tr> --}}
                                                                         @endforeach
                                                                     </tbody>
                                                                 </table>
@@ -162,6 +177,8 @@
                                 </div>
                             </div>
 
+                            <input type="hidden" name="image" id="carImageId">
+
                             <div class="row mb-6">
                                 <label class="col-sm-2 col-form-label" for="basic-default-name">Branch</label>
                                 <div class="col-sm-10">
@@ -178,17 +195,6 @@
                             </div>
 
                             {{-- -------------------------------------------- --}}
-
-                            {{-- <div class="row mb-6">
-                                <label class="col-sm-2 col-form-label" for="basic-default-name">Member Card</label>
-                                <div class="col-sm-10">
-                                    <input type="text" placeholder="enter member card" class="form-control @error('member_card') border-danger @enderror" name="member_card" value="{{ old('member_card') }}">
-                                    @error('member_card')
-                                        <small class="text-danger">{{ $message }}</small>
-                                    @enderror
-                                </div>
-                            </div> --}}
-
                             <div class="row mb-6">
                                 <label class="col-sm-2 col-form-label" for="basic-default-name">Member Card</label>
                                 <div class="col-sm-10">
@@ -206,7 +212,6 @@
                                     @enderror
                                 </div>
                             </div>
-
                             {{-- -------------------------------------------- --}}
 
                             <div class="row mb-6">
@@ -532,13 +537,13 @@
                             <div class="row mb-6">
                                 <label class="col-sm-2 col-form-label" for="basic-default-name">Certificate Engine Oil</label>
                                 <div class="col-sm-10">
-                                    <select name="rear_spoiler" class="form-select @error('rear_spoiler') border-danger @enderror">
+                                    <select name="certificate_engine_oil" class="form-select @error('certificate_engine_oil') border-danger @enderror">
                                         <option value="" disabled selected>select certificate engine oil</option>
-                                        <option value="Yes" @if (old('rear_spoiler') == 'Yes') selected @endif>Yes</option>
-                                        <option value="No" @if (old('rear_spoiler') == 'No') selected @endif>No</option>
-                                        <option value="Yes, Not Yet Install" @if (old('rear_spoiler') == 'Yes, Not Yet Install') selected @endif>Yes, Not Yet Install</option>
+                                        <option value="Yes" @if (old('certificate_engine_oil') == 'Yes') selected @endif>Yes</option>
+                                        <option value="No" @if (old('certificate_engine_oil') == 'No') selected @endif>No</option>
+                                        <option value="Yes, Not Yet Install" @if (old('certificate_engine_oil') == 'Yes, Not Yet Install') selected @endif>Yes, Not Yet Install</option>
                                     </select>
-                                    @error('rear_spoiler')
+                                    @error('certificate_engine_oil')
                                         <small class="text-danger">{{ $message }}</small>
                                     @enderror
                                 </div>
@@ -592,8 +597,8 @@
                             <div class="row mb-6">
                                 <label class="col-sm-2 col-form-label" for="basic-default-name">Price</label>
                                 <div class="col-sm-10">
-                                    <input type="text" placeholder="enter price" class="form-control @error('follow_up') border-danger @enderror" name="follow_up" value="{{ old('follow_up') }}">
-                                    @error('follow_up')
+                                    <input type="text" placeholder="enter price" class="form-control @error('price') border-danger @enderror" name="price" value="{{ old('price') }}">
+                                    @error('price')
                                         <small class="text-danger">{{ $message }}</small>
                                     @enderror
                                 </div>
@@ -609,7 +614,7 @@
                             <div class="row mb-6">
                                 <label class="col-sm-2 col-form-label" for="basic-default-name">Attach File</label>
                                 <div class="col-sm-3">
-                                    <input class="form-control" type="file" id="formFile" name="attach_file">
+                                    <input class="form-control" type="file" id="formFile" name="attach_file" accept="application/pdf"> 
                                 </div>
                             </div>
 
@@ -636,9 +641,11 @@
                 row.addEventListener("click", function() {
                     let imageUrl = this.getAttribute("data-image");
                     let modelName = this.getAttribute("data-model");
+                    let imageId = this.getAttribute("data-id");
 
                     document.getElementById("target").src = imageUrl;
                     document.getElementById("modelName").innerText = modelName;
+                    document.getElementById("carImageId").value = imageId;
 
                     // Close the modal after selection
                     let modal = document.getElementById('largeModal');
@@ -728,8 +735,8 @@
         });
         // ------------------------ Get Logistic ---------------------
 
-         // ------------------------ Get Member Card ---------------------
-         $('#memberCard-select').select2({
+        // ------------------------ Get Member Card ---------------------
+        $('#memberCard-select').select2({
             placeholder: "Select Member Card",
             allowClear: true,
             ajax: {
@@ -774,8 +781,6 @@
                 }
             });
         }
-
-
         // Event listener for selection
         $('#memberCard-select').on('change', function () {
             let selectedOption = $(this).val();

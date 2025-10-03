@@ -128,24 +128,24 @@
                             </tr>
                         </thead>
                         <tbody>
-                            {{-- @foreach ($logistics as $index => $logistic)
+                            @foreach ($saleReports as $index => $saleReports)
                                 <tr>
                                     <td style="text-align: center;">{{ $index + 1 }}</td>
-                                    <td style="text-align: start">{{ $logistic->model_name }}</td>
-                                    <td style="text-align: start">{{ $logistic->exterior_color }}</td>
-                                    <td style="text-align: start">{{ $logistic->interior_color }}</td>
-                                    <td style="text-align: start">{{ $logistic->model_year }}</td>
-                                    <td style="text-align: start">{{ $logistic->vin_number }}</td>
-                                    <td style="text-align: start">{{ $logistic->engine_number }}</td>
-                                    <td style="text-align: start">{{ $logistic->remark }}</td>
+                                    <td style="text-align: start">{{ $saleReports->customer_name }}</td>
+                                    <td style="text-align: start">{{ $saleReports->phone_number }}</td>
+                                    <td style="text-align: start">{{ $saleReports->gender }}</td>
+                                    <td style="text-align: start">{{ $saleReports->member_card }}</td>
+                                    <td style="text-align: start">{{ $saleReports->invoice_no }}</td>
+                                    <td style="text-align: start">{{ $saleReports->brand_name }}</td>
+                                    <td style="text-align: start">{{ $saleReports->	status }}</td>
                                     <td style="width: 100px">
                                         <div class="btn-group" role="group" aria-label="First group">
-                                            <a href="{{ url('/logistics/edit', encrypt($logistic->id)) }}" class="btn btn-outline-secondary"><i class="tf-icons bx bx-edit"></i></a>
+                                            <a href="" class="btn btn-outline-secondary"><i class="tf-icons bx bx-edit"></i></a>
                                             <a onclick="return confirm('Are you sure, you want to delete?')" href="" class="btn btn-outline-secondary" style="background-color: red; color:white"><i class="tf-icons bx bx-trash"></i></a>
                                         </div>
                                     </td>
                                 </tr>
-                            @endforeach --}}
+                            @endforeach
                         </tbody>
                     </table>
                 </div>
