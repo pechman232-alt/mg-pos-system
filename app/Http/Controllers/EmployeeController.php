@@ -19,6 +19,7 @@ class EmployeeController extends Controller
         }
         return response()->file($storagePath);
     }
+    
     public function employeeIndex(){
         $employees = EmployeeModel::selectRaw(
             'employees.id,

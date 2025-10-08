@@ -39,9 +39,13 @@
         }
 
         #datatable thead tr th {
-            height: 35px;
+            height: 20;
             background-color: #DEAA5E;
             color: white;
+        }
+
+        table.dataTable tbody th,table.dataTable tbody td {
+            padding: 5px 5px !important;
         }
 
         #datatable thead tr th, #datatable tbody tr td{

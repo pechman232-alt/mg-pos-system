@@ -128,7 +128,6 @@
                                                                         <tr>
                                                                             <th>No</th>
                                                                             <th>Image</th>
-                                                                            <th>ID</th>
                                                                             <th style="text-align: start">Model Name</th>
                                                                             <th style="text-align: start">Colors</th>
                                                                         </tr>
@@ -142,9 +141,8 @@
                                                                                 <td style="text-align: center; width: 20px">{{ $index + 1 }}</td>
                                                                                 <td>
                                                                                     <img src="{{ url($carImage->image_name == '' ? 'backend/assets/img/avatars/1.png' : '/imageCar/' . $carImage->image_name) }}"
-                                                                                        alt="image" class="rounded-circle-custome" width="120">
+                                                                                        alt="image" class="rounded-circle-custome" width="100">
                                                                                 </td>
-                                                                                <td style="text-align: start">{{ $carImage->id }}</td>
                                                                                 <td style="text-align: start">{{ $carImage->modelName }}</td>
                                                                                 <td style="text-align: start">{{ $carImage->colorName }}</td>
                                                                             </tr>

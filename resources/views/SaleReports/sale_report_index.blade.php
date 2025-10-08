@@ -39,13 +39,17 @@
         }
 
         #datatable thead tr th {
-            height: 35px;
+            height: 20;
             background-color: #DEAA5E;
             color: white;
         }
 
         #datatable thead tr th, #datatable tbody tr td{
             text-align: center;
+        }
+
+        table.dataTable tbody th,table.dataTable tbody td {
+            padding: 5px 5px !important;
         }
 
         .mr-1 {
@@ -63,7 +67,7 @@
     </style>
 
     <div class="container-xxl flex-grow-1 container-p-y">
-
+        @include('Helps.alert')
         <div class="card">
             <nav class="navbar navbar-example navbar-expand-lg bg-light">
                 <div class="container-fluid">
@@ -128,18 +132,19 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach ($saleReports as $index => $saleReports)
+                            @foreach ($saleReports as $index => $item)
                                 <tr>
                                     <td style="text-align: center;">{{ $index + 1 }}</td>
-                                    <td style="text-align: start">{{ $saleReports->customer_name }}</td>
-                                    <td style="text-align: start">{{ $saleReports->phone_number }}</td>
-                                    <td style="text-align: start">{{ $saleReports->gender }}</td>
-                                    <td style="text-align: start">{{ $saleReports->member_card }}</td>
-                                    <td style="text-align: start">{{ $saleReports->invoice_no }}</td>
-                                    <td style="text-align: start">{{ $saleReports->brand_name }}</td>
-                                    <td style="text-align: start">{{ $saleReports->	status }}</td>
+                                    <td style="text-align: start">{{ $item->customer_name }}</td>
+                                    <td style="text-align: start">{{ $item->phone_number }}</td>
+                                    <td style="text-align: start">{{ $item->gender }}</td>
+                                    <td style="text-align: start">{{ $item->member_card }}</td>
+                                    <td style="text-align: start">{{ $item->invoice_no }}</td>
+                                    <td style="text-align: start">{{ $item->brand_name }}</td>
+                                    <td style="text-align: start">{{ $item->status }}</td>
                                     <td style="width: 100px">
                                         <div class="btn-group" role="group" aria-label="First group">
+                                            <a href="{{ url('/sale-reports/view', encrypt($item->id)) }}" class="btn btn-outline-secondary">view</a>
                                             <a href="" class="btn btn-outline-secondary"><i class="tf-icons bx bx-edit"></i></a>
                                             <a onclick="return confirm('Are you sure, you want to delete?')" href="" class="btn btn-outline-secondary" style="background-color: red; color:white"><i class="tf-icons bx bx-trash"></i></a>
                                         </div>

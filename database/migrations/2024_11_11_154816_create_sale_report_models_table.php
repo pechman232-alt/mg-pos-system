@@ -22,7 +22,7 @@ return new class extends Migration
             $table->string('gender', 6);
             $table->date('dob');
             $table->integer('age');
-            $table->unsignedBigInteger('source_id');
+            $table->string('source_id', 50);
             $table->unsignedBigInteger('logistics_id');
             $table->string('plate_number', 10)->nullable();
             $table->string('invoice_no', 10);
