@@ -95,8 +95,18 @@ class SettingController extends Controller
         $branchs->branch_name = $request->branch_name;
         $branchs->save();
         return redirect('branch/create')->with('success', 'The Branch is Created Succesfully!');
-    }
+    } 
 
+    
+        public function update(Request $request, $id)
+    {
+        $branch = Branch::findOrFail(decrypt($id));
+        $branch->branch_name = $request->branch_name;
+        $branch->save();
+    
+        return redirect('/branch')->with('success', 'Branch updated successfully!');
+    }
+    
     // ------------- Province Controller -------------------
     public function provinceIndex(){
         $provinces = ProvinceModel::get();

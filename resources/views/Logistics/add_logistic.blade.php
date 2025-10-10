@@ -2,25 +2,84 @@
 @section('content')
 
     <style>
-        .rounded-circle {
-            object-fit: fill;
+           /* Fade-in the whole card */
+           .card {
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInCard 0.6s forwards;
         }
 
-        .my-img {
-            background: black;
-            height: 200px;
-            width: 200px;
-            border-radius: 50%;
+        /* Animate card header */
+        .card-header {
+            background-color: #DEAA5E;
+            /* solid color header */
+            color: white;
+            font-weight: 700;
+            font-size: 20px;
+            padding: 15px 20px;
+            border-radius: 10px 10px 0 0;
+            opacity: 0;
+            transform: translateY(-20px);
+            animation: fadeInHeader 0.6s forwards;
+            animation-delay: 0.2s;
+            transition: all 0.3s ease;
         }
 
-        .my-img-2 {
-            height: 70px;
-            width: 70px;
-            object-fit: fill;
+        /* Input fields animation */
+        .form-control {
+            opacity: 0;
+            transform: translateX(-20px);
+            animation: fadeInInput 0.5s forwards;
+            animation-delay: 0.4s;
+            transition: all 0.3s ease;
         }
 
-        .card-header, .card-footer {
-            background: #f5e2c5;
+        /* Input focus effect */
+        .form-control:focus {
+            border-color: #DEAA5E;
+            box-shadow: 0 0 8px rgba(222, 170, 94, 0.5);
+        }
+
+        /* Buttons animation */
+        .btn {
+            opacity: 0;
+            transform: translateY(10px);
+            animation: fadeInButton 0.5s forwards;
+            animation-delay: 0.6s;
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            transform: scale(1.05);
+        }
+
+        /* Keyframes */
+        @keyframes fadeInCard {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInHeader {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInInput {
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes fadeInButton {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
     </style>

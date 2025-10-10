@@ -6,47 +6,113 @@
 @endphp
 
 <style>
-    .logo-center img {
-        /* padding: 10px; */
-        width: 110px;
-        margin-top: 15px;
-        margin-left: 70px;
-        padding-top: 35px;
-        padding-bottom: 35px;
-    }
+   /* Sidebar container animation */
+#layout-menu {
+    width: 250px; /* Adjust sidebar width */
+    opacity: 0;
+    transform: translateX(-50px);
+    animation: slideInSidebar 0.6s forwards;
+    transition: width 0.3s ease;
+}
 
-    .app-brand .layout-menu-toggle {
-        position: absolute;
-        left: 15rem;
-        top: 4rem;
-        border-radius: 50%;
+/* Slide-in sidebar */
+@keyframes slideInSidebar {
+    to {
+        opacity: 1;
+        transform: translateX(0);
     }
+}
+/* Sidebar logo container */
+.logo-center {
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Horizontal center */
+    justify-content: center; /* Vertical center inside its container */
+    padding: 20px 0;
+    position: relative;
+}
 
-    .app-brand .layout-menu-toggle {
-        background-color: #CE181E;
-        border: 7px solid #fff;
+/* Logo image */
+.logo-center img {
+    width: 120px;
+    opacity: 0;
+    transform: scale(0.8);
+    animation: fadeInLogo 0.6s forwards;
+    animation-delay: 0.2s;
+}
+
+/* Optional: app brand toggle (for mobile) */
+.logo-center .app-brand {
+    margin-top: 10px;
+    display: flex;
+    align-items: center;
+}
+
+/* Logo fade-in keyframes */
+@keyframes fadeInLogo {
+    to {
+        opacity: 1;
+        transform: scale(1);
     }
+}
 
-    .bg-menu-theme .menu-inner>.menu-item.active>.menu-link {
-        color: #DEAA5E;
-        /* background-color: #fde9e9 !important; */
-        background-color: #fff !important;
+
+@keyframes fadeInLogo {
+    to {
+        opacity: 1;
+        transform: scale(1);
     }
+}
 
-    .bg-menu-theme .menu-inner>.menu-item.active:before {
-        background: #fff;
+/* Menu item fade-in & slide */
+.menu-inner .menu-item {
+    opacity: 0;
+    transform: translateX(-20px);
+    animation: fadeInMenuItem 0.5s forwards;
+}
+
+/* Stagger menu items */
+.menu-inner .menu-item:nth-child(1) { animation-delay: 0.3s; }
+.menu-inner .menu-item:nth-child(2) { animation-delay: 0.4s; }
+.menu-inner .menu-item:nth-child(3) { animation-delay: 0.5s; }
+/* Extend for more items dynamically if needed */
+
+/* Fade-in animation */
+@keyframes fadeInMenuItem {
+    to {
+        opacity: 1;
+        transform: translateX(0);
     }
+}
 
-    .menu-link.logout-btn {
-        color: #fff;
-        background: #DEAA5E;
-    }
+/* Hover effect for menu items */
 
-    .menu-link.logout-btn:hover {
-        color: #fff;
-        background: red !important;
-    }
+/* Icon and text hover slide */
+.menu-inner .menu-link i,
+.menu-inner .menu-link div {
+    transition: all 0.3s ease;
+}
 
+.menu-inner .menu-item:hover i,
+.menu-inner .menu-item:hover div {
+    transform: translateX(5px);
+}
+
+/* Active menu styling */
+
+
+/* Submenu collapse & fade animation */
+.menu-inner .menu-sub {
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    transition: max-height 0.4s ease, opacity 0.4s ease;
+}
+
+.menu-item.open > .menu-sub {
+    max-height: 500px; /* enough to show all submenus */
+    opacity: 1;
+}
 </style>
 
 <aside id="layout-menu" class="layout-menu menu-vertical menu bg-menu-theme">

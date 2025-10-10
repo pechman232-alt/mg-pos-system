@@ -2,148 +2,91 @@
 @section('content')
 
     <style>
-        .tiles {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            -moz-column-gap: 1rem;
-            column-gap: 1rem;
-            row-gap: 1rem;
-            margin-top: 1.25rem;
-        }
+    /* Container spacing */
+.container-xxl {
+    padding: 20px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
 
-        .tile {
-            padding: 1rem;
-            border-radius: 15px;
-            /* background-color: #fde9e9; */
-            background-color: rgb(235, 204, 146);
-            /* background-color: rgb(255 242 239 / 35%); */
-            border: solid #ffeae7;
-            color: var(--c-gray-900);
-            min-height: 160px;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            position: relative;
-            transition: 0.25s ease;
-        }
+/* Tiles grid */
+.tiles {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px;
+    margin-top: 20px;
+}
 
-        .tile:hover {
-            transform: translateY(-5px);
-            /* transform: scale(1.1) */
-        }
+/* Individual tile styling */
+.tile {
+    background: linear-gradient(145deg, #f6d365, #fda085);
+    border-radius: 15px;
+    padding: 20px;
+    color: white;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    animation: fadeInUp 0.6s ease forwards;
+}
 
-        .tile:focus-within {
-            box-shadow: 0 0 0 2px var(--c-gray-800), 0 0 0 4px var(--c-olive-500);
-        }
+/* Tile hover effect */
+.tile:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 15px 25px rgba(0, 0, 0, 0.2);
+}
 
-        .tile:nth-child(2) {
-            /* background-color: var(--c-green-500); */
-            /* background-color: rgb(255 242 239 / 35%); */
-            background-color: rgb(235, 204, 146);
+/* Tile header layout */
+.tile-header {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
 
-        }
+.tile-header i {
+    font-size: 40px;
+}
 
-        .tile:nth-child(2):focus-within {
-            box-shadow: 0 0 0 2px var(--c-gray-800), 0 0 0 4px var(--c-green-500);
-        }
+/* Tile text */
+.header-font-size {
+    font-size: 16px;
+    font-weight: 500;
+}
 
-        .tile:nth-child(3) {
-            /* background-color: var(--c-gray-300); */
-            /* background-color: rgb(255 242 239 / 35%); */
-            background-color: rgb(235, 204, 146);
+.tile h2 {
+    margin: 5px 0 0;
+    font-size: 28px;
+    font-weight: bold;
+}
 
-        }
+/* Arrow link */
+.tile a {
+    position: absolute;
+    bottom: 15px;
+    right: 15px;
+    color: white;
+    transition: transform 0.3s ease;
+}
 
-        .tile:nth-child(3):focus-within {
-            box-shadow: 0 0 0 2px var(--c-gray-800), 0 0 0 4px var(--c-gray-300);
-        }
+.tile a:hover {
+    transform: translateX(5px);
+}
 
-        .tile a {
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            font-weight: 600;
-        }
-
-        .tile a .icon-button {
-            color: inherit;
-            border-color: inherit;
-        }
-
-        .tile a .icon-button:hover,
-        .tile a .icon-button:focus {
-            background-color: transparent;
-        }
-
-        .tile a .icon-button:hover i,
-        .tile a .icon-button:focus i {
-            transform: none;
-        }
-
-        .tile a:focus {
-            box-shadow: none;
-        }
-
-        .tile a:after {
-            content: "";
-            display: block;
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-        }
-
-        .tile-header {
-            display: flex;
-            align-items: center;
-        }
-
-        .tile-header i {
-            font-size: 2.5em;
-        }
-
-        .tile-header h3 {
-            display: flex;
-            flex-direction: column;
-            line-height: 1.375;
-            margin-left: 0.5rem;
-        }
-
-        .tile-header h3 span:first-child {
-            font-weight: 600;
-        }
-
-        .tile-header h3 span:last-child {
-            font-size: 0.7em;
-            font-weight: 200;
-        }
-
-        .header-font-size {
-            font-size: 1.3rem;
-        }
-
-        .bxs-right-arrow-circle {
-            color: orange;
-        }
-
-        .bxs-right-arrow-circle:hover {
-            color: #CE181E;
-        }
-
-        .layout-page {
-            background-color: white;
-        }
-
-        .bg-footer-theme {
-            background-color: white !important;
-        }
+/* Fade in animation */
+@keyframes fadeInUp {
+    0% {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
 
     </style>
 
     <div class="container-xxl flex-grow-1 container-p-y">
-        <h2>Welcome Back!</h2>
         <hr class="my-0">
         <div class="tiles">
             <article class="tile">

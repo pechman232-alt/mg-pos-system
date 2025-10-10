@@ -147,6 +147,7 @@ class SaleReportController extends Controller
     }
 
     public function editSaleReport(){
+        
 
     }
 

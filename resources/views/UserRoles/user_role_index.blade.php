@@ -1,56 +1,103 @@
 @extends('layouts.homePages')
 @section('content')
     <style>
-        .navbar.bg-light {
-            /* background-color: #fde9e9 !important; */
-            background-color: #f5e2c5 !important;
-            border-radius: 10px;
-            margin-top: 15px;
-            margin-left: 15px;
-            margin-right: 15px;
-        }
+      /* Table row fade-in animation */
+#datatable tbody tr {
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeInRow 0.5s forwards;
+}
 
-        .navbar-expand-lg .navbar-collapse {
-            display: flex !important;
-            flex-basis: auto;
-        }
+/* Stagger animation for each row */
+#datatable tbody tr:nth-child(1) { animation-delay: 0.1s; }
+#datatable tbody tr:nth-child(2) { animation-delay: 0.2s; }
+#datatable tbody tr:nth-child(3) { animation-delay: 0.3s; }
+#datatable tbody tr:nth-child(4) { animation-delay: 0.4s; }
+#datatable tbody tr:nth-child(5) { animation-delay: 0.5s; }
+/* Add more if needed */
 
-        .dataTables_filter {
-            margin-bottom: 20px;
-        }
+@keyframes fadeInRow {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
 
-        .dataTables_paginate,
-        .dataTables_info {
-            margin-top: 20px;
-        }
+/* Hover effect for table rows */
+#datatable tbody tr:hover {
+    background-color: #f5f5f5;
+    transform: scale(1.02);
+    transition: all 0.3s ease;
+}
 
-        table#datatable {
-            border: 1px solid #ccc;
-        }
+/* Action buttons animation */
+.btn-outline-secondary {
+    transition: all 0.3s ease;
+}
 
-        table.dataTable thead>tr>th.sorting:after,
-        table.dataTable thead>tr>th.sorting_asc:after {
-            display: none;
-        }
+.btn-outline-secondary:hover {
+    transform: scale(1.1);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
 
-        table.dataTable thead>tr>th.sorting:before,
-        table.dataTable thead>tr>th.sorting_asc:before {
-            display: none;
-        }
+/* Delete button specific */
+.btn-outline-secondary[style*="background-color: red"] {
+    transition: all 0.3s ease;
+}
 
-        #datatable thead tr th {
-            height: 35px;
-            background-color: #DEAA5E;
-            color: white;
-        }
+.btn-outline-secondary[style*="background-color: red"]:hover {
+    transform: scale(1.1);
+    background-color: #ff4c4c;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
 
-        #datatable thead tr th, #datatable tbody tr td{
-            text-align: center;
-        }
+/* Optional: smooth badge animation */
+.badge {
+    transition: all 0.3s ease;
+}
 
-        .badge{
-            font-size: 0.9rem !important;
-        }
+.badge:hover {
+    transform: scale(1.1);
+}
+/* Table header background and text color */
+#datatable thead th {
+    background-color: #DEAA5E; /* gold-like color */
+    color: white;
+    font-weight: 600;
+    font-size: 16px;
+    text-align: center;
+    padding: 12px;
+    border-bottom: 2px solid #cfa060;
+    transition: all 0.3s ease;
+}
+
+/* Optional: hover effect for header cells */
+#datatable thead th:hover {
+    background-color: #cfa060; /* slightly darker on hover */
+    cursor: default;
+}
+
+/* Align specific headers if needed */
+#datatable thead th:nth-child(2),
+#datatable tbody td:nth-child(2) {
+    text-align: start; /* left-align "Name User Role" */
+}
+
+/* Optional: header text animation on page load */
+#datatable thead th {
+    opacity: 0;
+    transform: translateY(-10px);
+    animation: fadeInHeader 0.5s forwards;
+}
+
+@keyframes fadeInHeader {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
     </style>
 
     <div class="container-xxl flex-grow-1 container-p-y">

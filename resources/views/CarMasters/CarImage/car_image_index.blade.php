@@ -1,56 +1,84 @@
 @extends('layouts.homePages')
 @section('content')
-    <style>
-        .navbar.bg-light {
-            /* background-color: #fde9e9 !important; */
-            background-color: #f5e2c5 !important;
-            border-radius: 10px;
-            margin-top: 15px;
-            margin-left: 15px;
-            margin-right: 15px;
-        }
-
-        .navbar-expand-lg .navbar-collapse {
-            display: flex !important;
-            flex-basis: auto;
-        }
-
-        .dataTables_filter {
-            margin-bottom: 20px;
-        }
-
-        .dataTables_paginate,
-        .dataTables_info {
-            margin-top: 20px;
-        }
-
-        table#datatable {
-            border: 1px solid #ccc;
-        }
-
-        table.dataTable thead>tr>th.sorting:after,
-        table.dataTable thead>tr>th.sorting_asc:after {
-            display: none;
-        }
-
-        table.dataTable thead>tr>th.sorting:before,
-        table.dataTable thead>tr>th.sorting_asc:before {
-            display: none;
-        }
-
-        #datatable thead tr th {
-            height: 35px;
+<style>
+       #datatable thead th {
             background-color: #DEAA5E;
+            /* gold-like header */
             color: white;
+            font-weight: 600;
+            font-size: 16px;
+            text-align: center;
+            padding: 12px;
+            border-bottom: 2px solid #cfa060;
+            opacity: 0;
+            transform: translateY(-10px);
+            animation: fadeInHeader 0.5s forwards;
         }
 
-        #datatable thead tr th, #datatable tbody tr td{
-            text-align: center;
+        /* Header fade-in animation */
+        @keyframes fadeInHeader {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
-        .rounded-circle-custome {
-            border-radius: 10% !important;
+
+        /* Table row animation */
+        #datatable tbody tr {
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInRow 0.5s forwards;
         }
-    </style>
+
+        /* Stagger rows for sequential animation */
+        #datatable tbody tr:nth-child(1) {
+            animation-delay: 0.1s;
+        }
+
+        #datatable tbody tr:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        #datatable tbody tr:nth-child(3) {
+            animation-delay: 0.3s;
+        }
+
+        /* Add more if needed */
+
+        /* Row fade-in keyframe */
+        @keyframes fadeInRow {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Hover effect for rows */
+        #datatable tbody tr:hover {
+            background-color: #f5f5f5;
+            transform: scale(1.02);
+            transition: all 0.3s ease;
+        }
+
+        /* Action buttons hover effect */
+        .btn-outline-secondary {
+            transition: all 0.3s ease;
+        }
+
+        .btn-outline-secondary:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Delete button specific hover effect */
+        .btn-outline-secondary[style*="background-color: red"]:hover {
+            transform: scale(1.1);
+            background-color: #ff4c4c;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+</style>
+
 
     <div class="container-xxl flex-grow-1 container-p-y">
 

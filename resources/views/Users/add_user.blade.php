@@ -2,49 +2,92 @@
 @section('content')
 
     <style>
-        .rounded-circle {
-            object-fit: fill;
-        }
+        /* Fade-in the entire card */
+.card {
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeInCard 0.6s forwards;
+}
 
-        .my-img {
-            background: black;
-            height: 200px;
-            width: 200px;
-            border-radius: 50%;
-        }
+/* Animate the card header */
+.card-header {
+    background: linear-gradient(90deg, #DEAA5E, #F5C16C);
+    color: white;
+    font-size: 20px;
+    font-weight: 700;
+    padding: 15px 20px;
+    border-radius: 10px 10px 0 0;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    opacity: 0;
+    transform: translateY(-20px);
+    animation: fadeInHeader 0.6s forwards;
+    animation-delay: 0.2s;
+}
 
-        .my-img-2 {
-            height: 70px;
-            width: 70px;
-            object-fit: fill;
-        }
+/* Row animation */
+.row {
+    opacity: 0;
+    transform: translateX(-20px);
+    animation: fadeInRow 0.5s forwards;
+}
 
-        .card-header, .card-footer {
-            background: #f5e2c5;
-        }
+/* Stagger rows for sequential animation */
+.row:nth-child(1) { animation-delay: 0.3s; }
+.row:nth-child(2) { animation-delay: 0.4s; }
+.row:nth-child(3) { animation-delay: 0.5s; }
+.row:nth-child(4) { animation-delay: 0.6s; }
+.row:nth-child(5) { animation-delay: 0.7s; }
 
-        .select2-container .select2-selection--single {
-            height: 40px !important;
-        }
+/* Input and select focus effect */
+.form-control, .form-select {
+    transition: all 0.3s ease;
+}
 
-        .select2-container .select2-selection--single .select2-selection__rendered {
-            padding: 0.4375rem 1.875rem 0.4375rem 0.875rem !important;
-        }
+.form-control:focus, .form-select:focus {
+    border-color: #DEAA5E;
+    box-shadow: 0 0 8px rgba(222, 170, 94, 0.5);
+}
 
-        .select2-container--default .select2-selection--single .select2-selection__rendered {
-            line-height: 1.53 !important;
-        }
+/* Buttons animation */
+.btn {
+    opacity: 0;
+    transform: translateY(10px);
+    animation: fadeInButton 0.5s forwards;
+    animation-delay: 0.8s;
+    transition: all 0.3s ease;
+}
 
-        .select2-container--default .select2-selection--single .select2-selection__arrow {
-            top: 0px !important;
-            right: 10px !important;
-            height: 40px !important;
-        }
+.btn:hover {
+    transform: scale(1.05);
+}
 
-        .select2-container--default .select2-selection--single .select2-selection__clear {
-            height: 40px !important;
-            margin-right: 30px !important;
-        }
+/* Profile image hover effect */
+#target {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+#target:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 15px rgba(0,0,0,0.2);
+}
+
+/* Keyframes */
+@keyframes fadeInCard {
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeInHeader {
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeInRow {
+    to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes fadeInButton {
+    to { opacity: 1; transform: translateY(0); }
+}
+
 
     </style>
 

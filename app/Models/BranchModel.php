@@ -2,12 +2,13 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class BranchModel extends Model
 {
-    protected $table = "branches";
-    protected $fillable = [
-        'branch_name'
-    ];
+    use HasFactory;
+
+    protected $table = 'branches'; // your database table name
+    protected $fillable = ['branch_name'];
 }

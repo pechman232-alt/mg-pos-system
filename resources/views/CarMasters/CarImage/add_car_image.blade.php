@@ -2,29 +2,80 @@
 @section('content')
 
     <style>
-        .rounded-circle {
-            object-fit: fill;
+        #datatable thead th {
+            background-color: #DEAA5E;
+            /* gold-like header */
+            color: white;
+            font-weight: 600;
+            font-size: 16px;
+            text-align: center;
+            padding: 12px;
+            border-bottom: 2px solid #cfa060;
+            opacity: 0;
+            transform: translateY(-10px);
+            animation: fadeInHeader 0.5s forwards;
         }
 
-        .my-img {
-            background: black;
-            height: 200px;
-            width: 200px;
-            border-radius: 50%;
+        /* Header fade-in animation */
+        @keyframes fadeInHeader {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
-        .my-img-2 {
-            height: 70px;
-            width: 70px;
-            object-fit: fill;
+        /* Table row animation */
+        #datatable tbody tr {
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInRow 0.5s forwards;
         }
 
-        .card-header, .card-footer {
-            background: #f5e2c5;
+        /* Stagger rows for sequential animation */
+        #datatable tbody tr:nth-child(1) {
+            animation-delay: 0.1s;
         }
 
-        .rounded-circle-custome {
-            border-radius: 10% !important;
+        #datatable tbody tr:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        #datatable tbody tr:nth-child(3) {
+            animation-delay: 0.3s;
+        }
+
+        /* Add more if needed */
+
+        /* Row fade-in keyframe */
+        @keyframes fadeInRow {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Hover effect for rows */
+        #datatable tbody tr:hover {
+            background-color: #f5f5f5;
+            transform: scale(1.02);
+            transition: all 0.3s ease;
+        }
+
+        /* Action buttons hover effect */
+        .btn-outline-secondary {
+            transition: all 0.3s ease;
+        }
+
+        .btn-outline-secondary:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Delete button specific hover effect */
+        .btn-outline-secondary[style*="background-color: red"]:hover {
+            transform: scale(1.1);
+            background-color: #ff4c4c;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
         }
 
     </style>

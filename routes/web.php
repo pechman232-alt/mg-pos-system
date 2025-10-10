@@ -13,6 +13,8 @@ use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\SaleReportController;
 use App\Http\Controllers\CarModelController;
 use App\Http\Controllers\MemberCardController;
+use App\Http\Controllers\BranchController;
+
 
 // Route Login
 Route::get('login', [LoginController::class , 'loginPage']);
@@ -72,7 +74,7 @@ Route::middleware(['user_is_login'])->group(function () {
     Route::get('/sale-reports/create', [SaleReportController::class, 'createSaleReport']);
     Route::post('/sale-reports/store', [SaleReportController::class, 'storeSaleReport']);
     Route::get('/sale-reports/view/{id}', [SaleReportController::class, 'viewSaleReport']);
-
+     
     // todo ----------------------- Route Setting -----------------------------------
     // Route Departments
     Route::get('/departments', [SettingController::class, 'departIndex']);
@@ -89,6 +91,10 @@ Route::middleware(['user_is_login'])->group(function () {
     Route::get('/branchs',[SettingController::class, 'branchIndex']);
     Route::get('/branch/create', [SettingController::class, 'formBranch']);
     Route::post('/branchs/store', [SettingController::class,'createBranch']);
+    Route::get('/branch/edit/{id}', [SettingController::class, 'editBranch']);
+    Route::post('/branch/update/{id}', [SettingController::class, 'update']);
+    
+    
 
     // Route Province
     Route::get('/provinces',[SettingController::class, 'provinceIndex']);

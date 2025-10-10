@@ -2,49 +2,116 @@
 @section('content')
 
     <style>
-        .rounded-circle {
-            object-fit: fill;
-        }
+       <style>
+/* Card & Header */
+.card {
+    border: 1px solid #DEAA5E;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+    margin-top: 20px;
+}
 
-        .my-img {
-            background: black;
-            height: 200px;
-            width: 200px;
-            border-radius: 50%;
-        }
+.card-header {
+    background-color: #f5e2c5;
+    font-weight: 600;
+    font-size: 18px;
+    color: #333;
+    border-bottom: 1px solid #DEAA5E;
+}
 
-        .my-img-2 {
-            height: 70px;
-            width: 70px;
-            object-fit: fill;
-        }
+/* Form labels */
+.form-label {
+    font-weight: 500;
+    color: #444;
+}
 
-        .card-header, .card-footer {
-            background: #f5e2c5;
-        }
+/* Form inputs */
+.form-control, .form-select {
+    border: 1px solid #DEAA5E;
+    border-radius: 6px;
+    padding: 8px 12px;
+    transition: all 0.3s ease;
+}
 
-        .select2-container .select2-selection--single {
-            height: 40px !important;
-        }
+.form-control:focus, .form-select:focus {
+    border-color: #DEAA5E;
+    box-shadow: 0 0 5px rgba(222, 170, 94, 0.4);
+}
 
-        .select2-container .select2-selection--single .select2-selection__rendered {
-            padding: 0.4375rem 1.875rem 0.4375rem 0.875rem !important;
-        }
+/* Input group for password */
+.input-group-text {
+    background-color: #f5e2c5;
+    border: 1px solid #DEAA5E;
+    cursor: pointer;
+}
 
-        .select2-container--default .select2-selection--single .select2-selection__rendered {
-            line-height: 1.53 !important;
-        }
+#show-password:focus {
+    box-shadow: none;
+}
 
-        .select2-container--default .select2-selection--single .select2-selection__arrow {
-            top: 0px !important;
-            right: 10px !important;
-            height: 40px !important;
-        }
+/* Buttons */
+.btn-primary {
+    background-color: #DEAA5E;
+    border-color: #DEAA5E;
+    transition: all 0.3s ease;
+}
 
-        .select2-container--default .select2-selection--single .select2-selection__clear {
-            height: 40px !important;
-            margin-right: 30px !important;
-        }
+.btn-primary:hover {
+    background-color: #c48b44;
+    border-color: #c48b44;
+}
+
+.btn-outline-secondary {
+    border-color: #DEAA5E;
+    color: #DEAA5E;
+}
+
+.btn-outline-secondary:hover {
+    background-color: #DEAA5E;
+    color: #fff;
+}
+
+/* Image preview */
+#target {
+    border-radius: 50%;
+    border: 2px solid #DEAA5E;
+    object-fit: cover;
+}
+
+/* Upload wrapper */
+.button-wrapper label.btn {
+    background-color: #DEAA5E;
+    color: #fff;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.button-wrapper label.btn:hover {
+    background-color: #c48b44;
+}
+
+/* File info text */
+.button-wrapper p {
+    font-size: 13px;
+    color: #666;
+    margin-top: 5px;
+}
+
+/* Row spacing */
+.row > .mb-3 {
+    margin-bottom: 15px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .d-flex.align-items-start {
+        flex-direction: column;
+        gap: 10px;
+    }
+}
+</style>
+
 
     </style>
 
