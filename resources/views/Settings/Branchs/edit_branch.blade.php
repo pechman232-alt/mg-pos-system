@@ -1,94 +1,56 @@
 @extends('layouts.homePages')
 @section('content')
 
-<style>
-    .form-card {
-        background-color: #fff;
-        border: 1px solid #DEAA5E;
-        border-radius: 12px;
-        box-shadow: 0 4px 10px rgba(222, 170, 94, 0.15);
-        padding: 25px;
-        transition: all 0.3s ease;
-        animation: slideInRight 0.6s ease forwards;
-    }
-
-    @keyframes slideInRight {
-        0% {
-            opacity: 0;
-            transform: translateX(40px);
+    <style>
+        .rounded-circle {
+            object-fit: fill;
         }
-        100% {
-            opacity: 1;
-            transform: translateX(0);
+
+        .my-img {
+            background: black;
+            height: 200px;
+            width: 200px;
+            border-radius: 50%;
         }
-    }
 
-    .form-label {
-        font-weight: 600;
-        color: #444;
-    }
+        .my-img-2 {
+            height: 70px;
+            width: 70px;
+            object-fit: fill;
+        }
 
-    .form-control:focus {
-        border-color: #DEAA5E;
-        box-shadow: 0 0 5px rgba(222, 170, 94, 0.4);
-    }
+        .card-header, .card-footer {
+            background: #f5e2c5;
+        }
 
-    .btn-save {
-        background-color: #DEAA5E;
-        color: #fff;
-        border: none;
-        transition: 0.3s ease;
-    }
+    </style>
 
-    .btn-save:hover {
-        background-color: #c99646;
-        transform: scale(1.05);
-    }
+    <div class="container-xxl flex-grow-1 container-p-y">
 
-    .btn-back {
-        border: 1px solid #DEAA5E;
-        color: #DEAA5E;
-        transition: 0.3s ease;
-    }
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card mb-4">
+                    <h5 class="card-header">Edit Branch</h5>
+                    <hr class="my-0">
+                    <div class="card-body">
+                        <form action="{{ url('branch/update', encrypt($branch->id)) }}" method="POST" enctype="multipart/form-data">
+                            @csrf
+                            <div class="row mb-6">
+                                <label class="col-sm-2 col-form-label" for="basic-default-name">Branch Name</label>
+                                <div class="col-sm-10">
+                                    <input type="text" placeholder="enter branch" class="form-control" name="branch_name" value="{{ $branch->branch_name }}">
+                                </div>
+                            </div>
 
-    .btn-back:hover {
-        background-color: #DEAA5E;
-        color: white;
-        transform: scale(1.05);
-    }
-</style>
-
-<div class="container-xxl flex-grow-1 container-p-y">
-
-    <div class="row">
-        <div class="col-md-8 offset-md-2">
-            <div class="form-card">
-                <h4 class="mb-3"><i class="bx bx-edit"></i> Edit Branch</h4>
-                <hr>
-
-                <form action="{{ url('/branch/update', encrypt($branch->id)) }}" method="POST">
-                    @csrf
-
-                    <div class="mb-3">
-                        <label for="branch_name" class="form-label">Branch Name</label>
-                        <input type="text" name="branch_name" id="branch_name" 
-                               class="form-control" placeholder="Enter branch name" 
-                               value="{{ $branch->branch_name }}" required>
+                            <div class="mt-2">
+                                <button type="submit" class="btn btn-primary me-2">Save</button>
+                                <a href="{{ url('/branchs') }}" class="btn btn-outline-secondary">Cancel</a>
+                            </div>
+                        </form>
                     </div>
-
-                    <div class="mt-4 d-flex justify-content-between">
-                        <a href="{{ url('/branch') }}" class="btn btn-back">
-                            <i class="bx bx-arrow-back"></i> Back
-                        </a>
-                        <button type="submit" class="btn btn-save">
-                            <i class="bx bx-save"></i> Save Changes
-                        </button>
-                    </div>
-                </form>
+                </div>
             </div>
         </div>
     </div>
-
-</div>
 
 @endsection

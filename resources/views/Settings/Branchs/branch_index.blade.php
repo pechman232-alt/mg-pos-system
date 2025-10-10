@@ -115,12 +115,8 @@
                                     <td>{{ $branch->created_at }}</td>
                                     <td style="width: 100px">
                                         <div class="btn-group" role="group" aria-label="First group">
-                                            <a href="{{ url('/Branch/edit', encrypt($branch->id)) }}" class="btn btn-outline-secondary">
-                                                <i class="tf-icons bx bx-edit"></i>
-                                            </a>
-                                            <a onclick="return confirm('Are you sure, you want to delete?')" href=""
-                                                class="btn btn-outline-secondary" style="background-color: red; color:white"><i
-                                                    class="tf-icons bx bx-trash"></i></a>
+                                            <a href="{{ url('/branch/edit', encrypt($branch->id)) }}" class="btn btn-outline-secondary"> <i class="tf-icons bx bx-edit"></i></a>
+                                            <a onclick="return confirm('Are you sure, you want to delete?')" href="{{ url('/branch/destroy', encrypt($branch->id)) }}" class="btn btn-outline-secondary" style="background-color: red; color:white"><i class="tf-icons bx bx-trash"></i></a>
                                         </div>
                                     </td>
                                 </tr>

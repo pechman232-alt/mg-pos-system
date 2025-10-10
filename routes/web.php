@@ -92,8 +92,8 @@ Route::middleware(['user_is_login'])->group(function () {
     Route::get('/branch/create', [SettingController::class, 'formBranch']);
     Route::post('/branchs/store', [SettingController::class,'createBranch']);
     Route::get('/branch/edit/{id}', [SettingController::class, 'editBranch']);
-    Route::post('/branch/update/{id}', [SettingController::class, 'update']);
-    
+    Route::post('/branch/update/{id}', [SettingController::class, 'updateBranch']);
+    Route::get('/branch/destroy/{id}', [SettingController::class, 'destroyBranch']);
     
 
     // Route Province

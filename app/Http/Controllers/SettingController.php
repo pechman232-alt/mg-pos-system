@@ -48,7 +48,7 @@ class SettingController extends Controller
         try {
             $ID = decrypt($id);
             $depart = DepartmentModel::where('id', $ID)->firstorfail();
-
+            return $depart;
         } catch (\Throwable $th){
             return redirect()->back()->with('error', $th->getMessage());
         } 
@@ -95,16 +95,37 @@ class SettingController extends Controller
         $branchs->branch_name = $request->branch_name;
         $branchs->save();
         return redirect('branch/create')->with('success', 'The Branch is Created Succesfully!');
-    } 
+    }
 
-    
-        public function update(Request $request, $id)
-    {
-        $branch = Branch::findOrFail(decrypt($id));
-        $branch->branch_name = $request->branch_name;
-        $branch->save();
-    
-        return redirect('/branch')->with('success', 'Branch updated successfully!');
+    public function editBranch($id){
+        try {
+            $ID = decrypt($id);
+            $branch = BranchModel::where('id', $ID)->first();
+            return view('Settings.Branchs.edit_branch',['branch'=>$branch]);
+        } catch (\Throwable $th){
+            return redirect()->back()->with('error', $th->getMessage());
+        } 
+    }
+
+    public function updateBranch(Request $request, $id){
+        try {
+            $ID = decrypt($id);
+            $branch = BranchModel::where('id', $ID)->firstorfail();
+            $branch->update($request->all());
+            return redirect('branchs')->with('info', 'The Branch is Updated successfully.');
+        } catch (\Throwable $th){
+            return redirect()->back()->with('error', $th->getMessage());
+        } 
+    }
+
+    public function destroyBranch($id){
+        try {
+            $ID = decrypt($id);
+            $branch = BranchModel::where('id' , $ID)->firstorfail()->delete();
+            return redirect('branchs')->with('warning', 'The Branch is Deleted Succesfully!');
+        } catch (\Throwable $th){
+            return redirect()->back()->with('error', $th->getMessage());
+        } 
     }
     
     // ------------- Province Controller -------------------
