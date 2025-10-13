@@ -48,13 +48,14 @@ Route::middleware(['user_is_login'])->group(function () {
     Route::post('/userRoles/update/{id}',[UserRoleController::class, 'fnUpdateUserRole']);
 
     // Route Logistics
-    Route::get('/logistics', [LogisticController::class, 'logisticIndex']);
+    Route::get('/logistics', [LogisticController::class, 'logisticIndex'])->name('search.logistics');
     Route::get('/logistics/create',[LogisticController::class, 'createLogistics']);
     Route::post('/logistics/store',[LogisticController::class, 'storeLogistics']);
-    Route::post('/logistics/import', [LogisticController::class, 'importLogistic']);
     Route::get('/logistics/edit/{id}', [LogisticController::class, 'editLogistics']);
     Route::post('/logistics/update/{id}', [LogisticController::class, 'updateLogistics']);
     Route::get('/logistics/destroy/{id}', [LogisticController::class, 'destroyLogistics']);
+    Route::post('/logistics/import', [LogisticController::class, 'importLogistic']);
+    Route::get('/logistics/export', [LogisticController::class, 'exportLogistic']);
     Route::get('/download-template-logistic', function(){
         $filePath = public_path('templates/logistic_excel_template.xlsx');
         return Response::download($filePath, 'logistic_excel_template.xlsx');
@@ -70,7 +71,7 @@ Route::middleware(['user_is_login'])->group(function () {
     Route::get('/employees/details/{id}',[EmployeeController::class, 'viewEmployee']);
 
     // Route SaleReport
-    Route::get('/sale-reports', [SaleReportController::class, 'saleReportIndex']);
+    Route::get('/sale-reports', [SaleReportController::class, 'saleReportIndex'])->name('search.sale-reports');
     Route::get('/sale-reports/create', [SaleReportController::class, 'createSaleReport']);
     Route::post('/sale-reports/store', [SaleReportController::class, 'storeSaleReport']);
     Route::get('/sale-reports/view/{id}', [SaleReportController::class, 'viewSaleReport']);
@@ -135,10 +136,16 @@ Route::middleware(['user_is_login'])->group(function () {
     Route::post('/colors/store', [CarModelController::class, 'storeColor']);
 
     //Route MemberCard
-    Route::get('/member-cards',[MemberCardController::class, 'memberCardIndex']);
+    Route::get('/member-cards',[MemberCardController::class, 'memberCardIndex'])->name('search.member-cards');
     Route::get('/member-cards/create',[MemberCardController::class, 'createMemberCard']);
     Route::post('/member-cards/store',[MemberCardController::class, 'storeMemberCard']);
     Route::get('/member-cards/edit/{id}',[MemberCardController::class, 'editMemberCard']);
     Route::post('/member-cards/update/{id}',[MemberCardController::class, 'updateMemberCard']);
     Route::get('/member-cards/destroy/{id}',[MemberCardController::class, 'destroyMemberCard']);
+    Route::get('/member-cards/export', [MemberCardController::class, 'exportMemberCard']);
+    Route::post('/member-cards/import', [MemberCardController::class, 'importMemberCard']);
+    Route::get('/download-template-member-card', function(){
+        $filePath = public_path('templates/member_card_template.xlsx');
+        return Response::download($filePath, 'member_card_template.xlsx');
+    });
 });

@@ -16,65 +16,103 @@ use App\Http\Requests\SaleReportRequest;
 
 class SaleReportController extends Controller
 {
-    public function saleReportIndex(){
-        $saleReports = SaleReportModel::get();
-        return view('SaleReports.sale_report_index',['saleReports'=> $saleReports]);
+    public function saleReportIndex(Request $request) {
+
+        $keyword = $request->input('keyword');
+        $dateFrom = $request->input('date_from');
+        $dateTo = $request->input('date_to');
+        $invoiceDate = $request->input('invoice_date');
+
+        $saleReports = SaleReportModel::query()
+        ->join('member_cards', 'member_cards.id', '=', 'sale_reports.member_card')
+        ->select('sale_reports.*' ,'member_cards.member_card');
+
+        if (!empty($keyword)) {
+            $saleReports->where(function ($query) use ($keyword) {
+                $query->where('sale_reports.customer_name', 'like', '%' . $keyword . '%')
+                ->orWhere('member_cards.member_card', 'like', '%' . $keyword . '%');
+            });
+        }
+
+        if (!empty($dateFrom) && !empty($dateTo)) {
+            $saleReports->whereBetween('sale_reports.invoice_date', [$dateFrom, $dateTo]);
+        } elseif (!empty($dateFrom)) {
+            $saleReports->whereDate('sale_reports.invoice_date', '>=', $dateFrom);
+        } elseif (!empty($dateTo)) {
+            $saleReports->whereDate('sale_reports.invoice_date', '<=', $dateTo);
+        }
+
+        $saleReports = $saleReports->paginate(10);
+        $countSaleReports = $saleReports->total();
+
+        return view('SaleReports.sale_report_index',[
+            'saleReports'=> $saleReports,
+            'countSaleReports'=> $countSaleReports,
+            'date_from'=> $dateFrom,
+            'date_to'=> $dateTo,
+            'invoice_date'=> $invoiceDate,
+        ]);
     }
 
     public function viewSaleReport($id){
-        $ID = decrypt($id);
-        $saleReports = SaleReportModel::selectRaw(
-            'sale_reports.id,
-            sale_reports.customer_name,
-            sale_reports.brand_name,
-            sale_reports.phone_number,
-            sale_reports.gender,
-            sale_reports.dob,
-            sale_reports.age,
-            sale_reports.vihicle_battery,
-            sale_reports.vpc_vdr,
-            sale_reports.plate_number,
-            sale_reports.offer_uv_film,
-            sale_reports.offer_floor_mat,
-            sale_reports.side_step,
-            sale_reports.auto_tailgate,
-            sale_reports.rear_spoiler,
-            sale_reports.certificate_engine_oil,
-            sale_reports.pro_offer_oil,
-            sale_reports.pro_offer_oil_date,
-            sale_reports.source_id,
-            sale_reports.contract_no,
-            sale_reports.contract_date,
-            sale_reports.invoice_no,
-            sale_reports.invoice_date,
-            sale_reports.delivery_date,
-            sale_reports.price,
-            sale_reports.follow_up,
-            sale_reports.attach_file,
+        try {
+            $ID = decrypt($id);
+            $saleReports = SaleReportModel::selectRaw(
+                'sale_reports.id,
+                sale_reports.customer_name,
+                sale_reports.brand_name,
+                sale_reports.phone_number,
+                sale_reports.gender,
+                sale_reports.dob,
+                sale_reports.age,
+                sale_reports.vihicle_battery,
+                sale_reports.vpc_vdr,
+                sale_reports.plate_number,
+                sale_reports.offer_uv_film,
+                sale_reports.offer_floor_mat,
+                sale_reports.side_step,
+                sale_reports.auto_tailgate,
+                sale_reports.rear_spoiler,
+                sale_reports.certificate_engine_oil,
+                sale_reports.pro_offer_oil,
+                sale_reports.pro_offer_oil_date,
+                sale_reports.source_id,
+                sale_reports.contract_no,
+                sale_reports.contract_date,
+                sale_reports.invoice_no,
+                sale_reports.invoice_date,
+                sale_reports.delivery_date,
+                sale_reports.price,
+                sale_reports.follow_up,
+                sale_reports.attach_file,
+                sale_reports.remark_sa,
 
-            provinces.name as address,
-            employees.full_name as sale_person,
-            member_cards.member_card as memberCard,
-            car_images.image_name as car_image,
-            car_models.model_name as model_name,
-            colors.color_name as color_name,
-            warranty.name as warranty,
+                provinces.name as address,
+                employees.full_name as sale_person,
+                member_cards.member_card as memberCard,
+                car_images.image_name as car_image,
+                car_models.model_name as model_name,
+                colors.color_name as color_name,
+                warranty.name as warranty,
 
-            logistics.model_year as modelYear,
-            logistics.vin_number as vinNumber,
-            logistics.engine_number as engineNumber
-            '
-        )
-        ->join('car_images', 'car_images.id', '=', 'sale_reports.image')
-        ->join('car_models', 'car_models.id', '=', 'car_images.model_id')
-        ->join('colors', 'colors.id', '=' ,'car_models.color_id')
-        ->join('employees', 'employees.id', '=', 'sale_reports.employee_id')
-        ->join('member_cards', 'member_cards.id', '=', 'sale_reports.member_card')
-        ->join('provinces', 'provinces.id', '=', 'sale_reports.province_id')
-        ->join('logistics', 'logistics.id', '=', 'sale_reports.logistics_id')
-        ->join('warranty', 'warranty.id', '=', 'sale_reports.warranty_id')
-        ->find($ID);
-        return view('SaleReports.view_sale_report', ['saleReports'=>$saleReports]);
+                logistics.model_year as modelYear,
+                logistics.vin_number as vinNumber,
+                logistics.engine_number as engineNumber
+                '
+            )
+            ->join('car_images', 'car_images.id', '=', 'sale_reports.image')
+            ->join('car_models', 'car_models.id', '=', 'car_images.model_id')
+            ->join('colors', 'colors.id', '=' ,'car_models.color_id')
+            ->join('employees', 'employees.id', '=', 'sale_reports.employee_id')
+            ->join('member_cards', 'member_cards.id', '=', 'sale_reports.member_card')
+            ->join('provinces', 'provinces.id', '=', 'sale_reports.province_id')
+            ->join('logistics', 'logistics.id', '=', 'sale_reports.logistics_id')
+            ->join('warranty', 'warranty.id', '=', 'sale_reports.warranty_id')
+            ->find($ID);
+            return view('SaleReports.view_sale_report', ['saleReports'=>$saleReports]);
+        } catch (\Throwable $th) {
+            return redirect()->back()->with('error', $th->getMessage());
+        }
     }
 
     public function createSaleReport(Request $request){
@@ -148,7 +186,6 @@ class SaleReportController extends Controller
 
     public function editSaleReport(){
         
-
     }
 
     public function updateSaleReport(){

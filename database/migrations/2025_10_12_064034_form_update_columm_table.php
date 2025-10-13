@@ -11,8 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('sale_reports', function (Blueprint $table) {
-            $table->string('price', 30)->after('vihicle_battery');
+        Schema::table('logistics', function (Blueprint $table) {
+            $table->renameColumn('is_use', 'is_sale');
         });
     }
 
@@ -21,8 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('sale_reports', function (Blueprint $table) {
-            $table->dropColumn('price');
+        Schema::table('logistics', function (Blueprint $table) {
+            //
         });
     }
 };

@@ -43,9 +43,10 @@
                             </div>
 
                             <div class="mt-2">
-                                <button type="submit" class="btn btn-primary me-2">Save</button>
+                                <button type="submit" class="btn btn-primary me-2">Update</button>
                                 <a href="{{ url('/member-cards') }}" class="btn btn-outline-secondary">Cancel</a>
                             </div>
+                            <input type="hidden" name="last_url" value="{{ url()->previous() }}">
                         </form>
                     </div>
                 </div>

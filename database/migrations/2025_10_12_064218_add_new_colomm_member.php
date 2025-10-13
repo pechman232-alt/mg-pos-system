@@ -11,8 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('sale_reports', function (Blueprint $table) {
-            $table->string('offer_uv_film', 50)->change();
+        Schema::table('member_cards', function (Blueprint $table) {
+            $table->integer('is_sale')->default(1)->after('member_card');
         });
     }
 
@@ -21,8 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('sale_reports', function (Blueprint $table) {
-            //
+        Schema::table('member_cards', function (Blueprint $table) {
+            $table->dropColumn('is_sale');
         });
     }
 };

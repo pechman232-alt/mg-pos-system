@@ -194,8 +194,7 @@
                         <div class="row mb-6">
                             <label class="col-sm-2 col-form-label" for="basic-default-name">Customer name</label>
                             <div class="col">
-                                <input type="text" placeholder="enter model name" class="form-control" name="model_name"
-                                    value="{{ $saleReports->customer_name }}" disabled>
+                                <input type="text" placeholder="enter customer name" class="form-control" name="customer_name" value="{{ $saleReports->customer_name }}" disabled>
                             </div>
                             <label class="col-sm-2 col-form-label" for="basic-default-name">Branch Name</label>
                             <div class="col">
@@ -362,9 +361,12 @@
                         </div>
                         <div class="row mb-6">
                             <label class="col-sm-2 col-form-label" for="basic-default-name">Pro Offer Oil date</label>
-                            <div class="col-sm-4">
-                                <input type="text" placeholder="enter model name" class="form-control" name="model_name"
-                                    value="{{ $saleReports->pro_offer_oil_date }}" disabled>
+                            <div class="col">
+                                <input type="text" placeholder="enter model name" class="form-control" name="model_name" value="{{ $saleReports->pro_offer_oil_date }}" disabled>
+                            </div>
+                            <label class="col-sm-2 col-form-label" for="basic-default-name">Remark SA</label>
+                            <div class="col">
+                                <input type="text" placeholder="enter model name" class="form-control" name="model_name" value="{{ $saleReports->remark_sa }}" disabled>
                             </div>
                         </div>
                     </div>
