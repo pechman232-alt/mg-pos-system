@@ -227,7 +227,6 @@
                             </div>
                         </div>
 
-                        {{-- -------------------------------------------- --}}
                         <div class="row mb-6 form-row-animate">
                             <label class="col-sm-2 col-form-label" for="basic-default-name">Member Card</label>
                             <div class="col-sm-10">
@@ -328,16 +327,11 @@
                                 <select name="source_id"
                                     class="form-select @error('source_id') border-danger @enderror">
                                     <option value="" disabled selected>select source customer</option>
-                                    <option value="Call In" @if (old('source_id') == 'Call In') selected @endif>Call In
-                                    </option>
-                                    <option value="Referral" @if (old('source_id') == 'Referral') selected @endif>Referral
-                                    </option>
-                                    <option value="Facebook Page" @if (old('source_id') == 'Facebook Page') selected
-                                    @endif>Facebook Page</option>
-                                    <option value="Walk In" @if (old('source_id') == 'Walk In') selected @endif>Walk In
-                                    </option>
-                                    <option value="Personal Page" @if (old('source_id') == 'Personal Page') selected
-                                    @endif>Personal Page</option>
+                                    <option value="Call In" @if (old('source_id') == 'Call In') selected @endif>Call In</option>
+                                    <option value="Referral" @if (old('source_id') == 'Referral') selected @endif>Referral</option>
+                                    <option value="Facebook Page" @if (old('source_id') == 'Facebook Page') selected @endif>Facebook Page</option>
+                                    <option value="Walk In" @if (old('source_id') == 'Walk In') selected @endif>Walk In</option>
+                                    <option value="Personal Page" @if (old('source_id') == 'Personal Page') selected @endif>Personal Page</option>
                                 </select>
                                 @error('source_id')
                                     <small class="text-danger">{{ $message }}</small>
@@ -412,12 +406,21 @@
                         <div class="row mb-6 branch-animate">
                             <label class="col-sm-2 col-form-label" for="basic-default-name">Follow Up</label>
                             <div class="col-sm-10">
-                                <input type="text" placeholder="enter follow up"
-                                    class="form-control @error('follow_up') border-danger @enderror" name="follow_up"
-                                    value="{{ old('follow_up') }}">
-                                @error('follow_up')
-                                    <small class="text-danger">{{ $message }}</small>
-                                @enderror
+                                <select name="follow_up"
+                                    class="form-select">
+                                    <option value="" disabled selected>select follow up</option>
+                                    <option value="A" @if (old('follow_up') == 'A') selected @endif>A</option>
+                                    <option value="Not yet contact" @if (old('follow_up') == 'Not yet contact') selected @endif>Not yet contact</option>
+                                    <option value="Not pick up" @if (old('follow_up') == 'Not pick up') selected @endif>Not pick up</option>
+                                    <option value="Can not contact" @if (old('follow_up') == 'Can not contact') selected @endif>Can not contact</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="row mb-6 branch-animate">
+                            <label class="col-sm-2 col-form-label" for="basic-default-name">Feedback Command</label>
+                            <div class="col-sm-10">
+                                <input type="text" placeholder="enter feedback commnand" class="form-control" name="feedback_command" value="{{ old('feedback_command') }}">
                             </div>
                         </div>
 
@@ -433,6 +436,23 @@
                                     @endforeach
                                 </select>
                                 @error('warranty_id')
+                                    <small class="text-danger">{{ $message }}</small>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <div class="row mb-6 branch-animate">
+                            <label class="col-sm-2 col-form-label" for="basic-default-name">Battery Warranty For LeapMotor</label>
+                            <div class="col-sm-10">
+                                <select name="warranty_leap_motor"
+                                    class="form-select @error('warranty_leap_motor') border-danger @enderror">
+                                    <option value="" disabled selected>select battery warranty for leap motor</option>
+                                    @foreach ($warrantys as $item)
+                                        <option value="{{ $item->id }}" @if (old('warranty_leap_motor') == $item->id){{ 'selected' }}
+                                        @endif>{{ $item->name }}</option>
+                                    @endforeach
+                                </select>
+                                @error('warranty_leap_motor')
                                     <small class="text-danger">{{ $message }}</small>
                                 @enderror
                             </div>
@@ -634,8 +654,7 @@
                                 <select name="pro_offer_oil"
                                     class="form-select @error('pro_offer_oil') border-danger @enderror">
                                     <option value="" disabled selected>select pro offer oil</option>
-                                    <option value="First" @if (old('pro_offer_oil') == 'First') selected @endif>First
-                                    </option>
+                                    <option value="First" @if (old('pro_offer_oil') == 'First') selected @endif>First</option>
                                     <option value="1" @if (old('pro_offer_oil') == '1') selected @endif>1</option>
                                     <option value="2" @if (old('pro_offer_oil') == '2') selected @endif>2</option>
                                     <option value="3" @if (old('pro_offer_oil') == '3') selected @endif>3</option>

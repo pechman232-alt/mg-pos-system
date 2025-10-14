@@ -208,13 +208,13 @@
         </div>
     </div>
 
-    {{-- <script>
+    <script>
         document.getElementById('exportBtn').addEventListener('click', function () {
             const form = document.getElementById('filterForm');
             const oldAction = form.action;
-            form.action = "{{ url('member-cards/export') }}";
+            form.action = "{{ url('sale-reports/export') }}";
             form.submit();
             form.action = oldAction;
         });
-    </script> --}}
+    </script>
 @endsection
