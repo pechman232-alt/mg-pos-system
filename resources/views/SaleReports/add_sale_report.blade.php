@@ -132,8 +132,7 @@
                 <h5 class="card-header">Add Sale Report</h5>
                 <hr class="my-0">
                 <div class="card-body">
-                    <form action="{{ url('/sale-reports/store') }}" method="POST" action="/upload"
-                        enctype="multipart/form-data">
+                    <form action="{{ url('/sale-reports/store') }}" method="POST" action="/upload" enctype="multipart/form-data">
                         @csrf
                         <div class="row mb-6">
                             <label class="col-sm-2 col-form-label" for="basic-default-name">Brand Model</label>
@@ -714,8 +713,7 @@
                         <div class="row mb-6 branch-animate">
                             <label class="col-sm-2 col-form-label" for="basic-default-name">Remark Sa</label>
                             <div class="col-sm-10">
-                                <textarea name="remark_sa" class="form-control" placeholder="Enter remark sa"
-                                    style="height: 103px;"></textarea>
+                                <textarea name="remark_sa" class="form-control" placeholder="Enter remark sa" style="height: 103px;"></textarea>
                             </div>
                         </div>
 

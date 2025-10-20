@@ -56,13 +56,14 @@
         .bg_yellow {
             background-color: #FAA61A;
         }
-
+        
     </style>
 
     <div class="container-xxl flex-grow-1 container-p-y">
         <div class="card">
             <nav class="navbar navbar-example navbar-expand-lg bg-light">
                 <div class="container-fluid">
+
                     <div class="collapse navbar-collapse" id="navbar-ex-3">
                         <div class="navbar-nav me-auto">
                             <a class="nav-item nav-link active" href="" style="font-size: 18px;"> <i class='bx bx-package'></i>List of Sale Reports</a>
@@ -76,8 +77,7 @@
                                     <div class="modal-content">
                                         <div class="modal-header">
                                             <h5 class="modal-title" id="exampleModalLabel1">Sale Reports</h5>
-                                            <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                                aria-label="Close"></button>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                         </div>
                                         <div class="modal-body">
                                             <div class="row">
@@ -101,9 +101,13 @@
                                 </div>
                             </form>
                         </div>
+
                         <a href="{{ url('sale-reports/create') }}" class="btn btn-outline-primary">Add Sale-Report</a>
                     </div>
+
+
                 </div>
+
             </nav>
             <nav class="navbar navbar-example navbar-expand-lg bg-light" style="background-color: white !important;">
                 <div class="container-fluid">
@@ -165,23 +169,23 @@
                                         <td style="text-align: start">{{ $item->brand_name }}</td>
                                         <td>
                                             @if ($item->status == 1) 
-                                                <span class="badge bg_yellow">Active</span>
+                                                <span class="badge bg-label-success">Active</span>
                                             @else
                                                 <span class="badge bg_red">0</span>
                                             @endif
                                         </td>
                                         <td>
                                             <div class="btn-group" role="group" aria-label="First group">
-                                                <a href="{{ url('sale-reports/view', encrypt($item->id)) }}" class="btn btn-outline-secondary">view</a>
-                                                <a href="" class="btn btn-outline-secondary"><i class="tf-icons bx bx-edit"></i></a>
-                                                <a onclick="return confirm('Are you sure, you want to delete ?')" title="Delete user" href="" class="btn btn-outline-secondary" style="background-color: red; color:white"><i class="tf-icons bx bx-trash"></i></a>
+                                                <a href="{{ url('sale-reports/view', encrypt($item->id)) }}" class="btn btn-outline-secondary me-1">view</a>
+                                                <a href="{{ url('sale-reports/edit', encrypt($item->id)) }}" class="btn bg-label-info"><i class="tf-icons bx bx-edit"></i></a>
+                                                <a onclick="return confirm('Are you sure, you want to delete ?')" title="Delete user" href="{{ url('sale-reports/destroy', encrypt($item->id)) }}" class="btn btn-outline-secondary" style="background-color: red; color:white"><i class="tf-icons bx bx-trash"></i></a>
                                             </div>
                                         </td>
                                     </tr>
                                 @endforeach
                             @else
                                 <tr>
-                                    <td colspan="9" style="text-align: center">
+                                    <td colspan="10" style="text-align: center">
                                         Result not found.
                                     </td>
                                 </tr>

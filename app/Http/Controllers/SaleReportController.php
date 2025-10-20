@@ -134,7 +134,7 @@ class SaleReportController extends Controller
         ->get();
 
         if ($request->ajax()) {
-            $type = $request->input('type'); // Determine type of data (position or department)
+            $type = $request->input('type');
             $search = $request->input('search');
 
             if ($type === 'logistic') {
@@ -188,8 +188,8 @@ class SaleReportController extends Controller
             
             SaleReportModel::create($validated);
 
-            LogisticsModel::where('id', $validated['logistics_id'])->update(['is_sale' => 0]);
-            MemberCard::where('id', $validated['member_card'])->update(['is_sale' => 0]);
+            // LogisticsModel::where('id', $validated['logistics_id'])->update(['is_sale' => 0]);
+            // MemberCard::where('id', $validated['member_card'])->update(['is_sale' => 0]);
 
             return redirect('sale-reports/create')->with('success', 'The Sale Reports is created successfully.');
         } catch (\Throwable $th) {
@@ -197,16 +197,37 @@ class SaleReportController extends Controller
         }
     }
 
-    public function editSaleReport(){
-        
+    public function editSaleReport($id){
+        try {
+            $ID = decrypt($id);
+            $saleReports = SaleReportModel::find($ID);
+            return view('SaleReports.edit_sale_report', ['saleReports'=>$saleReports]);
+        } catch (\Throwable $tzh){
+            return redirect()->back()->with('error', $th->getMessage());
+        }
     }
 
-    public function updateSaleReport(){
-
+    public function updateSaleReport(Request $request, $id){
+        $ID = decrypt($id);
+        $saleReport = SaleReportModel::findOrFail($ID);
+        $saleReport->update();
+        return redirect('sale-reports')->with('info', 'The Sale Reports is Updated successfully.');
     }
 
-    public function destroySaleReport(){
+    public function destroySaleReport($id){
+        try {
+            $ID = decrypt($id);
 
+            $saleReport = SaleReportModel::findOrFail($ID);
+            $saleReport->delete();
+
+            // LogisticsModel::where('id', $saleReport->logistics_id)->update(['is_sale' => 1]);
+            // MemberCard::where('id', $saleReport->member_card)->update(['is_sale' => 1]);
+
+            return redirect('sale-reports')->with('error', 'The Sale Reports is Deleted successfully.');
+        } catch (\Throwable $th){
+            return redirect()->back()->with('error', $th->getMessage());
+        }
     }
 
     public function importSaleReport(){

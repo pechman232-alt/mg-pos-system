@@ -167,9 +167,9 @@
                                         <td style="text-align: start">{{ $item->engine_number }}</td>
                                         <td>
                                             @if ($item->is_sale == 0) 
-                                                <span class="badge bg_yellow">sold</span>
+                                                <span class="badge bg_red">sold</span>
                                             @else
-                                                <span class="badge bg_red">not yet sold</span>
+                                                <span class="badge bg_yellow">not yet sold</span>
                                             @endif
                                         </td>
                                         <td style="text-align: start">{{ $item->remark == "" ? "- - - - - - - - -":$item->remark }}</td>

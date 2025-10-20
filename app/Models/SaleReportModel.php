@@ -49,6 +49,18 @@ class SaleReportModel extends Model
     ];
     protected $dates = ['created_at', 'updated_at'];
 
+    protected static function booted(){
+        static::created(function ($saleReport) {
+            LogisticsModel::where('id', $saleReport->logistics_id)->update(['is_sale' => 0]);
+            MemberCard::where('id', $saleReport->member_card)->update(['is_sale' => 0]);
+        });
+
+        static::deleted(function ($saleReport) {
+            LogisticsModel::where('id', $saleReport->logistics_id)->update(['is_sale' => 1]);
+            MemberCard::where('id', $saleReport->member_card)->update(['is_sale' => 1]);
+        });
+    }
+
     public function branch()
     {
         return $this->belongsTo(BranchModel::class, 'branch_id', ownerKey: 'id');

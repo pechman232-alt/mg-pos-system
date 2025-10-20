@@ -373,7 +373,7 @@
                             </div>
                             <label class="col-sm-2 col-form-label" for="basic-default-name">Remark SA</label>
                             <div class="col">
-                                <input type="text" placeholder="remark sa" class="form-control" name="model_name" value="{{ $saleReports->remark_sa }}" disabled>
+                                <textarea class="form-control" placeholder="feedback command" style="height: 103px;" disabled>{{ $saleReports->remark_sa }}</textarea>
                             </div>
                         </div>
                     </div>
@@ -435,8 +435,7 @@
                         <div class="row mb-6">
                             <label class="col-sm-2 col-form-label" for="basic-default-name">Feedback Command</label>
                             <div class="col-sm-4">
-                                <input type="text" placeholder="feedback command" class="form-control" name="model_name"
-                                    value="{{ $saleReports->feedback_command }}" disabled>
+                                <textarea class="form-control" placeholder="feedback command" style="height: 103px;" disabled>{{ $saleReports->feedback_command }}</textarea>
                             </div>
                         </div>
 
