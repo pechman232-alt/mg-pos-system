@@ -13,14 +13,14 @@ return new class extends Migration
     {
         Schema::create('logistics', function (Blueprint $table) {
             $table->id();
-            $table->string('model_name', 50);
-            $table->string('exterior_color', 50);
-            $table->string('interior_color', 50);
-            $table->string('model_year', 4);
+            $table->string('model_name_id', 70);
+            $table->string('exterior_color', 50)->nullable();
+            $table->string('interior_color', 50)->nullable();
+            $table->string('model_year', 10);
             $table->string('vin_number', 40);
             $table->string('engine_number', 40);
             $table->text('remark')->nullable();
-            $table->integer('status')->default(1);
+            $table->integer('is_sale')->default(1);
             $table->timestamps();
         });
     }

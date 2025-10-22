@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('model_id');
             $table->unsignedBigInteger('color_id');
-            $table->string('image_name',200);
+            $table->string('image_name',200)->nullable();
             $table->timestamps();
         });
     }

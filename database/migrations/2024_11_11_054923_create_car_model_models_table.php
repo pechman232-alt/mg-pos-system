@@ -13,8 +13,7 @@ return new class extends Migration
     {
         Schema::create('car_models', function (Blueprint $table) {
             $table->id();
-            $table->string('model_name', 40);
-            $table->unsignedBigInteger('color_id');
+            $table->string('model_name', 70);
             $table->timestamps();
         });
     }

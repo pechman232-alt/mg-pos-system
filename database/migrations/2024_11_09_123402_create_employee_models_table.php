@@ -13,21 +13,21 @@ return new class extends Migration
     {
         Schema::create('employees', function (Blueprint $table) {
             $table->id();
-            $table->string('image_employee', 200);
-            $table->unsignedBigInteger('company_id');
-            $table->unsignedBigInteger('department_id');
-            $table->unsignedBigInteger('position_id');
+            $table->string('image_employee', 200)->nullable();
+            $table->unsignedBigInteger('company_id')->nullable();
+            $table->unsignedBigInteger('department_id')->nullable();
+            $table->unsignedBigInteger('position_id')->nullable();
             $table->string('full_name', 50);
-            $table->string('first_name', 20);
-            $table->string('last_name', 30);
-            $table->string('first_name_kh', 30);
-            $table->string('last_name_kh', 30);
+            $table->string('first_name', 40);
+            $table->string('last_name', 40);
+            $table->string('first_name_kh', 40)->nullable();
+            $table->string('last_name_kh', 40)->nullable();
             $table->string('gender', 6);
-            $table->integer('age');
-            $table->date('dob')->nullable();
-            $table->string('user_id', 20);
-            $table->unsignedInteger('branch_id');
-            $table->date('contract');
+            $table->integer('age')->nullable();
+            $table->date('dob')->nullable()->nullable();
+            $table->string('user_id', 20)->nullable();
+            $table->unsignedInteger('branch_id')->nullable();
+            $table->date('contract')->nullable();
             $table->string('official_userid', 40)->nullable();
             $table->string('official_pass', 15)->nullable();
             $table->string('group_domain', 30)->nullable();
