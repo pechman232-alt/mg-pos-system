@@ -24,7 +24,9 @@ class SaleReportModel extends Model
         'invoice_date',
         'delivery_date',
         'follow_up',
+        'feedback_command',
         'warranty_id',
+        'warranty_leap_motor',
         'employee_id',
         'province_id',
         'contract_no',
@@ -46,6 +48,18 @@ class SaleReportModel extends Model
         'status'
     ];
     protected $dates = ['created_at', 'updated_at'];
+
+    protected static function booted(){
+        static::created(function ($saleReport) {
+            LogisticsModel::where('id', $saleReport->logistics_id)->update(['is_sale' => 0]);
+            MemberCard::where('id', $saleReport->member_card)->update(['is_sale' => 0]);
+        });
+
+        static::deleted(function ($saleReport) {
+            LogisticsModel::where('id', $saleReport->logistics_id)->update(['is_sale' => 1]);
+            MemberCard::where('id', $saleReport->member_card)->update(['is_sale' => 1]);
+        });
+    }
 
     public function branch()
     {

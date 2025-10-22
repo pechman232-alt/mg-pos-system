@@ -29,6 +29,8 @@ return new class extends Migration
             $table->date('delivery_date');
             $table->string('follow_up', 10)->nullable();
             $table->unsignedInteger('warranty_id')->nullable();
+            $table->string('feedback_command', 1000)->nullable();
+            $table->unsignedInteger('warranty_leap_motor');
             $table->unsignedBigInteger('employee_id');
             $table->unsignedBigInteger('province_id');
             $table->string('contract_no', 10)->nullable();
@@ -42,7 +44,7 @@ return new class extends Migration
             $table->string('rear_spoiler', 30)->nullable();
             $table->string('certificate_engine_oil', 30);
             $table->string('pro_offer_oil')->nullable();
-            $table->date('pro_offer_oil_date')->nullable();
+            $table->date('pro_offer_oil_date', 50)->nullable();
             $table->date('vihicle_battery')->nullable();
             $table->string('price', 30)->nullable();
             $table->string('remark_sa')->nullable();

@@ -304,6 +304,13 @@
                                     value="{{ $saleReports->vpc_vdr }}" disabled>
                             </div>
                         </div>
+                        <div class="row mb-6">
+                            <label class="col-sm-2 col-form-label" for="basic-default-name">Battery Warranty For LeapMotor</label>
+                            <div class="col-sm-4">
+                                <input type="text" placeholder="warranty_leap_motor" class="form-control" name="model_name"
+                                    value="{{ $saleReports->warranty_leap_motor }}" disabled>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -366,7 +373,7 @@
                             </div>
                             <label class="col-sm-2 col-form-label" for="basic-default-name">Remark SA</label>
                             <div class="col">
-                                <input type="text" placeholder="enter model name" class="form-control" name="model_name" value="{{ $saleReports->remark_sa }}" disabled>
+                                <textarea class="form-control" placeholder="feedback command" style="height: 103px;" disabled>{{ $saleReports->remark_sa }}</textarea>
                             </div>
                         </div>
                     </div>
@@ -415,7 +422,7 @@
                         <div class="row mb-6">
                             <label class="col-sm-2 col-form-label" for="basic-default-name">Price</label>
                             <div class="col">
-                                <input type="text" placeholder="enter model name" class="form-control" name="model_name"
+                                <input type="text" placeholder="price" class="form-control" name="model_name"
                                     value="{{ $saleReports->price }}" disabled>
                             </div>
                             <label class="col-sm-2 col-form-label" for="basic-default-name">Follow Up</label>
@@ -424,6 +431,14 @@
                                     value="{{ $saleReports->follow_up }}" disabled>
                             </div>
                         </div>
+
+                        <div class="row mb-6">
+                            <label class="col-sm-2 col-form-label" for="basic-default-name">Feedback Command</label>
+                            <div class="col-sm-4">
+                                <textarea class="form-control" placeholder="feedback command" style="height: 103px;" disabled>{{ $saleReports->feedback_command }}</textarea>
+                            </div>
+                        </div>
+
                         <div class="mt-4">
                             <a href="" class="btn btn-primary me-2">Attactment</a>
                         </div>

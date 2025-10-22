@@ -13,6 +13,9 @@ use App\Models\ProvinceModel;
 use App\Models\MemberCard;
 use App\Models\SaleReportModel;
 use App\Http\Requests\SaleReportRequest;
+use App\Exports\SaleReportExport;
+use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Support\Facades\Log;
 
 class SaleReportController extends Controller
 {
@@ -84,6 +87,7 @@ class SaleReportController extends Controller
                 sale_reports.delivery_date,
                 sale_reports.price,
                 sale_reports.follow_up,
+                sale_reports.feedback_command,
                 sale_reports.attach_file,
                 sale_reports.remark_sa,
 
@@ -93,7 +97,8 @@ class SaleReportController extends Controller
                 car_images.image_name as car_image,
                 car_models.model_name as model_name,
                 colors.color_name as color_name,
-                warranty.name as warranty,
+                warranty_mg.name as warranty,
+                warranty_leap_motor.name as warranty_leap_motor,
 
                 logistics.model_year as modelYear,
                 logistics.vin_number as vinNumber,
@@ -107,7 +112,8 @@ class SaleReportController extends Controller
             ->join('member_cards', 'member_cards.id', '=', 'sale_reports.member_card')
             ->join('provinces', 'provinces.id', '=', 'sale_reports.province_id')
             ->join('logistics', 'logistics.id', '=', 'sale_reports.logistics_id')
-            ->join('warranty', 'warranty.id', '=', 'sale_reports.warranty_id')
+            ->join('warranty as warranty_mg', 'warranty_mg.id', '=', 'sale_reports.warranty_id')
+            ->join('warranty as warranty_leap_motor', 'warranty_leap_motor.id', '=', 'sale_reports.warranty_leap_motor')
             ->find($ID);
             return view('SaleReports.view_sale_report', ['saleReports'=>$saleReports]);
         } catch (\Throwable $th) {
@@ -117,24 +123,22 @@ class SaleReportController extends Controller
 
     public function createSaleReport(Request $request){
         $carImages = CarImage::selectRaw(
-            '
-            car_images.id,
+            'car_images.id,
             car_images.image_name,
             car_images.created_at,
             car_models.model_name as modelName,
-            colors.color_name as colorName
-            '
+            colors.color_name as colorName'
         )
         ->join('car_models','car_models.id','=','car_images.model_id')
         ->join('colors','colors.id', '=', 'car_images.color_id')
         ->get();
 
         if ($request->ajax()) {
-            $type = $request->input('type'); // Determine type of data (position or department)
+            $type = $request->input('type');
             $search = $request->input('search');
 
             if ($type === 'logistic') {
-                $logistics = LogisticsModel::where('status', '=', '1')
+                $logistics = LogisticsModel::where('is_sale', '=', '1')
                     ->where(function ($query) use ($search) {
                     $query->where('model_name', 'LIKE', "%{$search}%")
                         ->orWhere('vin_number', 'LIKE', "%{$search}%")
@@ -146,7 +150,8 @@ class SaleReportController extends Controller
             }
 
             if ($type === 'memberCard') {
-                $memberCard = MemberCard::where(function ($query) use ($search) {
+                $memberCard = MemberCard::where('is_sale', '=', '1')
+                    ->where(function ($query) use ($search) {
                     $query->where('member_card', 'LIKE', "%{$search}%");
                     })
                     ->select('id', 'member_card')
@@ -170,29 +175,74 @@ class SaleReportController extends Controller
             $age = \Carbon\Carbon::parse($dob)->age;
             $validated['age'] = $age;
             $validated['remark_sa'] = $request->input('remark_sa');
-            
+            $validated['follow_up'] = $request->input('follow_up');
+            $validated['feedback_command'] = $request->input('feedback_command');
+            $validated['price'] = $request->input('price');
+            $validated['contract_date'] = $request->input('contract_date');
+
             if ($request->hasFile('attach_file')) {
                 $file = $request->file('attach_file');
                 $path = $file->store('attachments', 'public');
                 $validated['attach_file'] = $path;
             }
-            $validated['status'] = 1;
+            
             SaleReportModel::create($validated);
+
+            // LogisticsModel::where('id', $validated['logistics_id'])->update(['is_sale' => 0]);
+            // MemberCard::where('id', $validated['member_card'])->update(['is_sale' => 0]);
+
             return redirect('sale-reports/create')->with('success', 'The Sale Reports is created successfully.');
         } catch (\Throwable $th) {
             return redirect()->back()->with('error', $th->getMessage());
         }
     }
 
-    public function editSaleReport(){
-        
+    public function editSaleReport($id){
+        try {
+            $ID = decrypt($id);
+            $saleReports = SaleReportModel::find($ID);
+            return view('SaleReports.edit_sale_report', ['saleReports'=>$saleReports]);
+        } catch (\Throwable $tzh){
+            return redirect()->back()->with('error', $th->getMessage());
+        }
     }
 
-    public function updateSaleReport(){
+    public function updateSaleReport(Request $request, $id){
+        $ID = decrypt($id);
+        $saleReport = SaleReportModel::findOrFail($ID);
+        $saleReport->update();
+        return redirect('sale-reports')->with('info', 'The Sale Reports is Updated successfully.');
+    }
+
+    public function destroySaleReport($id){
+        try {
+            $ID = decrypt($id);
+
+            $saleReport = SaleReportModel::findOrFail($ID);
+            $saleReport->delete();
+
+            // LogisticsModel::where('id', $saleReport->logistics_id)->update(['is_sale' => 1]);
+            // MemberCard::where('id', $saleReport->member_card)->update(['is_sale' => 1]);
+
+            return redirect('sale-reports')->with('error', 'The Sale Reports is Deleted successfully.');
+        } catch (\Throwable $th){
+            return redirect()->back()->with('error', $th->getMessage());
+        }
+    }
+
+    public function importSaleReport(){
 
     }
 
-    public function destroySaleReport(){
-
+    public function exportSaleReport(Request $request){
+        try {
+            return Excel::download(new SaleReportExport(
+                $request->input('date_from'),
+                $request->input('date_to'),
+            ), 'sale_report_export.xlsx');
+        } catch (\Exception $th){
+            Log::info($th);
+            return redirect()->back()->with('error', $th->getMessage());
+        }
     }
 }

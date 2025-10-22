@@ -20,7 +20,7 @@ class LogisticController extends Controller
         $dateTo = $request->input('date_to');
         $isSale = $request->input('isSale');
 
-        $logistics = LogisticsModel::query()
+        $logistics = LogisticsModel::query()->orderBy('sale_reports.invoice_date', 'desc')
         ->leftJoin('sale_reports', 'sale_reports.logistics_id', '=', 'logistics.id')
         ->select('logistics.*', 'sale_reports.invoice_date');
 

@@ -28,12 +28,11 @@ class SaleReportRequest extends FormRequest
             'invoice_no' => 'required|max:255|unique:sale_reports,invoice_no',
             'invoice_date' => 'required',
             'delivery_date' => 'required',
-            'follow_up' => 'required',
             'warranty_id' => 'required',
+            'warranty_leap_motor' => 'required',
             'employee_id' => 'required',
             'province_id' => 'required',
             'contract_no' => 'required',
-            'contract_date' => 'required',
             'vpc_vdr' => 'required',
             'offer_license_plate' => 'required',
             'offer_uv_film' => 'required',
@@ -44,8 +43,7 @@ class SaleReportRequest extends FormRequest
             'certificate_engine_oil' => 'required',
             'pro_offer_oil' => 'required',
             'pro_offer_oil_date' => 'required',
-            'vihicle_battery' => 'required',
-            'price' => 'required' // optional mean price and remark_sa and attactment
+            'vihicle_battery' => 'required'
         ];
     }
 }

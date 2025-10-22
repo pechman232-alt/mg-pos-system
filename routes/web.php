@@ -75,6 +75,10 @@ Route::middleware(['user_is_login'])->group(function () {
     Route::get('/sale-reports/create', [SaleReportController::class, 'createSaleReport']);
     Route::post('/sale-reports/store', [SaleReportController::class, 'storeSaleReport']);
     Route::get('/sale-reports/view/{id}', [SaleReportController::class, 'viewSaleReport']);
+    Route::get('/sale-reports/edit/{id}', [SaleReportController::class, 'editSaleReport']);
+    Route::post('/sale-reports/update/{id}', [SaleReportController::class, 'updateSaleReport']);
+    Route::get('/sale-reports/destroy/{id}', [SaleReportController::class, 'destroySaleReport']);
+    Route::get('/sale-reports/export',[SaleReportController::class, 'exportSaleReport']);
      
     // todo ----------------------- Route Setting -----------------------------------
     // Route Departments
