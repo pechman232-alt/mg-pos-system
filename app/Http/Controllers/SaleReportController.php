@@ -185,7 +185,8 @@ class SaleReportController extends Controller
                 $path = $file->store('attachments', 'public');
                 $validated['attach_file'] = $path;
             }
-            
+
+            $saleReport->created_by = auth('users')->user()->full_name;
             SaleReportModel::create($validated);
 
             // LogisticsModel::where('id', $validated['logistics_id'])->update(['is_sale' => 0]);
@@ -197,12 +198,60 @@ class SaleReportController extends Controller
         }
     }
 
-    public function editSaleReport($id){
+    public function editSaleReport(Request $request, $id){
         try {
             $ID = decrypt($id);
             $saleReports = SaleReportModel::find($ID);
-            return view('SaleReports.edit_sale_report', ['saleReports'=>$saleReports]);
-        } catch (\Throwable $tzh){
+
+            // if ($request->ajax()) {
+            //     $search = $request->input('search');
+            //     $memberCard = MemberCard::where('is_sale', '=', '1')
+            //         ->where('member_card', 'LIKE', "%{$search}%")
+            //         ->select('id', 'member_card')
+            //         ->get();
+            //     if ($saleReports && $saleReports->member_card) {
+            //         $selectedMemberCard = MemberCard::find($saleReports->member_card);
+            //         if ($selectedMemberCard) {
+            //             $memberCard->prepend($selectedMemberCard);
+            //         }
+            //     }
+            //     return response()->json($memberCard);
+            // }
+
+            $employees = EmployeeModel::where('department_id','=', '17')->get();
+            $provinces = ProvinceModel::all();
+            $warrantys = WarrantyModel::all();
+
+            $getCarImages = CarImage::selectRaw(
+                'car_images.id,
+                car_images.image_name,
+                car_images.created_at,
+                car_models.model_name as modelName,
+                colors.color_name as colorName'
+            )->join('car_models','car_models.id','=','car_images.model_id')
+            ->join('colors','colors.id', '=', 'car_images.color_id')
+            ->where('car_images.id', $saleReports->image)
+            ->first();
+
+            $carImages = CarImage::selectRaw(
+                'car_images.id,
+                car_images.image_name,
+                car_images.created_at,
+                car_models.model_name as modelName,
+                colors.color_name as colorName'
+            )->join('car_models','car_models.id','=','car_images.model_id')
+            ->join('colors','colors.id', '=', 'car_images.color_id')
+            ->get();
+
+            return view('SaleReports.edit_sale_report', [
+                'saleReports'=>$saleReports, 
+                'employees'=>$employees, 
+                'provinces'=>$provinces, 
+                'carImages'=>$carImages,
+                'getCarImages'=>$getCarImages,
+                'warrantys'=>$warrantys
+            ]);
+        } catch (\Throwable $th){
             return redirect()->back()->with('error', $th->getMessage());
         }
     }
@@ -210,7 +259,30 @@ class SaleReportController extends Controller
     public function updateSaleReport(Request $request, $id){
         $ID = decrypt($id);
         $saleReport = SaleReportModel::findOrFail($ID);
-        $saleReport->update();
+
+        if ($saleReport->member_card && $saleReport->member_card != $request->member_card) {
+            MemberCard::where('id', $saleReport->member_card)->update(['is_sale' => 1]);
+        }
+
+        if ($saleReport->logistics_id && $saleReport->logistics_id != $request->logistics_id){
+            LogisticsModel::where('id', $saleReport->logistics_id)->update(['is_sale' => 1]);
+        }
+
+        MemberCard::where('id', $request->member_card)->update(['is_sale' => 0]);
+        LogisticsModel::where('id', $request->logistics_id)->update(['is_sale' => 0]);
+
+        $dob = $request['dob'];
+        $age = \Carbon\Carbon::parse($dob)->age;
+        $request['age'] = $age;
+        $saleReport->updated_by = auth('users')->user()->full_name;
+
+        if ($request->filled('image')) { 
+            $saleReport->image = $request->image;
+        }
+
+        $updateData = $request->except(['image']);
+
+        $saleReport->update($updateData);
         return redirect('sale-reports')->with('info', 'The Sale Reports is Updated successfully.');
     }
 
@@ -219,7 +291,8 @@ class SaleReportController extends Controller
             $ID = decrypt($id);
 
             $saleReport = SaleReportModel::findOrFail($ID);
-            $saleReport->delete();
+            $saleReport->status = 0;
+            $saleReport->save();
 
             // LogisticsModel::where('id', $saleReport->logistics_id)->update(['is_sale' => 1]);
             // MemberCard::where('id', $saleReport->member_card)->update(['is_sale' => 1]);

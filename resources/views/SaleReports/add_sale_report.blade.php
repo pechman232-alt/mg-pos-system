@@ -138,11 +138,9 @@
                             <label class="col-sm-2 col-form-label" for="basic-default-name">Brand Model</label>
                             <div class="col-sm-10">
                                 <div class="d-flex align-items-start align-items-sm-center gap-4">
-                                    <img src="{{ asset('backend/assets/img/avatars/image.png') }}" alt="user-avatar"
-                                        class="rounded-circle-custome" width="150" id="target">
+                                    <img src="{{ asset('backend/assets/img/avatars/image.png') }}" alt="user-avatar" class="rounded-circle-custome" width="150" id="target">
                                     <div class="button-wrapper">
-                                        <button type="button" class="btn btn-success mr-1" data-bs-toggle="modal"
-                                            data-bs-target="#largeModal">Upload Brand Model</button>
+                                        <button type="button" class="btn btn-success mr-1" data-bs-toggle="modal" data-bs-target="#largeModal">Upload Brand Model</button>
                                         <div class="modal fade" id="largeModal" tabindex="-1" style="display: none;"
                                             aria-hidden="true">
                                             <div class="modal-dialog modal-lg" role="document">
@@ -315,8 +313,7 @@
                         <div class="row mb-6 branch-animate">
                             <label class="col-sm-2 col-form-label" for="basic-default-name">Age</label>
                             <div class="col-sm-10">
-                                <input id="age" type="text" disabled placeholder="age" class="form-control" name="age"
-                                    value="{{ old('age') }}">
+                                <input id="age" type="text" disabled placeholder="age" class="form-control" name="age" value="{{ old('age') }}">
                             </div>
                         </div>
 
