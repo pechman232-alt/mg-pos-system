@@ -186,8 +186,9 @@
     <div class="container-xxl flex-grow-1 container-p-y">
         <div class="row">
             <div class="col-md-12">
-                 <form action="{{ url('sale-reports/update', encrypt($logistics->id)) }}" method="POST" action="/upload" enctype="multipart/form-data">
+                 <form action="{{ url('sale-reports/update', encrypt($saleReports->id)) }}" method="POST" action="/upload" enctype="multipart/form-data">
                     @csrf
+                    {{-- done Customer information --}}
                     <div class="card mb-4">
                         <h5 class="card-header">Customer information</h5>
                         <hr class="my-0">
@@ -195,121 +196,168 @@
                             <div class="row mb-6">
                                 <label class="col-sm-2 col-form-label" for="basic-default-name">Customer name</label>
                                 <div class="col">
-                                    <input type="text" placeholder="enter customer name" class="form-control" name="customer_name" value="{{ $saleReports->customer_name }}" disabled>
+                                    <input type="text" placeholder="enter customer name" class="form-control" name="customer_name" value="{{ $saleReports->customer_name }}">
                                 </div>
                                 <label class="col-sm-2 col-form-label" for="basic-default-name">Branch Name</label>
                                 <div class="col">
-                                    <input type="text" placeholder="enter model name" class="form-control" name="model_name"
-                                        value="{{ $saleReports->brand_name }}" disabled>
+                                    <select name="brand_name" class="form-select">
+                                        <option value="" disabled selected>select brand name</option>
+                                         <option value="MG" {{ old('brand_name', $saleReports->brand_name) == 'MG' ? 'selected' : '' }}>MG</option>
+                                         <option value="Maxus" {{ old('brand_name', $saleReports->brand_name) == 'Maxus' ? 'selected' : '' }}>Maxus</option>
+                                    </select>
                                 </div>
                             </div>
                             <div class="row mb-6">
                                 <label class="col-sm-2 col-form-label" for="basic-default-name">Sale person</label>
                                 <div class="col">
-                                    <input type="text" placeholder="enter model name" class="form-control" name="model_name"
-                                        value="{{ $saleReports->sale_person }}" disabled>
+                                    <select name="employee_id" class="form-select">
+                                        <option value="" disabled selected>select employee id</option>
+                                        @foreach ($employees as $item)
+                                            <option @if ($item->id == $saleReports->employee_id) selected @endif value="{{ $item->id }}">{{ $item->full_name }}</option>
+                                        @endforeach
+                                    </select>
                                 </div>
                                 <label class="col-sm-2 col-form-label" for="basic-default-name">Phone Number</label>
                                 <div class="col">
-                                    <input type="text" placeholder="enter model name" class="form-control" name="model_name"
-                                        value="{{ $saleReports->phone_number }}" disabled>
+                                    <input type="text" placeholder="enter phone number" class="form-control" name="phone_number" value="{{ $saleReports->phone_number }}">
                                 </div>
                             </div>
                             <div class="row mb-6">
                                 <label class="col-sm-2 col-form-label" for="basic-default-name">Menber Card</label>
                                 <div class="col">
-                                    <input type="text" placeholder="enter model name" class="form-control" name="model_name"
-                                        value="{{ $saleReports->memberCard }}" disabled>
+                                    <input type="hidden" id="old-member-card" value="{{ old('member_card', $saleReports->member_card ?? '') }}">
+                                    <select id="member-card-select" class="form-select" name="member_card">
+                                        <option value="">Select Member Card</option>
+                                        @if (old('member_card', $saleReports->member_card ?? ''))
+                                            @php
+                                                $selectedMember = App\Models\MemberCard::find(old('member_card', $saleReports->member_card ?? ''));
+                                            @endphp
+                                            @if ($selectedMember)
+                                                <option value="{{ $selectedMember->id }}" selected>{{ $selectedMember->member_card }}</option>
+                                            @endif
+                                        @endif
+                                    </select>
                                 </div>
+
                                 <label class="col-sm-2 col-form-label" for="basic-default-name">Gender</label>
                                 <div class="col">
-                                    <input type="text" placeholder="enter model name" class="form-control" name="model_name"
-                                        value="{{ $saleReports->gender }}" disabled>
+                                    <select name="gender" class="form-select">
+                                        <option value="" disabled selected>select gender name</option>
+                                         <option value="Male" {{ old('gender', $saleReports->gender) == 'Male' ? 'selected' : '' }}>Male</option>
+                                         <option value="Female" {{ old('gender', $saleReports->gender) == 'Female' ? 'selected' : '' }}>Female</option>
+                                    </select>
                                 </div>
                             </div>
                             <div class="row mb-6">
                                 <label class="col-sm-2 col-form-label" for="basic-default-name">Date of birth</label>
                                 <div class="col">
-                                    <input type="text" placeholder="enter model name" class="form-control" name="model_name"
-                                        value="{{ $saleReports->dob }}" disabled>
+                                    <input id="dob" onchange="calculateAge()" class="form-control" type="date" id="html5-date-input" name="dob" value="{{ $saleReports->dob }}">
                                 </div>
                                 <label class="col-sm-2 col-form-label" for="basic-default-name">age</label>
                                 <div class="col">
-                                    <input type="text" placeholder="enter model name" class="form-control" name="model_name"
-                                        value="{{ $saleReports->age }}" disabled>
+                                    <input id="age" type="text" placeholder="age" class="form-control" name="age" value="{{ $saleReports->age }}" disabled>
                                 </div>
                             </div>
                             <div class="row mb-6">
                                 <label class="col-sm-2 col-form-label" for="basic-default-name">Address</label>
                                 <div class="col-sm-4">
-                                    <input type="text" placeholder="enter model name" class="form-control" name="model_name"
-                                        value="{{ $saleReports->address }}" disabled>
+                                    <select name="province_id" class="form-select">
+                                        <option value="" disabled selected>select address id</option>
+                                        @foreach ($provinces as $item)
+                                            <option @if ($item->id == $saleReports->province_id) selected @endif value="{{ $item->id }}">{{ $item->name }}</option>
+                                        @endforeach
+                                    </select>
                                 </div>
                             </div>
                         </div>
                     </div>
-
+                    {{-- done Customer information end --}}
+                    
                     <div class="card mb-4">
                         <h5 class="card-header">Vehicle basic information</h5>
                         <hr class="my-0">
                         <div class="card-body">
-                            <div style="padding-bottom: 25px">
-                                <img src="{{ url($saleReports->car_image == '' ? 'backend/assets/img/avatars/1.png' : '/imageCar/' . $saleReports->car_image) }}"
-                                    alt="collapse-image" height="125" class="me-6 mb-sm-0 mb-2">
+
+                            <div class="row mb-6">
+                                <div class="col-sm-10">
+                                    <div class="d-flex align-items-start align-items-sm-center gap-4">
+                                        <img  src="{{ url($getCarImages?->image_name ? '/imageCar/' . $getCarImages->image_name : 'backend/assets/img/avatars/image.png') }}" alt="user-avatar" class="rounded-circle-custome"  height="125" id="target"/>
+                                        <div class="button-wrapper">
+                                            <button type="button" class="btn btn-success mr-1" data-bs-toggle="modal" data-bs-target="#largeModal">Upload Brand Model</button>
+                                            <p class="text-muted mb-0">Model Name: <span id="modelName">{{ $getCarImages?->modelName }}</span></p>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
+
+                            <input type="hidden" name="image" id="carImageId">
+                          
                             <div class="row mb-6">
                                 <label class="col-sm-2 col-form-label" for="basic-default-name">Model Name</label>
                                 <div class="col">
-                                    <input type="text" placeholder="enter model name" class="form-control" name="model_name"
-                                        value="{{ $saleReports->model_name }}" disabled>
+                                    <input type="text" id="modelName" placeholder="enter model name" class="form-control" name="model_name" value="{{ $getCarImages?->modelName }}" disabled>
                                 </div>
                                 <label class="col-sm-2 col-form-label" for="basic-default-name">Color</label>
                                 <div class="col">
-                                    <input type="text" placeholder="enter model name" class="form-control" name="model_name"
-                                        value="{{ $saleReports->color_name }}" disabled>
+                                    <input type="text" placeholder="enter model name" class="form-control" name="model_name" value="{{ $getCarImages?->colorName }}" disabled>
                                 </div>
                             </div>
+
+
                             <div class="row mb-6">
-                                <label class="col-sm-2 col-form-label" for="basic-default-name">Year</label>
+                                <label class="col-sm-2 col-form-label" for="basic-default-name">Vehicle Model</label>
                                 <div class="col">
-                                    <input type="text" placeholder="enter model name" class="form-control" name="model_name"
-                                        value="{{ $saleReports->modelYear }}" disabled>
+                                    <input type="hidden" id="old-logistic-id" value="{{ old('logistics_id', $saleReports->logistics_id ?? '') }}">
+                                    <select id="logistic-select" class="form-select" name="logistics_id">
+                                        <option value="">Select Member Card</option>
+                                        @if (old('logistics_id', $saleReports->logistics_id ?? ''))
+                                            @php
+                                                $selectedLogistic = App\Models\LogisticsModel::find(old('logistics_id', $saleReports->logistics_id ?? ''));
+                                            @endphp
+                                            @if ($selectedLogistic)
+                                                <option value="{{ $selectedLogistic->id }}" selected>{{ $selectedLogistic->model_name }} - {{ $selectedLogistic->vin_number }} - {{ $selectedLogistic->engine_number }}</option>
+                                            @endif
+                                        @endif
+                                    </select>
                                 </div>
-                                <label class="col-sm-2 col-form-label" for="basic-default-name">Vin</label>
-                                <div class="col">
-                                    <input type="text" placeholder="enter model name" class="form-control" name="model_name"
-                                        value="{{ $saleReports->vinNumber }}" disabled>
+
+                                <label class="col-sm-2 col-form-label" for="basic-default-name">Warranty</label>
+                                <div class="col-sm-4">
+                                    <select name="warranty_id" class="form-select">
+                                        <option value="" disabled selected>select address id</option>
+                                        @foreach ($warrantys as $item)
+                                            <option @if ($item->id == $saleReports->warranty_id) selected @endif value="{{ $item->id }}">{{ $item->name }}</option>
+                                        @endforeach
+                                    </select>
                                 </div>
                             </div>
-                            <div class="row mb-6">
+
+                            {{-- <div class="row mb-6">
                                 <label class="col-sm-2 col-form-label" for="basic-default-name">Engine number</label>
                                 <div class="col">
-                                    <input type="text" placeholder="enter model name" class="form-control" name="model_name"
-                                        value="{{ $saleReports->engineNumber }}" disabled>
+                                    <input type="text" placeholder="enter model name" class="form-control" name="model_name" value="{{ $saleReports->engineNumber }}" disabled>
                                 </div>
                                 <label class="col-sm-2 col-form-label" for="basic-default-name">Warranty</label>
                                 <div class="col">
-                                    <input type="text" placeholder="enter model name" class="form-control" name="model_name"
-                                        value="{{ $saleReports->warranty }}" disabled>
+                                    <input type="text" placeholder="enter model name" class="form-control" name="model_name" value="{{ $saleReports->warranty }}" disabled>
                                 </div>
-                            </div>
+                            </div> --}}
+
                             <div class="row mb-6">
                                 <label class="col-sm-2 col-form-label" for="basic-default-name">Vihicle Battery</label>
                                 <div class="col">
-                                    <input type="text" placeholder="enter model name" class="form-control" name="model_name"
-                                        value="{{ $saleReports->vihicle_battery }}" disabled>
+                                    <input type="text" placeholder="enter model name" class="form-control" name="model_name" value="{{ $saleReports->vihicle_battery }}" disabled>
                                 </div>
                                 <label class="col-sm-2 col-form-label" for="basic-default-name">VPC & VDR</label>
                                 <div class="col">
-                                    <input type="text" placeholder="enter model name" class="form-control" name="model_name"
-                                        value="{{ $saleReports->vpc_vdr }}" disabled>
+                                    <input type="text" placeholder="enter model name" class="form-control" name="model_name" value="{{ $saleReports->vpc_vdr }}" disabled>
                                 </div>
                             </div>
+
                             <div class="row mb-6">
                                 <label class="col-sm-2 col-form-label" for="basic-default-name">Battery Warranty For LeapMotor</label>
                                 <div class="col-sm-4">
-                                    <input type="text" placeholder="warranty_leap_motor" class="form-control" name="model_name"
-                                        value="{{ $saleReports->warranty_leap_motor }}" disabled>
+                                    <input type="text" placeholder="warranty_leap_motor" class="form-control" name="model_name" value="{{ $saleReports->warranty_leap_motor }}" disabled>
                                 </div>
                             </div>
                         </div>
@@ -428,15 +476,15 @@
                                 </div>
                                 <label class="col-sm-2 col-form-label" for="basic-default-name">Follow Up</label>
                                 <div class="col">
-                                    <input type="text" placeholder="enter model name" class="form-control" name="model_name" value="{{ $saleReports->follow_up }}">
+                                    <input type="text" placeholder="enter model name" class="form-control" name="follow_up" value="{{ $saleReports->follow_up }}" disabled>
                                 </div>
                             </div>
 
                             <div class="row mb-6">
                                 <label class="col-sm-2 col-form-label" for="basic-default-name">Feedback Command</label>
                                 <div class="col-sm-4">
-                                    <textarea class="form-control" name="feedback_command" placeholder="feedback command" style="height: 103px;" disabled>{{ $saleReports->feedback_command }}</textarea>
-                                    <button type="button" class="btn bg-label-info mt-1" data-bs-toggle="modal" data-bs-target="#modalCenter"><i class="tf-icons bx bx-edit"></i></button>
+                                    <textarea class="form-control" name="feedback_command" placeholder="feedback command" style="height: 103px;">{{ $saleReports->feedback_command }}</textarea>
+                                    {{-- <button type="button" class="btn bg-label-info mt-1" data-bs-toggle="modal" data-bs-target="#modalCenter"><i class="tf-icons bx bx-edit"></i></button> --}}
                                 </div>
                             </div>
                              
@@ -461,7 +509,7 @@
         </div>
     </div>
 
-    <div class="modal fade" id="modalCenter" tabindex="-1" style="display: none;" aria-hidden="true">
+    {{-- <div class="modal fade" id="modalCenter" tabindex="-1" style="display: none;" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -482,5 +530,196 @@
                 </div>
             </div>
         </div>
+    </div> --}}
+
+    <div class="modal fade" id="largeModal" tabindex="-1" style="display: none;"
+        aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel3">Model Name</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="table-responsive text-nowrap">
+                        <table id="datatable" class="display">
+                            <thead>
+                                <tr>
+                                    <th>No</th>
+                                    <th>Image</th>
+                                    <th style="text-align: start">Model Name</th>
+                                    <th style="text-align: start">Colors</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach ($carImages as $index => $carImage)
+                                    <tr class="select-image"
+                                        data-id="{{ $carImage->id }}"
+                                        data-image="{{ url($carImage->image_name == '' ? 'backend/assets/img/avatars/1.png' : '/imageCar/' . $carImage->image_name) }}"
+                                        data-model="{{ $carImage->modelName }}">
+                                        <td style="text-align: center; width: 20px">
+                                            {{ $index + 1 }}
+                                        </td>
+                                        <td>
+                                            <img src="{{ url($carImage->image_name == '' ? 'backend/assets/img/avatars/1.png' : '/imageCar/' . $carImage->image_name) }}" alt="image" class="rounded-circle-custome" width="100">
+                                        </td>
+                                        <td style="text-align: start">
+                                            {{ $carImage->modelName }}
+                                        </td>
+                                        <td style="text-align: start">
+                                            {{ $carImage->colorName }}
+                                        </td>
+                                    </tr>
+
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary"
+                        data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
     </div>
+
+    <script>
+        $('#member-card-select').select2({
+            placeholder: "Select Member Card",
+            allowClear: true,
+            ajax: {
+                url: "{{ url('/sale-reports/create') }}", 
+                type: "GET",
+                dataType: 'json',
+                delay: 250,
+                data: function (params) {
+                    return {
+                        type: 'memberCard',
+                        search: params.term
+                    };
+                },
+                processResults: function (data) {
+                    return {
+                        results: $.map(data, function (item) {
+                            return {
+                                id: item.id,
+                                text: item.member_card
+                            };
+                        })
+                    };
+                },
+                cache: true
+            }
+        });
+
+        let oldMemberCard = $('#old-member-card').val();
+        if (oldMemberCard) {
+            $.ajax({
+                url: "{{ url('/sale-reports/create') }}",
+                type: "GET",
+                data: { type: 'memberCard', search: '' },
+                success: function (data) {
+                    let selectedItem = data.find(item => item.id == oldMemberCard);
+                    if (selectedItem) {
+                        let option = new Option(selectedItem.member_card, selectedItem.id, true, true);
+                        $('#member-card-select').append(option).trigger('change');
+                    }
+                }
+            });
+        }
+
+        $('#logistic-select').select2({
+            placeholder: "Select Logistic",
+            allowClear: true,
+            ajax: {
+                url: "{{ url('/sale-reports/create') }}", // Replace with the correct route
+                type: "GET",
+                dataType: 'json',
+                delay: 250, // Delay to reduce server load
+                data: function (params) {
+                    return {
+                        search: params.term, // Search query
+                        type: 'logistic'
+
+                    };
+                },
+                processResults: function (data) {
+                    return {
+                        results: $.map(data, function (item) {
+                            return {
+                                id: item.id,
+                                text: item.model_name + ' - ' + item.vin_number + ' - ' + item.engine_number
+                            };
+                        })
+                    };
+                },
+                cache: true
+            }
+        });
+
+        let oldLogisticId = $('#old-logistic-id').val();
+        if (oldLogisticId) {
+            $.ajax({
+                url: "{{ url('/sale-reports/create') }}", // Use the same endpoint
+                type: "GET",
+                data: { search: '', type: 'logistic' }, // Adjust this if needed
+                success: function (data) {
+                    let selectedItem = data.find(item => item.id == oldLogisticId);
+                    if (selectedItem) {
+                        let optionText = selectedItem.model_name + ' - ' + selectedItem.vin_number + ' - ' + selectedItem.engine_number;
+                        let option = new Option(optionText, selectedItem.id, true, true);
+                        $('#logistic-select').append(option).trigger('change');
+                    }
+                }
+            });
+        }
+
+        function calculateAge() {
+            const dobInput = document.getElementById('dob');
+            const ageInput = document.getElementById('age');
+            const dob = new Date(dobInput.value);
+            const today = new Date();
+
+            if (dobInput.value) {
+                let age = today.getFullYear() - dob.getFullYear();
+                const monthDiff = today.getMonth() - dob.getMonth();
+                const dayDiff = today.getDate() - dob.getDate();
+
+                // Adjust age if the birthday hasn't occurred yet this year
+                if (monthDiff < 0 || (monthDiff === 0 && dayDiff < 0)) {
+                    age--;
+                }
+
+                ageInput.value = age > 0 ? age : "Invalid Date of Birth";
+            } else {
+                ageInput.value = "";
+            }
+        }
+
+        $('#datatable').DataTable({
+            "iDisplayLength": 25
+        });
+
+        document.addEventListener("DOMContentLoaded", function () {
+            document.querySelectorAll(".select-image").forEach(row => {
+                row.addEventListener("click", function () {
+                    let imageUrl = this.getAttribute("data-image");
+                    let modelName = this.getAttribute("data-model");
+                    let imageId = this.getAttribute("data-id");
+
+                    document.getElementById("target").src = imageUrl;
+                    document.getElementById("modelName").innerText = modelName;
+                    document.getElementById("carImageId").value = imageId;
+
+                    // Close the modal after selection
+                    let modal = document.getElementById('largeModal');
+                    let modalInstance = bootstrap.Modal.getInstance(modal);
+                    if (modalInstance) {
+                        modalInstance.hide();
+                    }
+                });
+            });
+        });
+    </script>
 @endsection
