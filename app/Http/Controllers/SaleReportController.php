@@ -27,7 +27,7 @@ class SaleReportController extends Controller
         $invoiceDate = $request->input('invoice_date');
 
         $saleReports = SaleReportModel::query()
-        ->join('member_cards', 'member_cards.id', '=', 'sale_reports.member_card')
+        ->join('member_cards', 'member_cards.id', '=', 'sale_reports.member_card_id')
         ->select('sale_reports.*' ,'member_cards.member_card');
 
         if (!empty($keyword)) {
@@ -109,7 +109,7 @@ class SaleReportController extends Controller
             ->join('car_models', 'car_models.id', '=', 'car_images.model_id')
             ->join('colors', 'colors.id', '=' ,'car_models.color_id')
             ->join('employees', 'employees.id', '=', 'sale_reports.employee_id')
-            ->join('member_cards', 'member_cards.id', '=', 'sale_reports.member_card')
+            ->join('member_cards', 'member_cards.id', '=', 'sale_reports.member_card_id')
             ->join('provinces', 'provinces.id', '=', 'sale_reports.province_id')
             ->join('logistics', 'logistics.id', '=', 'sale_reports.logistics_id')
             ->join('warranty as warranty_mg', 'warranty_mg.id', '=', 'sale_reports.warranty_id')

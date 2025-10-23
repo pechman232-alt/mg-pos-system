@@ -19,7 +19,7 @@ class MemberCardController extends Controller
         $isSale = $request->input('isSale');
 
         $member_cards = MemberCard::query()
-        ->leftJoin('sale_reports', 'sale_reports.member_card', '=', 'member_cards.id')
+        ->leftJoin('sale_reports', 'sale_reports.member_card_id', '=', 'member_cards.id')
         ->select('member_cards.*', 'sale_reports.invoice_date');
 
         if (!is_null($isSale) && $isSale !== '') {
