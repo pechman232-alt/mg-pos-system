@@ -29,8 +29,6 @@ return new class extends Migration
             $table->date('delivery_date');
             $table->string('follow_up', 10)->nullable();
             $table->unsignedInteger('warranty_id')->nullable();
-            $table->string('feedback_command', 1000)->nullable();
-            $table->unsignedInteger('warranty_leap_motor');
             $table->unsignedBigInteger('employee_id');
             $table->unsignedBigInteger('province_id');
             $table->string('contract_no', 10)->nullable();

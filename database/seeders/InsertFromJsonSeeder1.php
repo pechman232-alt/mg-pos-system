@@ -113,8 +113,8 @@ class InsertFromJsonSeeder1 extends Seeder
                     // --- Logistics (dedupe by vin_number if present)
                     $vin = $this->value($item, 'vin_number');
                     $logisticsData = [
-                        'model_name'     => $this->value($item, 'vehicle_Model'),
-                        'exterior_color' => null,
+                        'model_name_id'  => $carModel->id,
+                        'exterior_color' => $color->color_name,
                         'interior_color' => null,
                         'model_year'     => $this->value($item, 'model_year') ?: null,
                         'vin_number'     => $vin ?: null,
