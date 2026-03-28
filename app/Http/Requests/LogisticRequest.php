@@ -13,7 +13,7 @@ class LogisticRequest extends FormRequest{
     public function rules(): array
     {
         return [
-            'model_name' => 'required|string|max:255',
+            'model_name_id' => 'required|string|max:255',
             'exterior_color' => 'required|string|max:255',
             'interior_color' => 'required|string|max:255',
             'model_year' => 'required|string|max:4',
@@ -26,7 +26,7 @@ class LogisticRequest extends FormRequest{
     public function messages(): array
     {
         return [
-            'model_name.required' => 'enter a valid model name!.',
+            'model_name_id.required' => 'enter a valid model name!.',
             'exterior_color.required' => 'enter a valid exterior color!.',
             'interior_color.required' => 'enter a valid interior color!.',
             'model_year.required' => 'enter a valid model year!.',

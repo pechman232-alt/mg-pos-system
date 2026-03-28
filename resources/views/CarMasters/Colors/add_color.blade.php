@@ -1,162 +1,223 @@
 @extends('layouts.homePages')
 @section('content')
 
-    <style>
-    /* ====== Card Styling & Animation ====== */
-    .card {
-        border-radius: 12px;
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
-        animation: fadeInUp 0.8s ease-in-out;
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<style>
+    /* ====== BRAND IDENTITY & COLORS ====== */
+    :root {
+        --brand-indigo: #4f46e5;
+        --brand-purple: #7c3aed;
+        --brand-pink: #ec4899;
+        --text-main: #566a7f;
+        --border-light: #d9dee3;
+        --font-family: 'Plus Jakarta Sans', sans-serif !important;
+    }
+
+    body {
+        background-color: #f8fafc;
+        margin: 0;
+    }
+
+    /* ====== 100% FIT SCREEN WRAPPER ====== */
+    .fluid-page-wrapper {
+        width: 100% !important;
+        max-width: 100% !important;
+        padding: 1.5rem !important;
+        animation: softRise 0.6s ease-out;
+        font-family: var(--font-family);
+    }
+
+    @keyframes softRise {
+        from { opacity: 0; transform: translateY(15px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ====== CARD STYLING ====== */
+    .card-custom {
+        border: none !important;
+        border-radius: 16px !important;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05) !important;
+        background: #fff;
         overflow: hidden;
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        width: 100%;
     }
 
-    .card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 8px 18px rgba(0, 0, 0, 0.1);
+    /* ====== BRANDED GRADIENT HEADER ====== */
+    .card-header-gradient {
+        background: linear-gradient(90deg, var(--brand-indigo) 0%, var(--brand-purple) 50%, var(--brand-pink) 100%) !important;
+        padding: 1.5rem 2rem !important;
+        color: #ffffff !important;
+        font-weight: 800;
+        font-size: 1.2rem;
+        display: flex;
+        align-items: center;
+        gap: 12px;
     }
 
-    @keyframes fadeInUp {
-        from {
-            opacity: 0;
-            transform: translateY(20px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-
-    /* ====== Header & Footer ====== */
-    .card-header, .card-footer {
-        background: #f5e2c5;
-        font-weight: 600;
-        color: #333;
-        animation: slideDown 0.6s ease;
-    }
-
-    @keyframes slideDown {
-        from {
-            opacity: 0;
-            transform: translateY(-10px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-
-    /* ====== Form Styling ====== */
-    form {
-        animation: fadeIn 1s ease-in;
-    }
-
-    @keyframes fadeIn {
-        from { opacity: 0; }
-        to { opacity: 1; }
-    }
-
-    label.form-label {
-        font-weight: 600;
-        color: #444;
-        transition: color 0.3s ease;
-    }
-
-    label.form-label:hover {
-        color: #DEAA5E;
-    }
-
-    .form-control, .form-select {
+    /* ====== TEXT HIGHLIGHT ====== */
+    .highlight-label {
+        font-weight: 700;
+        color: var(--brand-indigo); 
+        background: rgba(79, 70, 229, 0.08);
+        padding: 6px 14px;
         border-radius: 8px;
-        border: 1px solid #ccc;
-        padding: 10px;
-        transition: all 0.3s ease-in-out;
+        display: inline-block;
+        margin-bottom: 12px;
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
     }
 
-    .form-control:focus, .form-select:focus {
-        border-color: #DEAA5E;
-        box-shadow: 0 0 6px rgba(222, 170, 94, 0.5);
-        transform: scale(1.01);
-    }
-
-    /* ====== Buttons ====== */
-    .btn {
-        border-radius: 8px;
+    /* ====== FORM CONTROLS ====== */
+    .form-control-custom {
+        border-radius: 12px;
+        border: 1.5px solid var(--border-light);
+        padding: 12px 18px;
+        font-size: 15px;
+        font-weight: 600;
         transition: all 0.3s ease;
+        background-color: #f8fafc;
+        width: 100%;
     }
 
-    .btn-primary {
-        background-color: #DEAA5E;
-        border-color: #DEAA5E;
-        color: #fff;
+    .form-control-custom:focus {
+        border-color: var(--brand-indigo);
+        background-color: #fff;
+        box-shadow: 0 0 0 5px rgba(79, 70, 229, 0.1);
+        outline: none;
     }
 
-    .btn-primary:hover {
-        background-color: #c8944b;
-        transform: scale(1.05);
-        box-shadow: 0 4px 10px rgba(222, 170, 94, 0.4);
+    /* Native Color Picker Styling */
+    .color-picker-input {
+        width: 50px;
+        height: 50px;
+        padding: 0;
+        border: none;
+        border-radius: 12px;
+        cursor: pointer;
+        background: none;
+    }
+    .color-picker-input::-webkit-color-swatch {
+        border: 2px solid #fff;
+        border-radius: 10px;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
     }
 
-    .btn-outline-secondary:hover {
-        background-color: #DEAA5E;
-        color: #fff;
-        transform: scale(1.05);
+    /* ====== BUTTONS ====== */
+    .btn-save {
+        background: linear-gradient(135deg, var(--brand-indigo), var(--brand-purple)) !important;
+        border: none !important;
+        color: #fff !important;
+        font-weight: 800;
+        border-radius: 12px;
+        padding: 14px 45px !important;
+        transition: 0.3s;
+        letter-spacing: 0.5px;
     }
 
-    /* ====== Image Style (Optional Future Use) ====== */
-    .rounded-circle {
-        object-fit: fill;
+    .btn-save:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 25px rgba(124, 58, 237, 0.3);
     }
 
-    .my-img {
-        background: black;
-        height: 200px;
-        width: 200px;
-        border-radius: 50%;
+    .btn-cancel {
+        border: 1.5px solid var(--border-light) !important;
+        background-color: #fff;
+        color: var(--text-main);
+        font-weight: 700;
+        padding: 14px 30px !important;
+        border-radius: 12px;
+        text-decoration: none !important;
+        display: inline-block;
+        transition: 0.2s;
     }
+    .btn-cancel:hover { background: #f1f5f9; border-color: #cbd5e1; }
 
-    .my-img-2 {
-        height: 70px;
-        width: 70px;
-        object-fit: fill;
-    }
+</style>
 
-    </style>
+<div class="fluid-page-wrapper">
+    <div class="card-custom">
+        <div class="card-header-gradient">
+            <i class="fas fa-eye-dropper"></i> ADD NEW COLOR RECORD
+        </div>
+        
+        <div class="card-body p-4 p-lg-5">
+            <form action="{{ url('/colors/store') }}" method="POST" id="colorForm">
+                @csrf
+                <div class="row g-5">
+                    <div class="col-xl-6 col-lg-12">
+                        <label class="highlight-label">Color Marketing Name</label>
+                        <input type="text" name="color_name" placeholder="e.g. Phantom Black Metallic" 
+                               class="form-control-custom @error('color_name') border-danger @enderror" 
+                               value="{{ old('color_name') }}" required>
+                        @error('color_name')
+                            <small class="text-danger fw-800 mt-2 d-block"><i class="fas fa-exclamation-circle me-1"></i>{{ $message }}</small>
+                        @enderror
+                    </div>
 
-    <div class="container-xxl flex-grow-1 container-p-y">
-        <div class="row">
-            <div class="col-md-12">
-                <div class="card mb-4">
-                    <h5 class="card-header">Add Colors</h5>
-                    <hr class="my-0">
-                    <div class="card-body">
-                        <form action="{{ url('/colors/store') }}" method="POST" action="/upload" enctype="multipart/form-data">
-                            @csrf
-                            <div class="row">
-                                <div class="mb-3 col-md-6">
-                                    <label class="form-label" for="basic-default-fullname">Color Name</label>
-                                    <input type="text" placeholder="Enter color name" class="form-control @error('color_name') border-danger @enderror" name="color_name" value="{{ old('color_name') }}">
-                                    @error('color_name')
-                                        <small class="text-danger">{{ $message }}</small>
-                                    @enderror
-                                </div>
-                                <div class="mb-3 col-md-6">
-                                    <label class="form-label" for="basic-default-fullname">Code</label>
-                                    <input type="text" placeholder="Enter code" class="form-control @error('code') border-danger @enderror" name="code" value="{{ old('code') }}">
-                                    @error('code')
-                                        <small class="text-danger">{{ $message }}</small>
-                                    @enderror
-                                </div>
+                    <div class="col-xl-6 col-lg-12">
+                        <label class="highlight-label">Hexadecimal Spectrum</label>
+                        <div class="d-flex align-items-center gap-3">
+                            <input type="color" id="visual_picker" class="color-picker-input shadow-sm" 
+                                   value="{{ old('code', '#4f46e5') }}" oninput="syncInputs(this.value, 'text')">
+                            
+                            <div class="flex-grow-1">
+                                <input type="text" id="hex_code" name="code" placeholder="#FFFFFF" 
+                                       class="form-control-custom fw-bold text-uppercase @error('code') border-danger @enderror" 
+                                       value="{{ old('code', '#4f46e5') }}" maxlength="7" 
+                                       oninput="syncInputs(this.value, 'visual')">
                             </div>
-                            <div class="mt-2">
-                                <button type="submit" class="btn btn-primary me-2">Save</button>
-                                <a href="{{ url('/colors') }}" class="btn btn-outline-secondary">Cancel</a>
-                            </div>
-                        </form>
+
+                            <button type="button" class="btn btn-light border-2 fw-bold rounded-3 py-2 px-3 shadow-sm" onclick="generateRandomHex()" title="Random Color">
+                                <i class="fas fa-dice-five fs-5"></i>
+                            </button>
+                        </div>
+                        @error('code')
+                            <small class="text-danger fw-800 mt-2 d-block"><i class="fas fa-exclamation-circle me-1"></i>{{ $message }}</small>
+                        @enderror
                     </div>
                 </div>
-            </div>
+
+                <div class="mt-5 pt-4 border-top d-flex gap-3 justify-content-start">
+                    <button type="submit" class="btn-save shadow-sm">
+                        <i class="fas fa-check-circle me-2"></i> PUBLISH COLOR
+                    </button>
+                    <a href="{{ url('/colors') }}" class="btn btn-cancel">
+                        DISCARD
+                    </a>
+                </div>
+            </form>
         </div>
     </div>
+</div>
+
+<script>
+    /**
+     * Syncs the color between the visual picker and the text field
+     */
+    function syncInputs(value, targetType) {
+        let hex = value;
+        
+        if (targetType === 'visual') {
+            if (!hex.startsWith('#') && hex.length > 0) hex = '#' + hex;
+            if (hex.length === 7) {
+                document.getElementById('visual_picker').value = hex;
+            }
+        } else {
+            document.getElementById('hex_code').value = hex.toUpperCase();
+        }
+    }
+
+    /**
+     * Generates a random high-quality Hex code
+     */
+    function generateRandomHex() {
+        const randomColor = '#' + Math.floor(Math.random()*16777215).toString(16).padStart(6, '0').toUpperCase();
+        document.getElementById('hex_code').value = randomColor;
+        document.getElementById('visual_picker').value = randomColor;
+    }
+</script>
 
 @endsection

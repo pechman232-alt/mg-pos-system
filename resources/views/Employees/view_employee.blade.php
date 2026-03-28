@@ -1,407 +1,172 @@
 @extends('layouts.homePages')
 @section('content')
-    <style>
-        /* === Container === */
-        .container-xxl {
-            margin-top: 20px;
-            animation: fadeSlideIn 0.8s ease forwards;
-        }
 
-        /* === Navbar === */
-        .navbar.bg-light {
-            background-color: #f8f9fa !important;
-            border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-            margin-bottom: 20px;
-        }
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Kantumruy+Pro:wght@400;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-        /* === Card Styling === */
-        .card {
-            background: #fff;
-            border: none;
-            border-radius: 18px;
-            padding: 25px;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-            animation: slideUp 0.8s ease-out forwards;
-        }
+<style>
+    :root {
+        --indigo: #4f46e5;
+        --dark: #0f172a;
+        --border: #e2e8f0;
+        --bg-body: #f8fafc;
+        --font-main: 'Plus Jakarta Sans', sans-serif;
+        --font-kh: 'Kantumruy Pro', sans-serif;
+    }
 
-        /* === Avatar === */
+    body { background-color: var(--bg-body); color: var(--dark); font-family: var(--font-main); font-size: 0.88rem; }
 
+    /* Card Layout */
+    .card-view { border: none; border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.03); background: #fff; overflow: hidden; margin-bottom: 2rem; }
+    .header-accent { background: var(--dark); padding: 1.5rem 2.5rem; border: none; }
+    
+    /* Identity Header */
+    .identity-container { background: #fff; padding: 2.5rem; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 2.5rem; }
+    .avatar-view { width: 140px; height: 140px; border-radius: 24px; object-fit: cover; border: 4px solid #fff; box-shadow: 0 10px 25px rgba(0,0,0,0.08); }
+    .name-en { font-size: 2rem; font-weight: 800; letter-spacing: -0.5px; margin: 0; }
+    .name-kh { font-family: var(--font-kh); font-size: 1.3rem; color: var(--indigo); font-weight: 700; margin-top: 4px; }
 
-        .avatar:hover {
-            transform: scale(1.05);
-        }
+    /* Data Fields */
+    .section-title { font-size: 0.75rem; font-weight: 800; color: #64748b; text-transform: uppercase; letter-spacing: 1.5px; margin: 2.5rem 0 1.2rem; display: flex; align-items: center; gap: 15px; }
+    .section-title::after { content: ""; height: 1px; flex: 1; background: var(--border); }
+    
+    .data-label { font-size: 0.65rem; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 6px; }
+    .data-value { background: #fcfdfe; border: 1px solid #f1f5f9; border-radius: 10px; padding: 10px 14px; font-weight: 700; min-height: 42px; display: flex; align-items: center; justify-content: space-between; }
+    .pw-text { font-family: 'JetBrains Mono', monospace; color: #ef4444; font-size: 0.8rem; }
 
-        /* === Header Text === */
-        .card-header h3 {
-            font-weight: 600;
-            color: #333;
-            margin-bottom: 5px;
-        }
+    /* Credentials Card */
+    .sys-card { background: #fff; border: 1px solid var(--border); border-radius: 12px; padding: 15px; height: 100%; transition: 0.2s; }
+    .sys-card:hover { border-color: var(--indigo); background: #fcfdfe; }
 
-        .card-header p {
-            margin: 0;
-            font-size: 15px;
-            color: #555;
-        }
+    /* Print Configuration (A4 Professional) */
+    @media print {
+        @page { size: A4; margin: 15mm; }
+        body { background: #fff; padding: 0; }
+        .no-print { display: none !important; }
+        .card-view { box-shadow: none; border: none; border-radius: 0; }
+        .identity-container { padding: 1rem 0; gap: 2rem; border-bottom: 2px solid #000; }
+        .avatar-view { width: 120px; height: 120px; border: 1px solid #ddd; }
+        .data-value { border: none; padding: 5px 0; background: none; border-bottom: 1px solid #eee; border-radius: 0; min-height: auto; }
+        .sys-card { border: none; border-bottom: 1px dashed #ccc; border-radius: 0; padding: 10px 0; }
+        .header-accent { background: #eee !important; color: #000 !important; }
+        .header-accent h5 { color: #000 !important; }
+        .section-title { margin: 1.5rem 0 1rem; color: #000; }
+        .section-title::after { background: #000; }
+    }
+</style>
 
-        /* === View Fields === */
-        .view-field {
-            margin-bottom: 15px;
-            position: relative;
-        }
-
-        .view-field label {
-            display: block;
-            font-weight: 600;
-            color: #444;
-            margin-bottom: 5px;
-            font-size: 14px;
-            letter-spacing: 0.3px;
-        }
-
-        .view-field input {
-            width: 100%;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            background: #fafafa;
-            padding: 10px 14px;
-            font-size: 15px;
-            color: #333;
-            transition: all 0.3s ease;
-        }
-
-        .view-field input:hover {
-            background: #fff;
-            border-color: #DEAA5E;
-            box-shadow: 0 0 6px rgba(222, 170, 94, 0.4);
-        }
-
-        /* === Animation Keyframes === */
-        @keyframes fadeSlideIn {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @keyframes slideUp {
-            from {
-                opacity: 0;
-                transform: translateY(40px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        /* === Print Mode === */
-        @media print {
-            body {
-                background: #fff;
-            }
-
-            .navbar,
-            .btn,
-            .sidebar {
-                display: none !important;
-            }
-
-            .card {
-                box-shadow: none;
-                border: 1px solid #000;
-                padding: 20px;
-            }
-
-            .avatar {
-                border: none;
-            }
-
-            input {
-                border: none;
-                background: transparent !important;
-                color: #000 !important;
-            }
-        }
-
-        /* === Optional: Print Button Animation === */
-        @keyframes pulsePrint {
-
-            0%,
-            100% {
-                transform: scale(1);
-                box-shadow: 0 0 0 rgba(222, 170, 94, 0.4);
-            }
-
-            50% {
-                transform: scale(1.05);
-                box-shadow: 0 0 12px rgba(222, 170, 94, 0.6);
-            }
-        }
-
-        /* === Employee Info Header === */
-        .d-flex.align-items-center.gap-4.mb-4 {
-            background: linear-gradient(135deg, #f5e2c5 0%, #fff 100%);
-            border-radius: 16px;
-            padding: 20px;
-            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
-            margin-bottom: 25px;
-            animation: slideFadeHeader 0.8s ease-out forwards;
-            transition: all 0.3s ease;
-        }
-
-        /* Subtle hover lift effect */
-        .d-flex.align-items-center.gap-4.mb-4:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(222, 170, 94, 0.3);
-        }
-
-        /* Avatar Style */
-        .avatar-use {
-            width: 120px;
-            height: 120px;
-            border-radius: 50%;
-            border: 3px solid #DEAA5E;
-            object-fit: cover;
-            animation: zoomInAvatar 0.9s ease-out;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        .avatar:hover {
-            transform: scale(1.08);
-            box-shadow: 0 0 12px rgba(222, 170, 94, 0.5);
-        }
-
-        /* Header Text */
-        .card-header h3 {
-            font-size: 22px;
-            font-weight: 700;
-            color: #2b2b2b;
-            margin-bottom: 8px;
-            letter-spacing: 0.5px;
-            animation: fadeInText 1s ease forwards;
-        }
-
-        .card-header p {
-            color: #555;
-            font-size: 15px;
-            line-height: 1.4;
-            margin-bottom: 5px;
-            animation: fadeInText 1.2s ease forwards;
-        }
-
-        /* === Keyframes === */
-        @keyframes slideFadeHeader {
-            from {
-                opacity: 0;
-                transform: translateY(-20px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @keyframes zoomInAvatar {
-            from {
-                opacity: 0;
-                transform: scale(0.8);
-            }
-
-            to {
-                opacity: 1;
-                transform: scale(1);
-            }
-        }
-
-        @keyframes fadeInText {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-    </style>
-
-
-    <div class="container-xxl">
-        <nav class="navbar navbar-expand-lg bg-light">
-            <div class="container-fluid">
-                <div class="navbar-nav me-auto">
-                    <a class="nav-item nav-link active" href="" style="font-size: 18px;">
-                        <i class='bx bx-package'></i> Employee Details</a>
-                </div>
-            </div>
-        </nav>
-
-        <div class="card">
-            <!-- Avatar and Name -->
-            <div class="d-flex align-items-center gap-4 mb-4">
-                <img src="{{ url($employees->image_employee == '' ? 'backend/assets/img/avatars/1.png' : '/imageEmployee/' . $employees->image_employee) }}"
-                    class="avatar-use" alt="Avatar">
-                <div class="card-header">
-                    <h3>{{ $employees->full_name }} ({{ $employees->first_name_kh }} {{ $employees->last_name_kh }})</h3>
-                    <p>Gender: <b>{{ $employees->gender }}</b> | UserID: <b>{{ $employees->user_id }}</b></p>
-                    <p>Age: <b>{{ $employees->age }}</b> | DOB: <b>{{ $employees->dob }}</b></p>
-                    <p>Phone: <b>{{ $employees->phone_number }}</b></p>
-                </div>
-            </div>
-
-            <!-- Employee Info -->
-            <div class="row g-6">
-                <div class="col-md-6 view-field">
-                    <label>Position</label>
-                    <input type="text" value="{{ $employees->postionName }}">
-                </div>
-                <div class="col-md-6 view-field">
-                    <label>Department</label>
-                    <input type="text" value="{{ $employees->departmentName }}">
-                </div>
-            </div>
-
-            <div class="row g-6">
-                <div class="col-md-6 view-field">
-                    <label>Company</label>
-                    <input type="text" value="{{ $employees->companyName }}">
-                </div>
-                <div class="col-md-6 view-field">
-                    <label>Branch</label>
-                    <input type="text" value="{{ $employees->branchName }}">
-                </div>
-            </div>
-
-            <div class="row g-6">
-                <div class="col-md-6 view-field">
-                    <label>Contract Date</label>
-                    <input type="text" value="{{ $employees->contract }}">
-                </div>
-                <div class="col-md-6 view-field">
-                    <label>Group Domain</label>
-                    <input type="text" value="{{ $employees->group_domain }}">
-                </div>
-            </div>
-
-            <div class="row g-6">
-                <div class="col-md-6 view-field">
-                    <label>Official UserID</label>
-                    <input type="text" value="{{ $employees->official_userid }}">
-                </div>
-                <div class="col-md-6 view-field">
-                    <label>Official Password</label>
-                    <input type="text" value="{{ $employees->official_pass }}">
-                </div>
-            </div>
-
-            <!-- Continue for Synology, Microsoft, HR, RAPP, Datasheet, Extension, Register, Access Door -->
-            <div class="row g-6">
-                <div class="col-md-6 view-field">
-                    <label>Synology UserID</label>
-                    <input type="text" value="{{ $employees->s_user_id }}">
-                </div>
-                <div class="col-md-6 view-field">
-                    <label>Synology Password</label>
-                    <input type="text" value="{{ $employees->s_pass }}">
-                </div>
-            </div>
-
-            <div class="row g-6">
-                <div class="col-md-6 view-field">
-                    <label>Microsoft UserID</label>
-                    <input type="text" value="{{ $employees->m_user_id }}">
-                </div>
-                <div class="col-md-6 view-field">
-                    <label>Microsoft Password</label>
-                    <input type="text" value="{{ $employees->m_pass }}">
-                </div>
-            </div>
-
-            <div class="row g-6">
-                <div class="col-md-6 view-field">
-                    <label>HR UserID</label>
-                    <input type="text" value="{{ $employees->hr_user_id }}">
-                </div>
-                <div class="col-md-6 view-field">
-                    <label>HR Password</label>
-                    <input type="text" value="{{ $employees->hr_pass }}">
-                </div>
-            </div>
-
-            <div class="row g-6">
-                <div class="col-md-6 view-field">
-                    <label>RAPP UserID</label>
-                    <input type="text" value="{{ $employees->rapp_user_id }}">
-                </div>
-                <div class="col-md-6 view-field">
-                    <label>RAPP Password</label>
-                    <input type="text" value="{{ $employees->rapp_pass }}">
-                </div>
-            </div>
-
-            <div class="row g-6">
-                <div class="col-md-6 view-field">
-                    <label>User ID - Datasheet</label>
-                    <input type="text" value="{{ $employees->user_id_data_sheet }}">
-                </div>
-                <div class="col-md-6 view-field">
-                    <label>Password - Datasheet</label>
-                    <input type="text" value="{{ $employees->data_sheet_pass }}">
-                </div>
-            </div>
-
-            <div class="row g-6">
-                <div class="col-md-6 view-field">
-                    <label>Extension ID</label>
-                    <input type="text" value="{{ $employees->extension_id }}">
-                </div>
-                <div class="col-md-6 view-field">
-                    <label>Register Password</label>
-                    <input type="text" value="{{ $employees->register_pass }}">
-                </div>
-            </div>
-
-            <div class="row g-6">
-                <div class="col-md-6 view-field">
-                    <label>Access Door</label>
-                    <input type="text" value="{{ $employees->access_door }}">
-                </div>
-                <div class="col-md-6 view-field">
-                    <label>Activate</label>
-                    <input type="text" value="{{ $employees->activate }}">
-                </div>
-            </div>
-
-            <div class="view-field">
-                <label>Note</label>
-                <input type="text" value="{{ $employees->note }}">
+<div class="container-xxl mt-4">
+    <div class="card-view">
+        <div class="header-accent d-flex justify-content-between align-items-center no-print">
+            <h5 class="text-white m-0 fw-bold"><i class="fas fa-id-card-alt me-2"></i> PERSONNEL RECORD</h5>
+            <div class="d-flex gap-2">
+                <button onclick="window.print()" class="btn btn-sm btn-light rounded-pill px-4 fw-bold shadow-sm">
+                    <i class="fas fa-print me-2"></i> PRINT A4
+                </button>
+                <a href="{{ route('employees.index') }}" class="btn btn-sm btn-outline-light rounded-pill px-4 fw-bold">DIRECTORY</a>
             </div>
         </div>
+
+        <div class="card-body p-0">
+            <div class="identity-container">
+                <img src="{{ $employees->image_employee ? url('/imageEmployee/' . $employees->image_employee) : url('backend/assets/img/avatars/1.png') }}" class="avatar-view">
+                <div class="flex-grow-1">
+                    <h1 class="name-en">{{ $employees->full_name }}</h1>
+                    <div class="name-kh">{{ $employees->first_name_kh }} {{ $employees->last_name_kh }}</div>
+                    <div class="mt-4 d-flex gap-3 align-items-center">
+                        <span class="badge bg-dark rounded-pill px-3 py-2">ID: {{ $employees->user_id }}</span>
+                        <span class="fw-bold" style="color: {{ $employees->status == 1 ? '#10b981' : '#ef4444' }}; font-size: 0.75rem;">
+                            {{ $employees->status == 1 ? '● SYSTEM ACTIVE' : '● DEACTIVATED' }}
+                        </span>
+                    </div>
+                </div>
+                <div class="text-end d-none d-md-block">
+                    <div class="data-label">Join Date</div>
+                    <div class="fw-bold text-dark h5 mb-0">{{ $employees->contract ?? '---' }}</div>
+                </div>
+            </div>
+
+            <div class="px-5 pb-5">
+                <div class="section-title">Personnel Demographics</div>
+                <div class="row g-4">
+                    <div class="col-3">
+                        <div class="data-label">Gender</div>
+                        <div class="data-value">{{ $employees->gender }}</div>
+                    </div>
+                    <div class="col-3">
+                        <div class="data-label">Age / Lifecycle</div>
+                        <div class="data-value">{{ $employees->dob ? \Carbon\Carbon::parse($employees->dob)->age : 'N/A' }} Years</div>
+                    </div>
+                    <div class="col-3">
+                        <div class="data-label">Date of Birth</div>
+                        <div class="data-value">{{ $employees->dob ?? '---' }}</div>
+                    </div>
+                    <div class="col-3">
+                        <div class="data-label">Primary Contact</div>
+                        <div class="data-value text-primary">{{ $employees->phone_number ?? '---' }}</div>
+                    </div>
+                </div>
+
+                <div class="section-title">Organization & Role</div>
+                <div class="row g-4">
+                    <div class="col-4">
+                        <div class="data-label">Parent Entity</div>
+                        <div class="data-value">{{ $employees->company->company_name ?? $employees->companyName }}</div>
+                    </div>
+                    <div class="col-4">
+                        <div class="data-label">Department</div>
+                        <div class="data-value">{{ $employees->department->name ?? $employees->departmentName }}</div>
+                    </div>
+                    <div class="col-4">
+                        <div class="data-label">Position</div>
+                        <div class="data-value fw-bold text-indigo">{{ $employees->position->name ?? $employees->postionName }}</div>
+                    </div>
+                </div>
+
+                <div class="section-title">Digital Infrastructure (Credentials)</div>
+                <div class="row g-3">
+                    @php
+                        $sysList = [
+                            ['label' => 'Official Portal', 'u' => $employees->official_userid, 'p' => $employees->official_pass, 'icon' => 'fa-desktop'],
+                            ['label' => 'M365 / Email', 'u' => $employees->m_user_id, 'p' => $employees->m_pass, 'icon' => 'fa-envelope'],
+                            ['label' => 'NAS Storage', 'u' => $employees->s_user_id, 'p' => $employees->s_pass, 'icon' => 'fa-server']
+                        ];
+                    @endphp
+                    @foreach($sysList as $sys)
+                    <div class="col-md-4">
+                        <div class="sys-card shadow-sm">
+                            <div class="data-label mb-2"><i class="fas {{ $sys['icon'] }} me-1"></i> {{ $sys['label'] }}</div>
+                            <div class="data-value mb-1 fw-normal small">User: <b>{{ $sys['u'] ?? '-' }}</b></div>
+                            <div class="data-value pw-text small">Pass: <b>{{ $sys['p'] ?? '-' }}</b></div>
+                        </div>
+                    </div>
+                    @endforeach
+                </div>
+
+                <div class="section-title">Facilities & Security</div>
+                <div class="row g-4">
+                    <div class="col-3">
+                        <div class="data-label">Extension</div>
+                        <div class="data-value"># {{ $employees->extension_id ?? 'N/A' }}</div>
+                    </div>
+                    <div class="col-3">
+                        <div class="data-label">Door Access Card</div>
+                        <div class="data-value pw-text">{{ $employees->access_door ?? 'N/A' }}</div>
+                    </div>
+                    <div class="col-6">
+                        <div class="data-label">Administrative Note</div>
+                        <div class="data-value fw-normal" style="font-size: 0.75rem;">{{ $employees->note ?? 'No notes recorded.' }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="p-4 border-top text-center no-print">
+            <a href="{{ route('employees.edit', encrypt($employees->id)) }}" class="btn btn-indigo px-5 py-3 rounded-pill fw-bold shadow-sm">
+                <i class="fas fa-edit me-2"></i> EDIT INFORMATION
+            </a>
+        </div>
     </div>
+</div>
 
-    <script>
-        function showImage(src, target) {
-            var fr = new FileReader();
-            fr.onload = function () {
-                target.src = fr.result;
-            }
-            fr.readAsDataURL(src.files[0]);
-        }
-
-        function selectImg() {
-            var src = document.getElementById("select_image");
-            var target = document.getElementById("target");
-            showImage(src, target);
-        }
-    </script>
 @endsection

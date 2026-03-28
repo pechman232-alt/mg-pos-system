@@ -38,17 +38,28 @@ class SettingController extends Controller
         try {
             $ID = decrypt($id);
             $depart = DepartmentModel::where('id', $ID)->first();
-            return $depart;
+            return view('Settings.Departments.edit_depart',['depart'=>$depart]);
         } catch (\Throwable $th){
             return redirect()->back()->with('error', $th->getMessage());
         }        
     }
 
-    public function updateDepart($id){
+    public function updateDepart(Request $request, $id){
         try {
             $ID = decrypt($id);
             $depart = DepartmentModel::where('id', $ID)->firstorfail();
-            return $depart;
+            $depart->update(attributes: $request->all());
+            return redirect('departments')->with('info', 'The Department is Updated successfully.');
+        } catch (\Throwable $th){
+            return redirect()->back()->with('error', $th->getMessage());
+        } 
+    }
+
+    public function destroyDepart($id){
+        try {
+            $ID = decrypt($id);
+            $depart = DepartmentModel::where('id' , $ID)->firstorfail()->delete();
+            return redirect('departments')->with('warning', 'The Department is Deleted Succesfully!');
         } catch (\Throwable $th){
             return redirect()->back()->with('error', $th->getMessage());
         } 
@@ -73,6 +84,37 @@ class SettingController extends Controller
         $position->name = $request->name;
         $position->save();
         return redirect('positions/create')->with('success', 'The Position is Created Succesfully!');
+    }
+
+    public function editPosition($id){
+        try {
+            $ID = decrypt($id);
+            $position = PositionModel::where('id', $ID)->first();
+            return view('Settings.Positions.edit_position',['position'=>$position]);
+        } catch (\Throwable $th){
+            return redirect()->back()->with('error', $th->getMessage());
+        }        
+    }
+
+    public function updatePosition(Request $request, $id){
+        try {
+            $ID = decrypt($id);
+            $position = PositionModel::where('id', $ID)->firstorfail();
+            $position->update($request->all());
+            return redirect('positions')->with('info', 'The Position is Updated successfully.');
+        } catch (\Throwable $th){
+            return redirect()->back()->with('error', $th->getMessage());
+        } 
+    }
+
+    public function destroyPosition($id){
+        try {
+            $ID = decrypt($id);
+            $position = PositionModel::where('id' , $ID)->firstorfail()->delete();
+            return redirect('positions')->with('warning', 'The Position is Deleted Succesfully!');
+        } catch (\Throwable $th){
+            return redirect()->back()->with('error', $th->getMessage());
+        } 
     }
 
     // ------------- Branch Controller -------------------
@@ -118,14 +160,16 @@ class SettingController extends Controller
         } 
     }
 
-    public function destroyBranch($id){
+    public function destroyBranch($id)
+    {
         try {
-            $ID = decrypt($id);
-            $branch = BranchModel::where('id' , $ID)->firstorfail()->delete();
-            return redirect('branchs')->with('warning', 'The Branch is Deleted Succesfully!');
-        } catch (\Throwable $th){
-            return redirect()->back()->with('error', $th->getMessage());
-        } 
+            $branch = \App\Models\BranchModel::findOrFail($id);
+            $branch->delete();
+    
+            return redirect('/branchs')->with('success', 'លុបសាខាបានជោគជ័យ!');
+        } catch (\Exception $e) {
+            return redirect('/branchs')->with('error', 'មិនអាចលុបបានទេ! សាខានេះប្រហែលជាមានទិន្នន័យជាប់ពាក់ព័ន្ធ។');
+        }
     }
     
     // ------------- Province Controller -------------------
@@ -149,6 +193,37 @@ class SettingController extends Controller
         return redirect('provinces/create')->with('success', 'The Province is Created Succesfully!');
     }
 
+    public function editProvince($id){
+        try {
+            $ID = decrypt($id);
+            $province = ProvinceModel::where('id', $ID)->first();
+            return view('Settings.Provinces.edit_province',['province'=>$province]);
+        } catch (\Throwable $th){
+            return redirect()->back()->with('error', $th->getMessage());
+        } 
+    }
+
+    public function updateProvince(Request $request, $id){
+        try {
+            $ID = decrypt($id);
+            $province = ProvinceModel::where('id', $ID)->firstorfail();
+            $province->update($request->all());
+            return redirect('provinces')->with('info', 'The Province is Updated successfully.');
+        } catch (\Throwable $th){
+            return redirect()->back()->with('error', $th->getMessage());
+        } 
+    }
+
+    public function destroyProvince($id){
+        try {
+            $ID = decrypt($id);
+            $province = ProvinceModel::where('id' , $ID)->firstorfail()->delete();
+            return redirect('provinces')->with('warning', 'The Province is Deleted Succesfully!');
+        } catch (\Throwable $th){
+            return redirect()->back()->with('error', $th->getMessage());
+        } 
+    }
+
     // ------------- Company Controller -------------------
     public function companyIndex(){
         $companys = CompanyModel::get();
@@ -168,6 +243,37 @@ class SettingController extends Controller
         $company->company_name = $request->company_name;
         $company->save();
         return redirect('companys/create')->with('success','The Company is Created Succesfully!');
+    }
+
+    public function editCompany($id){
+        try {
+            $ID = decrypt($id);
+            $company = CompanyModel::where('id', $ID)->first();
+            return view('Settings.Companys.edit_company',['company'=>$company]);
+        } catch (\Throwable $th){
+            return redirect()->back()->with('error', $th->getMessage());
+        } 
+    }
+
+    public function updateCompany(Request $request, $id){
+        try {
+            $ID = decrypt($id);
+            $company = CompanyModel::where('id', $ID)->firstorfail();
+            $company->update($request->all());
+            return redirect('companys')->with('info', 'The Company is Updated successfully.');
+        } catch (\Throwable $th){
+            return redirect()->back()->with('error', $th->getMessage());
+        } 
+    }
+
+    public function destroyCompany($id){
+        try {
+            $ID = decrypt($id);
+            $company = CompanyModel::where('id' , $ID)->firstorfail()->delete();
+            return redirect('companys')->with('warning', 'The Company is Deleted Succesfully!');
+        } catch (\Throwable $th){
+            return redirect()->back()->with('error', $th->getMessage());
+        } 
     }
 
     // ------------- Waranty Controller -------------------
@@ -191,16 +297,35 @@ class SettingController extends Controller
         return redirect('warantys/create')->with('success','The Waranty is Created Succesfully!');
     }
 
-    public function editWaranty(){
-
+    public function editWaranty($id){
+        try {
+            $ID = decrypt($id);
+            $waranty = WarrantyModel::where('id', $ID)->first();
+            return view('Settings.Warantys.edit_waranty',['waranty'=>$waranty]);
+        } catch (\Throwable $th){
+            return redirect()->back()->with('error', $th->getMessage());
+        } 
     }
 
-    public function updateWaranty(){
-
+    public function updateWaranty(Request $request, $id){
+        try {
+            $ID = decrypt($id);
+            $waranty = WarrantyModel::where('id', $ID)->firstorfail();
+            $waranty->update($request->all());
+            return redirect('warantys')->with('info', 'The Waranty is Updated successfully.');
+        } catch (\Throwable $th){
+            return redirect()->back()->with('error', $th->getMessage());
+        } 
     }
 
-    public function fnDeleteWaranty(){
-
+    public function destroyWaranty($id){
+        try {
+            $ID = decrypt($id);
+            $waranty = WarrantyModel::where('id' , $ID)->firstorfail()->delete();
+            return redirect('warantys')->with('warning', 'The Waranty is Deleted Succesfully!');
+        } catch (\Throwable $th){
+            return redirect()->back()->with('error', $th->getMessage());
+        } 
     }
 
     // ------------- Engine Oil Controller -------------------
@@ -223,5 +348,36 @@ class SettingController extends Controller
         $engine_oil->name = $request->name;
         $engine_oil->save();
         return redirect('engineOils/create')->with('success','The Engine Oil is Created Succesfully!');
+    }
+
+    public function editEngineOil($id){
+        try {
+            $ID = decrypt($id);
+            $engine_oil = EngineOilModel::where('id', $ID)->first();
+            return view('Settings.EngineOils.edit_engine_oil',['engine_oil'=>$engine_oil]);
+        } catch (\Throwable $th){
+            return redirect()->back()->with('error', $th->getMessage());
+        } 
+    }
+
+    public function updateEngineOil(Request $request, $id){
+        try {
+            $ID = decrypt($id);
+            $engine_oil = EngineOilModel::where('id', $ID)->firstorfail();
+            $engine_oil->update($request->all());
+            return redirect('engineOils')->with('info', 'The Engine Oil is Updated successfully.');
+        } catch (\Throwable $th){
+            return redirect()->back()->with('error', $th->getMessage());
+        } 
+    }
+
+    public function destroyEngineOil($id){
+        try {
+            $ID = decrypt($id);
+            $engine_oil = EngineOilModel::where('id' , $ID)->firstorfail()->delete();
+            return redirect('engineOils')->with('warning', 'The Engine Oil is Deleted Succesfully!');
+        } catch (\Throwable $th){
+            return redirect()->back()->with('error', $th->getMessage());
+        } 
     }
 }

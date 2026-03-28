@@ -7,150 +7,180 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\UserRolesModel;
 use App\Models\MenuModel;
+use Illuminate\Support\Facades\DB;
 
 class UserRoleController extends Controller
 {
-    public function userRoleIndex(){
-        $userRoles = UserRolesModel::get();
-        return view('UserRoles.user_role_index',['userRoles'=>$userRoles]);
+    public function userRoleIndex()
+    {
+        $userRoles = UserRolesModel::orderBy('id', 'desc')->get();
+        return view('UserRoles.user_role_index', compact('userRoles'));
     }
 
-    public function formUserRole(){
+    public function formUserRole()
+    {
         $mainMenus = MenuModel::where('sub_of', '0')->get();
         $subMenus = MenuModel::where('sub_of', '!=', '0')->get();
-        return view('UserRoles.add_role',['mainMenus'=>$mainMenus, 'subMenus'=>$subMenus]);
+        return view('UserRoles.add_role', compact('mainMenus', 'subMenus'));
     }
 
-    public function storeUserRole(Request $request){
-        // if(Auth::guard('users')->check()){
-        //     return ("Add User Roles");
-        // } else {
-        //     return ("Ot mean user te");
-        // }
+    public function storeUserRole(Request $request)
+    {
         $request->validate([
-            'name' => 'required',
-        ],
-        ['name' => 'Please Enter UserRole Name!']
-        );
+            'name' => 'required|unique:user_roles,name',
+        ], [
+            'name.required' => 'សូមបញ្ចូលឈ្មោះតួនាទី (Role Name)!',
+            'name.unique' => 'ឈ្មោះតួនាទីនេះមានរួចហើយ!'
+        ]);
 
-        $role_name = $request->name;
-        $ch_main = $request->ch_main;
-        $ch_sub = $request->ch_sub;
+        try {
+            DB::beginTransaction();
 
-        $userRole = new UserRolesModel();
-        $userRole->name = $role_name;
-        $userRole->save();
+            $userRole = new UserRolesModel();
+            $userRole->name = $request->name;
+            $userRole->save();
 
-        if(!empty($ch_main)) {
-            for($i = 0; $i < count(value: $ch_main); $i++){
-                $main = New ActiveMenuModel();
-                $main->role_id = $userRole->id;
-                $main->menu_id = $ch_main[$i];
-                $main->save();
+            // រៀបចំទិន្នន័យសម្រាប់ Bulk Insert (លឿនជាង save ក្នុង loop)
+            $permissions = [];
+            
+            if ($request->has('ch_main')) {
+                foreach ($request->ch_main as $menu_id) {
+                    $permissions[] = ['role_id' => $userRole->id, 'menu_id' => $menu_id];
+                }
             }
-        }
 
-        if(!empty($ch_sub)) {
-            for($i = 0; $i < count($ch_sub); $i++){
-                $main = New ActiveMenuModel();
-                $main->role_id = $userRole->id;
-                $main->menu_id = $ch_sub[$i];
-                $main->save();
+            if ($request->has('ch_sub')) {
+                foreach ($request->ch_sub as $menu_id) {
+                    $permissions[] = ['role_id' => $userRole->id, 'menu_id' => $menu_id];
+                }
             }
+
+            if (!empty($permissions)) {
+                ActiveMenuModel::insert($permissions);
+            }
+
+            DB::commit();
+            return redirect('/userRoles')->with('success', 'បង្កើតតួនាទីថ្មីបានជោគជ័យ។');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->with('error', 'មានបញ្ហាបច្ចេកទេស៖ ' . $e->getMessage());
         }
-        return redirect('create/roles')->with('success','The Role is Created Successfully');
     }
 
-    public function fnEditUserRole($id){
+    public function fnEditUserRole($id)
+    {
         $ID = decrypt($id);
-        if(Auth::guard('users')->check()){
-            $data = ActiveMenuModel::where('role_id', $ID)->get();
-            $userRole = UserRolesModel::where('id', $ID)->first();
+        
+        if (Auth::guard('users')->check()) {
+            $userRole = UserRolesModel::findOrFail($ID);
+            $activeMenuIds = ActiveMenuModel::where('role_id', $ID)->pluck('menu_id')->toArray();
+
             $mainMenus = MenuModel::where('sub_of', '0')->get();
             $subMenus = MenuModel::where('sub_of', '!=', '0')->get();
 
-            foreach ($mainMenus as $i1 => $m){
-                foreach ($data as $i2 => $d){
-                    if ($m->id == $d->menu_id){
-                        $mainMenus[$i1]['checked'] = '1';
-                    }
-                }
-            }
+            // បន្ថែម Attribute 'checked' ទៅឱ្យ Menu
+            $mainMenus->map(function ($menu) use ($activeMenuIds) {
+                $menu->checked = in_array($menu->id, $activeMenuIds) ? '1' : '0';
+                return $menu;
+            });
 
-            foreach ($subMenus as $i1 => $m){
-                foreach ($data as $i2 => $d){
-                    if ($m->id == $d->menu_id){
-                        $subMenus[$i1]['checked'] = '1';
-                    }
-                }
-            }
-            return view('UserRoles.edit_role',['mainMenus'=>$mainMenus, 'subMenus'=>$subMenus, 'userRole'=>$userRole]);
-        } else {
-            return redirect('login');
+            $subMenus->map(function ($menu) use ($activeMenuIds) {
+                $menu->checked = in_array($menu->id, $activeMenuIds) ? '1' : '0';
+                return $menu;
+            });
+
+            return view('UserRoles.edit_role', compact('mainMenus', 'subMenus', 'userRole'));
         }
+        
+        return redirect('login');
     }
 
-    public function fnUpdateUserRole(Request $request, $id){
-
+    public function fnUpdateUserRole(Request $request, $id)
+    {
         $ID = decrypt($id);
 
-        $role_name = $request->name;
-        $ch_main = $request->ch_main;
-        $ch_sub = $request->ch_sub;
+        $request->validate([
+            'name' => 'required|unique:user_roles,name,' . $ID,
+        ]);
 
-        $userRole = UserRolesModel::where('id', $ID)->firstorfail();
-        $userRole->name = $role_name;
-        $userRole->save();
+        try {
+            DB::beginTransaction();
 
-        // Delete before add new(Call update)
-        $main_d = ActiveMenuModel::where('role_id', $ID)->delete();
+            $userRole = UserRolesModel::findOrFail($ID);
+            $userRole->name = $request->name;
+            $userRole->save();
 
-        if(!empty($ch_main)) {
-            for($i = 0; $i < count($ch_main); $i++){
-                $main = New ActiveMenuModel();
-                $main->role_id = $userRole->id;
-                $main->menu_id = $ch_main[$i];
-                $main->save();
+            // លុបសិទ្ធិចាស់ៗចេញ
+            ActiveMenuModel::where('role_id', $ID)->delete();
+
+            // បញ្ចូលសិទ្ធិថ្មី (Bulk Insert)
+            $permissions = [];
+            $all_menus = array_merge($request->ch_main ?? [], $request->ch_sub ?? []);
+            
+            foreach ($all_menus as $menu_id) {
+                $permissions[] = ['role_id' => $ID, 'menu_id' => $menu_id];
             }
-        }
 
-        if(!empty($ch_sub)) {
-            for($i = 0; $i < count($ch_sub); $i++){
-                $main = New ActiveMenuModel();
-                $main->role_id = $userRole->id;
-                $main->menu_id = $ch_sub[$i];
-                $main->save();
+            if (!empty($permissions)) {
+                ActiveMenuModel::insert($permissions);
             }
+
+            // 🔄 បច្ចុប្បន្នភាព Session Menu ភ្លាមៗ (Optional: បើ User កំពុង Login នឹងឃើញការប្រែប្រួល)
+            $this->refreshUserSessionMenus($ID);
+
+            DB::commit();
+            return redirect('userRoles')->with('info', 'តួនាទីត្រូវបានធ្វើបច្ចុប្បន្នភាពជោគជ័យ។');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->with('error', 'ការ Update បរាជ័យ!');
         }
-
-        $activeMenus = ActiveMenuModel::selectRaw(
-            'menus.id as menuid,
-            menus.name as menuName,
-            menus.route,
-            menus.icon
-            '
-        )
-        ->join('menus', 'menus.id', '=', 'active_menus.menu_id')
-        ->where('active_menus.role_id', auth('users')->user()->role_id)
-        ->where('menus.sub_of', '=' ,'0')
-        ->get();
-
-        session()->put('activeMenus', $activeMenus);
-
-        $activeSubMenus = ActiveMenuModel::selectRaw(
-            'menus.id as menu,
-            menus.name as menuName,
-            menus.sub_of,
-            menus.route
-            ',
-        )
-        ->join('menus', 'menus.id', '=', 'active_menus.menu_id')
-        ->where('active_menus.role_id', auth('users')->user()->role_id)
-        ->where('menus.sub_of', '!=', '0')
-        ->get();
-
-        session()->put('activeSubMenus', $activeSubMenus);
-
-        return redirect('userRoles')->with('info', 'The Role is updated successfully.');
     }
+
+    // Helper Function សម្រាប់ Refresh Menu ក្នុង Session
+    private function refreshUserSessionMenus($roleId)
+    {
+        if (auth('users')->check() && auth('users')->user()->role_id == $roleId) {
+            $activeMenus = DB::table('active_menus')
+                ->join('menus', 'menus.id', '=', 'active_menus.menu_id')
+                ->where('active_menus.role_id', $roleId)
+                ->where('menus.sub_of', '0')
+                ->select('menus.id as menuid', 'menus.name as menuName', 'menus.route', 'menus.icon')
+                ->get();
+
+            $activeSubMenus = DB::table('active_menus')
+                ->join('menus', 'menus.id', '=', 'active_menus.menu_id')
+                ->where('active_menus.role_id', $roleId)
+                ->where('menus.sub_of', '!=', '0')
+                ->select('menus.id as menu', 'menus.name as menuName', 'menus.sub_of', 'menus.route')
+                ->get();
+
+            session()->put('activeMenus', $activeMenus);
+            session()->put('activeSubMenus', $activeSubMenus);
+        }
+    }
+
+    public function fnDeleteUserRole($id)
+{
+    try {
+        // ១. បកលេខកូដ ID (ព្រោះយើងបញ្ជូនមកជា Encrypted String)
+        $ID = decrypt($id); 
+
+        DB::beginTransaction();
+
+        // ២. លុបសិទ្ធិ (Menus) ដែលជាប់ជាមួយ Role នេះជាមុនសិន ដើម្បីកុំឱ្យទិន្នន័យហល់
+        \App\Models\ActiveMenuModel::where('role_id', $ID)->delete();
+
+        // ៣. លុប Role នេះចេញពី Database
+        $role = \App\Models\UserRolesModel::findOrFail($ID);
+        $role->delete();
+
+        DB::commit();
+        
+        return redirect('/userRoles')->with('success', 'តួនាទីត្រូវបានលុបចេញពីប្រព័ន្ធដោយជោគជ័យ!');
+
+    } catch (\Exception $e) {
+        DB::rollBack();
+        return redirect('/userRoles')->with('error', 'មិនអាចលុបបានទេ! ប្រហែលជាមានបុគ្គលិកកំពុងប្រើប្រាស់ Role នេះ។');
+    }
+}
 }

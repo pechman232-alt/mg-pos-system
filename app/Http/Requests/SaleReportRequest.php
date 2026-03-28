@@ -16,7 +16,7 @@ class SaleReportRequest extends FormRequest
         return [
             'image' => 'required',
             'branch_id' => 'required',
-            'member_card' => 'required|max:255|unique:sale_reports,member_card',
+            'member_card_id' => 'required|max:255|unique:sale_reports,member_card_id',
             'brand_name' => 'required',
             'customer_name' => 'required',
             'phone_number' => 'required',

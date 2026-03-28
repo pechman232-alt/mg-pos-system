@@ -11,6 +11,7 @@ use App\Models\WarrantyModel;
 use App\Models\EmployeeModel;
 use App\Models\ProvinceModel;
 use App\Models\MemberCard;
+use App\Models\EngineOilModel;
 use App\Models\SaleReportModel;
 use App\Http\Requests\SaleReportRequest;
 use App\Exports\SaleReportExport;
@@ -27,13 +28,19 @@ class SaleReportController extends Controller
         $invoiceDate = $request->input('invoice_date');
 
         $saleReports = SaleReportModel::query()
-        ->join('member_cards', 'member_cards.id', '=', 'sale_reports.member_card_id')
-        ->select('sale_reports.*' ,'member_cards.member_card');
+        ->leftJoin('member_cards', 'member_cards.id', '=', 'sale_reports.member_card_id')
+        ->leftJoin('logistics', 'logistics.id', '=', 'sale_reports.logistics_id')
+        ->select('sale_reports.*' ,'member_cards.member_card')
+        ->orderByDesc('sale_reports.invoice_date');
 
         if (!empty($keyword)) {
             $saleReports->where(function ($query) use ($keyword) {
-                $query->where('sale_reports.customer_name', 'like', '%' . $keyword . '%')
-                ->orWhere('member_cards.member_card', 'like', '%' . $keyword . '%');
+                $query->orWhere('sale_reports.customer_name', 'like', '%' . $keyword . '%')
+                ->orWhere('sale_reports.invoice_no', 'like', '%' . $keyword . '%')
+                ->orWhere('sale_reports.phone_number', 'like', '%' . $keyword . '%')
+                ->orWhere('member_cards.member_card', 'like', '%' . $keyword . '%')
+                ->orWhere('logistics.vin_number','like', '%'. $keyword . '%')
+                ->orWhere('logistics.engine_number','like', '%'. $keyword . '%');
             });
         }
 
@@ -67,9 +74,23 @@ class SaleReportController extends Controller
                 sale_reports.phone_number,
                 sale_reports.gender,
                 sale_reports.dob,
-                sale_reports.age,
+                provinces.name as address,
+                employees.full_name as sale_person,
+                member_cards.member_card as memberCard,
+                branches.branch_name as branchs,
+
+                car_models.model_name as model_name,
+                colors.color_name as color_name,
+                logistics.model_year as modelYear,
+                logistics.vin_number as vinNumber,
+                logistics.engine_number as engineNumber,
+                car_images.image_name,
+                
+                warranty_mg.name as warranty,
                 sale_reports.vihicle_battery,
                 sale_reports.vpc_vdr,
+                warranty_leap_motor.name as warranty_leap_motor,
+
                 sale_reports.plate_number,
                 sale_reports.offer_uv_film,
                 sale_reports.offer_floor_mat,
@@ -89,31 +110,19 @@ class SaleReportController extends Controller
                 sale_reports.follow_up,
                 sale_reports.feedback_command,
                 sale_reports.attach_file,
-                sale_reports.remark_sa,
-
-                provinces.name as address,
-                employees.full_name as sale_person,
-                member_cards.member_card as memberCard,
-                car_images.image_name as car_image,
-                car_models.model_name as model_name,
-                colors.color_name as color_name,
-                warranty_mg.name as warranty,
-                warranty_leap_motor.name as warranty_leap_motor,
-
-                logistics.model_year as modelYear,
-                logistics.vin_number as vinNumber,
-                logistics.engine_number as engineNumber
+                sale_reports.remark_sa
                 '
             )
-            ->join('car_images', 'car_images.id', '=', 'sale_reports.image')
-            ->join('car_models', 'car_models.id', '=', 'car_images.model_id')
-            ->join('colors', 'colors.id', '=' ,'car_models.color_id')
-            ->join('employees', 'employees.id', '=', 'sale_reports.employee_id')
-            ->join('member_cards', 'member_cards.id', '=', 'sale_reports.member_card_id')
-            ->join('provinces', 'provinces.id', '=', 'sale_reports.province_id')
-            ->join('logistics', 'logistics.id', '=', 'sale_reports.logistics_id')
-            ->join('warranty as warranty_mg', 'warranty_mg.id', '=', 'sale_reports.warranty_id')
-            ->join('warranty as warranty_leap_motor', 'warranty_leap_motor.id', '=', 'sale_reports.warranty_leap_motor')
+            ->leftJoin('employees', 'employees.id', '=', 'sale_reports.employee_id')
+            ->leftJoin('logistics', 'logistics.id', '=', 'sale_reports.logistics_id')
+            ->leftJoin('car_models', 'car_models.id', '=', 'logistics.model_name_id')
+            ->leftJoin('car_images', 'car_images.id', '=', 'sale_reports.image')
+            ->leftJoin('colors', 'colors.id', '=', 'car_images.color_id')
+            ->leftJoin('member_cards', 'member_cards.id', '=', 'sale_reports.member_card_id')
+            ->leftJoin('provinces', 'provinces.id', '=', 'sale_reports.province_id')
+            ->leftJoin('branches', 'branches.id', '=', 'sale_reports.branch_id')
+            ->leftJoin('warranty as warranty_mg', 'warranty_mg.id', '=', 'sale_reports.warranty_id')
+            ->leftJoin('warranty as warranty_leap_motor', 'warranty_leap_motor.id', '=', 'sale_reports.warranty_leap_motor')
             ->find($ID);
             return view('SaleReports.view_sale_report', ['saleReports'=>$saleReports]);
         } catch (\Throwable $th) {
@@ -139,12 +148,19 @@ class SaleReportController extends Controller
 
             if ($type === 'logistic') {
                 $logistics = LogisticsModel::where('is_sale', '=', '1')
+                    ->join('car_models', 'car_models.id', '=', 'logistics.model_name_id')
                     ->where(function ($query) use ($search) {
-                    $query->where('model_name', 'LIKE', "%{$search}%")
+                    $query->where('car_models.model_name', 'LIKE', "%{$search}%")
                         ->orWhere('vin_number', 'LIKE', "%{$search}%")
                         ->orWhere('engine_number', 'LIKE', "%{$search}%");
                     })
-                    ->select('id', 'model_name', 'vin_number', 'engine_number')
+                    // ->select('id', 'model_name', 'vin_number', 'engine_number')
+                    ->select(
+                        'logistics.id',
+                        'car_models.model_name',
+                        'logistics.vin_number',
+                        'logistics.engine_number'
+                    )
                     ->get();
                 return response()->json($logistics);
             }
@@ -164,16 +180,24 @@ class SaleReportController extends Controller
         $branchs = BranchModel::all();
         $warrantys = WarrantyModel::all();
         $provinces = ProvinceModel::all();
-        $employees = EmployeeModel::where('department_id','=', '17')->get();
-        return view('SaleReports.add_sale_report',['carImages'=>$carImages, 'branchs'=>$branchs, 'warrantys'=>$warrantys,'employees'=>$employees, 'provinces'=>$provinces]);
+        $engineOil = EngineOilModel::all();
+
+        $employees = EmployeeModel::where('department_id','=', '1')->get();
+
+        return view('SaleReports.add_sale_report',[
+            'carImages'=>$carImages, 
+            'branchs'=>$branchs, 
+            'warrantys'=>$warrantys,
+            'employees'=>$employees, 
+            'provinces'=>$provinces,
+            'engineOil'=>$engineOil,
+        ]);
     }
 
     public function storeSaleReport(SaleReportRequest $request){
-        try {
+        // try {
+            
             $validated = $request->validated();
-            $dob = $validated['dob'];
-            $age = \Carbon\Carbon::parse($dob)->age;
-            $validated['age'] = $age;
             $validated['remark_sa'] = $request->input('remark_sa');
             $validated['follow_up'] = $request->input('follow_up');
             $validated['feedback_command'] = $request->input('feedback_command');
@@ -186,16 +210,14 @@ class SaleReportController extends Controller
                 $validated['attach_file'] = $path;
             }
 
-            $saleReport->created_by = auth('users')->user()->full_name;
+            $validated['created_by'] = auth(guard: 'users')->user()->full_name;
+            // return $validated;
+
             SaleReportModel::create($validated);
-
-            // LogisticsModel::where('id', $validated['logistics_id'])->update(['is_sale' => 0]);
-            // MemberCard::where('id', $validated['member_card'])->update(['is_sale' => 0]);
-
             return redirect('sale-reports/create')->with('success', 'The Sale Reports is created successfully.');
-        } catch (\Throwable $th) {
-            return redirect()->back()->with('error', $th->getMessage());
-        }
+        // } catch (\Throwable $th) {
+        //     return redirect()->back()->with('error', $th->getMessage());
+        // }
     }
 
     public function editSaleReport(Request $request, $id){
@@ -218,10 +240,11 @@ class SaleReportController extends Controller
             //     return response()->json($memberCard);
             // }
 
-            $employees = EmployeeModel::where('department_id','=', '17')->get();
+            $employees = EmployeeModel::where('department_id','=', '1')->get();
             $provinces = ProvinceModel::all();
             $warrantys = WarrantyModel::all();
-
+            $engineOil = EngineOilModel::all();
+            $branchs = BranchModel::all();
             $getCarImages = CarImage::selectRaw(
                 'car_images.id,
                 car_images.image_name,
@@ -249,7 +272,9 @@ class SaleReportController extends Controller
                 'provinces'=>$provinces, 
                 'carImages'=>$carImages,
                 'getCarImages'=>$getCarImages,
-                'warrantys'=>$warrantys
+                'warrantys'=>$warrantys,
+                'engineOil'=>$engineOil,
+                'branchs'=>$branchs,
             ]);
         } catch (\Throwable $th){
             return redirect()->back()->with('error', $th->getMessage());
@@ -260,20 +285,17 @@ class SaleReportController extends Controller
         $ID = decrypt($id);
         $saleReport = SaleReportModel::findOrFail($ID);
 
-        if ($saleReport->member_card && $saleReport->member_card != $request->member_card) {
-            MemberCard::where('id', $saleReport->member_card)->update(['is_sale' => 1]);
+        if ($saleReport->member_card_id && $saleReport->member_card_id != $request->member_card_id) {
+            MemberCard::where('id', $saleReport->member_card_id)->update(['is_sale' => 1]);
         }
 
         if ($saleReport->logistics_id && $saleReport->logistics_id != $request->logistics_id){
             LogisticsModel::where('id', $saleReport->logistics_id)->update(['is_sale' => 1]);
         }
 
-        MemberCard::where('id', $request->member_card)->update(['is_sale' => 0]);
+        MemberCard::where('id', $request->member_card_id)->update(['is_sale' => 0]);
         LogisticsModel::where('id', $request->logistics_id)->update(['is_sale' => 0]);
 
-        $dob = $request['dob'];
-        $age = \Carbon\Carbon::parse($dob)->age;
-        $request['age'] = $age;
         $saleReport->updated_by = auth('users')->user()->full_name;
 
         if ($request->filled('image')) { 
@@ -294,17 +316,13 @@ class SaleReportController extends Controller
             $saleReport->status = 0;
             $saleReport->save();
 
-            // LogisticsModel::where('id', $saleReport->logistics_id)->update(['is_sale' => 1]);
-            // MemberCard::where('id', $saleReport->member_card)->update(['is_sale' => 1]);
+            LogisticsModel::where('id', $saleReport->logistics_id)->update(['is_sale' => 1]);
+            MemberCard::where('id', $saleReport->member_card)->update(['is_sale' => 1]);
 
             return redirect('sale-reports')->with('error', 'The Sale Reports is Deleted successfully.');
         } catch (\Throwable $th){
             return redirect()->back()->with('error', $th->getMessage());
         }
-    }
-
-    public function importSaleReport(){
-
     }
 
     public function exportSaleReport(Request $request){

@@ -19,8 +19,11 @@ class User extends Authenticatable
      */
     protected $fillable = [
         'name',
+        'full_name', // បន្ថែមតាមកូដ Header បង
         'email',
         'password',
+        'role',      // 🚩 ត្រូវតែមាន field នេះដើម្បីឆែករក Admin
+        'profile_pic',
     ];
 
     /**

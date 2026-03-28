@@ -8354,10 +8354,7 @@ button.list-group-item-gray.active {
 .card .card-link {
   display: inline-block;
 }
-.card .card-header + .card-body,
-.card .card-header + .card-content > .card-body:first-of-type {
-  padding-top: 0;
-}
+
 
 .card-action.card-fullscreen {
   display: block;

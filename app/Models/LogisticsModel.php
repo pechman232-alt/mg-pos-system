@@ -8,7 +8,7 @@ class LogisticsModel extends Model
 {
     protected $table ="logistics";
     protected $fillable = [
-        'model_name',
+        'model_name_id',
         'exterior_color',
         'interior_color',
         'model_year',

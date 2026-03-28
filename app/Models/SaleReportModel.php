@@ -10,13 +10,12 @@ class SaleReportModel extends Model
     protected $fillable = [
         'image',
         'branch_id',
-        'member_card',
+        'member_card_id',
         'brand_name',
         'customer_name',
         'phone_number',
         'gender',
         'dob',
-        'age',
         'source_id',
         'logistics_id',
         'plate_number',
@@ -45,20 +44,21 @@ class SaleReportModel extends Model
         'price',
         'remark_sa',
         'attach_file',
-        'status'
+        'status',
+        'created_by',
     ];
     protected $dates = ['created_at', 'updated_at'];
 
     protected static function booted(){
         static::created(function ($saleReport) {
             LogisticsModel::where('id', $saleReport->logistics_id)->update(['is_sale' => 0]);
-            MemberCard::where('id', $saleReport->member_card)->update(['is_sale' => 0]);
+            MemberCard::where('id', $saleReport->member_card_id)->update(['is_sale' => 0]);
         });
 
-        static::deleted(function ($saleReport) {
-            LogisticsModel::where('id', $saleReport->logistics_id)->update(['is_sale' => 1]);
-            MemberCard::where('id', $saleReport->member_card)->update(['is_sale' => 1]);
-        });
+        // static::deleted(function ($saleReport) {
+        //     LogisticsModel::where('id', $saleReport->logistics_id)->update(['is_sale' => 1]);
+        //     MemberCard::where('id', $saleReport->member_card)->update(['is_sale' => 1]);
+        // });
     }
 
     public function branch()

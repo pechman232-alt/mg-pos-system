@@ -1,338 +1,447 @@
 @extends('layouts.homePages')
 @section('content')
 
-    <style>
-       <style>
-/* Card & Header */
-.card {
-    border: 1px solid #DEAA5E;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.05);
-    margin-top: 20px;
-}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-.card-header {
-    background-color: #f5e2c5;
-    font-weight: 600;
-    font-size: 18px;
-    color: #333;
-    border-bottom: 1px solid #DEAA5E;
-}
-
-/* Form labels */
-.form-label {
-    font-weight: 500;
-    color: #444;
-}
-
-/* Form inputs */
-.form-control, .form-select {
-    border: 1px solid #DEAA5E;
-    border-radius: 6px;
-    padding: 8px 12px;
-    transition: all 0.3s ease;
-}
-
-.form-control:focus, .form-select:focus {
-    border-color: #DEAA5E;
-    box-shadow: 0 0 5px rgba(222, 170, 94, 0.4);
-}
-
-/* Input group for password */
-.input-group-text {
-    background-color: #f5e2c5;
-    border: 1px solid #DEAA5E;
-    cursor: pointer;
-}
-
-#show-password:focus {
-    box-shadow: none;
-}
-
-/* Buttons */
-.btn-primary {
-    background-color: #DEAA5E;
-    border-color: #DEAA5E;
-    transition: all 0.3s ease;
-}
-
-.btn-primary:hover {
-    background-color: #c48b44;
-    border-color: #c48b44;
-}
-
-.btn-outline-secondary {
-    border-color: #DEAA5E;
-    color: #DEAA5E;
-}
-
-.btn-outline-secondary:hover {
-    background-color: #DEAA5E;
-    color: #fff;
-}
-
-/* Image preview */
-#target {
-    border-radius: 50%;
-    border: 2px solid #DEAA5E;
-    object-fit: cover;
-}
-
-/* Upload wrapper */
-.button-wrapper label.btn {
-    background-color: #DEAA5E;
-    color: #fff;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.button-wrapper label.btn:hover {
-    background-color: #c48b44;
-}
-
-/* File info text */
-.button-wrapper p {
-    font-size: 13px;
-    color: #666;
-    margin-top: 5px;
-}
-
-/* Row spacing */
-.row > .mb-3 {
-    margin-bottom: 15px;
-}
-
-/* Responsive adjustments */
-@media (max-width: 768px) {
-    .d-flex.align-items-start {
-        flex-direction: column;
-        gap: 10px;
+<style>
+    /* --- GLOBAL BRANDING --- */
+    :root {
+        --brand-indigo: #4f46e5;
+        --brand-purple: #7c3aed;
+        --brand-pink: #ec4899;
+        --brand-red: #ef4444;
+        --bg-body: #f8fafc;
+        --font-family: 'Plus Jakarta Sans', sans-serif !important;
     }
-}
+
+    body, .container-xxl {
+        font-family: var(--font-family);
+        background-color: var(--bg-body);
+        font-size: 0.85rem;
+        color: #1e293b;
+    }
+
+    .container-xxl {
+        max-width: 100% !important;
+        width: 100% !important;
+        padding: 1.5rem 2rem !important;
+    }
+
+    /* --- PREMIUM CARD STYLING --- */
+    .full-width-card {
+        width: 100% !important;
+        border: none;
+        border-radius: 16px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+        background: #fff;
+        overflow: hidden;
+    }
+
+    /* Professional 4-Color Header Gradient */
+    .card-header {
+        background: linear-gradient(90deg, var(--brand-indigo) 0%, var(--brand-purple) 33%, var(--brand-pink) 66%, var(--brand-red) 100%) !important;
+        padding: 20px 25px !important;
+        border-bottom: none !important;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .header-title {
+        color: #ffffff !important;
+        font-weight: 800;
+        font-size: 1.1rem;
+        margin: 0;
+        letter-spacing: -0.5px;
+    }
+
+    /* --- FORM ELEMENTS --- */
+    .form-label {
+        font-weight: 700;
+        font-size: 0.75rem;
+        color: #475569;
+        text-transform: uppercase;
+        margin-bottom: 8px;
+        display: block;
+        letter-spacing: 0.5px;
+    }
+
+    .form-control, .form-select {
+        height: 48px;
+        padding: 10px 16px;
+        border-radius: 10px;
+        border: 1.5px solid #e2e8f0;
+        font-size: 0.85rem;
+        background-color: #fcfdfe;
+        font-weight: 500;
+        transition: all 0.2s ease;
+    }
+
+    .form-control:focus, .form-select:focus {
+        background-color: #ffffff;
+        border-color: var(--brand-indigo);
+        box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
+        outline: none;
+    }
+
+    /* --- BUTTONS --- */
+    .btn-primary {
+        background: #1e293b !important;
+        color: white !important;
+        border: none;
+        font-weight: 800;
+        padding: 12px 25px;
+        border-radius: 10px;
+        font-size: 0.9rem;
+        transition: all 0.3s ease;
+        text-transform: uppercase;
+    }
+
+    .btn-primary:hover {
+        background: #000 !important;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    }
+
+    .btn-outline-secondary {
+        border-radius: 10px;
+        font-weight: 700;
+        padding: 12px 25px;
+    }
+
+    .btn-back {
+        background: rgba(255, 255, 255, 0.2);
+        color: #fff;
+        border: 1px solid rgba(255, 255, 255, 0.4);
+        font-size: 0.75rem;
+        font-weight: 700;
+        padding: 6px 16px;
+        text-decoration: none;
+        border-radius: 8px;
+    }
+    .btn-back:hover { background: rgba(255, 255, 255, 0.3); color: #fff; }
+
+    /* --- AVATAR & ICONS --- */
+    #target {
+        border-radius: 16px;
+        object-fit: cover;
+        border: 4px solid #f8fafc;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+    }
+
+    .input-group-text {
+        background: #f8fafc;
+        border: 1.5px solid #e2e8f0;
+        border-radius: 0 10px 10px 0;
+        color: #94a3b8;
+    }
+
+    /* --- SELECT2 OVERRIDES --- */
+    .select2-container .select2-selection--single {
+        height: 48px !important;
+        border: 1.5px solid #e2e8f0 !important;
+        border-radius: 10px !important;
+        display: flex;
+        align-items: center;
+    }
+    .select2-container--default .select2-selection--single .select2-selection__rendered {
+        padding-left: 15px !important;
+        color: #1e293b !important;
+    }
 </style>
 
+<div class="container-xxl flex-grow-1 container-p-y">
+    <div class="row">
+        <div class="col-12">
+            <div class="card full-width-card">
+                <div class="card-header">
+                    <h5 class="header-title">
+                        <i class="fas fa-user-edit me-2"></i>MODIFY PERSONNEL DOSSIER
+                    </h5>
+                    <a href="{{ url('/users') }}" class="btn btn-back">CANCEL</a>
+                </div>
 
-    </style>
+                <div class="card-body p-5">
+                    <form action="{{ url('/users/update', encrypt($users->id)) }}" method="POST" enctype="multipart/form-data">
+                        @csrf
 
-    <div class="container-xxl flex-grow-1 container-p-y">
+                        <div class="row">
+                            <div class="mb-4 col-md-4">
+                                <label class="form-label">Full Name</label>
+                                <input type="text" class="form-control" name="full_name" value="{{ $users->full_name }}">
+                            </div>
+                            <div class="mb-4 col-md-4">
+                                <label class="form-label">Username</label>
+                                <input type="text" class="form-control" name="username" value="{{ $users->username }}">
+                            </div>
+                            <div class="mb-4 col-md-4">
+                                <label class="form-label">User-ID</label>
+                                <input type="text" class="form-control" name="user_id" value="{{ $users->user_id }}">
+                            </div>
+                        </div>
 
-        <div class="row">
-            <div class="col-md-12">
-                <div class="card mb-4">
-                    <h5 class="card-header">Add Users</h5>
-                    <hr class="my-0">
-                    <div class="card-body">
-                        <form action="{{ url('/users/update', encrypt($users->id)) }}" method="POST" action="/upload" enctype="multipart/form-data">
-                            @csrf
-                            <div class="row">
-                                <div class="mb-3 col-md-4">
-                                    <label class="form-label" for="basic-default-fullname">Full-Name</label>
-                                    <input type="text" placeholder="enter full name" class="form-control" name="full_name" value="{{ $users->full_name }}">
-                                </div>
+                        <div class="row">
+                            <div class="mb-4 col-md-4">
+                                <label class="form-label">Gender</label>
+                                <select name="gender" class="form-select">
+                                    <option value="Male" @if($users->gender == 'Male') selected @endif>Male</option>
+                                    <option value="Female" @if($users->gender == 'Female') selected @endif>Female</option>
+                                </select>
+                            </div>
+                            <div class="mb-4 col-md-4">
+                                <label class="form-label">Email</label>
+                                <input type="text" class="form-control" name="email" value="{{ $users->email }}">
+                            </div>
+                            <div class="mb-4 col-md-4">
+                                <label class="form-label">Phone Number</label>
+                                <input type="text" class="form-control" name="phone_number" value="{{ $users->phone_number }}">
+                            </div>
+                        </div>
 
-                                <div class="mb-3 col-md-4">
-                                    <label class="form-label" for="basic-default-fullname">Username</label>
-                                    <input type="text" placeholder="enter username" class="form-control" name="username" value="{{ $users->username }}">
-                                </div>
+                        <div class="row">
+                            <div class="mb-4 col-md-4">
+                                <label class="form-label">Branch</label>
+                                <select name="branch_id" class="form-select">
+                                    @foreach ($branchs as $item)
+                                        <option value="{{ $item->id }}" @if ($item->id == $users->branch_id) selected @endif>{{ $item->branch_name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="mb-4 col-md-4">
+                                <label class="form-label">Department</label>
+                                <select name="department_id" class="form-select">
+                                    @foreach ($departs as $item)
+                                        <option value="{{ $item->id }}" @if ($item->id == $users->department_id) selected @endif>{{ $item->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="mb-4 col-md-4">
+                                <label class="form-label">Position</label>
+                                <input type="hidden" id="old-position-id" value="{{ old('position_id', $users->position_id ?? '') }}">
+                                <select id="position-select" class="form-select" name="position_id"></select>
+                            </div>
+                        </div>
 
-                                <div class="mb-3 col-md-4">
-                                    <label class="form-label" for="basic-default-fullname">User-ID</label>
-                                    <input type="text" placeholder="Enter UserID" class="form-control" name="user_id" value="{{ $users->user_id }}">
+                        <div class="row border-bottom mb-4 pb-2">
+                            <div class="mb-4 col-md-4">
+                                <label class="form-label">Date Start Work</label>
+                                <input class="form-control" type="date" name="start_work_date" value="{{ $users->start_work_date }}">
+                            </div>
+                            <div class="mb-4 col-md-4">
+                                <label class="form-label">Password</label>
+                                <div class="input-group">
+                                    <input type="password" name="password" class="form-control" id="show-password" placeholder="••••••••">
+                                    <span class="input-group-text" onclick="togglePasswordVisibility()">
+                                        <i class="bx bx-hide" id="toggle-icon"></i>
+                                    </span>
                                 </div>
                             </div>
-
-                            <div class="row">
-                                <div class="mb-3 col-md-4">
-                                    <label class="form-label" for="basic-default-fullname">Gender</label>
-                                    <select name="gender" class="form-select">
-                                        <option value="" disabled>Gender select</option>
-                                        <option value="Male" @if (old('gender', $users->gender ?? '') == 'Male') selected @endif>Male</option>
-                                        <option value="Female" @if (old('gender', $users->gender ?? '') == 'Female') selected @endif>Female</option>
-                                    </select>
-                                </div>
-
-                                <div class="mb-3 col-md-4">
-                                    <label class="form-label" for="basic-default-fullname">Email</label>
-                                    <input type="text" placeholder="example@gmail.com" class="form-control" name="email" value="{{ $users->email }}">
-                                </div>
-
-                                <div class="mb-3 col-md-4">
-                                    <label class="form-label" for="basic-default-fullname">Phone Number</label>
-                                    <input type="text" placeholder="+00 000 000" class="form-control" name="phone_number" value="{{ $users->phone_number }}">
-                                </div>
+                            <div class="mb-4 col-md-4">
+                                <label class="form-label">User Role</label>
+                                <select name="role_id" class="form-select">
+                                    @foreach ($userRole as $item)
+                                        <option value="{{ $item->id }}" @if ($item->id == $users->role_id) selected @endif>{{ $item->name }}</option>
+                                    @endforeach
+                                </select>
                             </div>
+                        </div>
 
-                            <div class="row">
-                                <div class="mb-3 col-md-4">
-                                    <label class="form-label" for="basic-default-fullname">Branch</label>
-                                    <select name="branch_id" class="form-select">
-                                        <option value="" disabled selected>Branch select</option>
-                                        @foreach ($branchs as $item)
-                                            <option @if ($item->id == $users->branch_id) selected @endif value="{{ $item->id }}" >{{ $item->branch_name }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
-
-                                <div class="mb-3 col-md-4">
-                                    <label class="form-label" for="basic-default-fullname">Department</label>
-                                    <select name="department_id" class="form-select">
-                                        <option value="" disabled selected>Department select</option>
-                                        @foreach ($departs as $item)
-                                            <option @if ($item->id == $users->department_id) selected @endif value="{{ $item->id }}" >{{ $item->name }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
-
-                                <div class="mb-3 col-md-4">
-                                    <label class="form-label" for="basic-default-fullname">Position</label>
-                                    <input type="hidden" id="old-position-id" value="{{ old('position_id', $users->position_id ?? '') }}">
-                                    <select id="position-select" class="form-select" name="position_id">
-                                        <option value="">Select Position</option>
-                                        @if (old('position_id'))
-                                            <option value="{{ old('position_id') }}" selected>
-                                                {{ optional(App\Models\PositionModel::find(old('position_id')))->name }}
-                                            </option>
-                                        @endif
-                                    </select>
-                                </div>
+                        <div class="d-flex align-items-center gap-4 mb-5">
+                            <img src="{{ url($users->profile_pic == '' ? 'backend/assets/img/avatars/1.png' : '/imageUser/' . $users->profile_pic) }}"
+                                 height="110" width="110" id="target">
+                            <div>
+                                <label for="select_image" class="btn btn-primary btn-sm mb-2">
+                                    <i class="fas fa-upload me-2"></i>Upload Photo
+                                    <input type="file" name="profile_pic" id="select_image" onchange="selectImg()" hidden accept="image/*">
+                                </label>
+                                <p class="text-muted mb-0 small">Allowed JPEG, PNG. Max 1024K</p>
                             </div>
+                        </div>
 
-                            <div class="row">
-                                <div class="mb-3 col-md-4">
-                                    <label class="form-label" for="basic-default-fullname">Date Start Work</label>
-                                    <input class="form-control" type="date" id="html5-date-input" name="start_work_date" value="{{ $users->start_work_date }}">
-                                </div>
-
-                                <div class="mb-3 col-md-4">
-                                    <label class="form-label" for="basic-default-fullname">Passowrd</label>
-                                    <div class="input-group">
-                                        <input type="password" name="password" class="form-control" id="show-password" placeholder="············" aria-describedby="show-password">
-                                        <span id="basic-default-password2" class="input-group-text cursor-pointer" onclick="togglePasswordVisibility()"><i class="bx bx-hide" id="toggle-icon"></i></span>
-                                    </div>
-                                </div>
-
-                                <div class="mb-3 col-md-4">
-                                    <label class="form-label" for="basic-default-fullname">UserRole</label>
-                                    <select name="role_id" class="form-select">
-                                        <option value="" disabled selected>UserRoles select</option>
-                                        @foreach ($userRole as $item)
-                                            <option @if ($item->id == $users->role_id) selected @endif value="{{ $item->id }}" >{{ $item->name }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                            </div>
-
-                            <div class="mb-4 mt-3">
-                                <div class="d-flex align-items-start align-items-sm-center gap-4">
-                                    <img src="{{ url($users->profile_pic == '' ? 'backend/assets/img/avatars/1.png' : '/imageUser/' . $users->profile_pic) }}" alt="user-avatar" class="d-block rounded" height="100" width="100" id="target">
-
-                                    <div class="button-wrapper">
-                                        <label for="select_image" class="btn btn-primary me-2 mb-1">
-                                            <span class="d-none d-sm-block">Upload new photo</span>
-                                            <i class="bx bx-upload d-block d-sm-none"></i>
-                                            <input type="file" name="profile_pic" id="select_image" onchange="selectImg()" hidden accept="image/png, image/jpeg">
-                                        </label>
-                                        <p class="text-muted mb-0">Allowed JPEG, JPG or PNG. Max size of 1024K</p>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="mt-2">
-                                <button type="submit" class="btn btn-primary me-2">Save</button>
-                                <a href="{{ url('users') }}" class="btn btn-outline-secondary">Cancel</a>
-                            </div>
-                        </form>
-                    </div>
+                        <div class="pt-3">
+                            <button type="submit" class="btn btn-primary me-2">Save Changes</button>
+                            <a href="{{ url('users') }}" class="btn btn-outline-secondary">Back to Directory</a>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
     </div>
+</div>
+<script>
 
-    <script>
-        function showImage(src, target) {
-            var fr = new FileReader();
-            fr.onload = function() {
-                target.src = fr.result;
-            }
-            fr.readAsDataURL(src.files[0]);
+    function showImage(src, target) {
+
+        var fr = new FileReader();
+
+        fr.onload = function() {
+
+            target.src = fr.result;
+
         }
 
-        function selectImg() {
-            var src = document.getElementById("select_image");
-            var target = document.getElementById("target");
-            showImage(src, target);
+        fr.readAsDataURL(src.files[0]);
+
+    }
+
+
+
+    function selectImg() {
+
+        var src = document.getElementById("select_image");
+
+        var target = document.getElementById("target");
+
+        showImage(src, target);
+
+    }
+
+</script>
+
+
+
+<script>
+
+    function togglePasswordVisibility() {
+
+        const passwordField = document.getElementById('show-password');
+
+        const toggleIcon = document.getElementById('toggle-icon');
+
+
+
+        if (passwordField.type === 'password') {
+
+            passwordField.type = 'text';
+
+            toggleIcon.classList.remove('bx-hide');
+
+            toggleIcon.classList.add('bx-show');
+
+        } else {
+
+            passwordField.type = 'password';
+
+            toggleIcon.classList.remove('bx-show');
+
+            toggleIcon.classList.add('bx-hide');
+
         }
-    </script>
 
-    <script>
-        function togglePasswordVisibility() {
-            const passwordField = document.getElementById('show-password');
-            const toggleIcon = document.getElementById('toggle-icon');
+    }
 
-            if (passwordField.type === 'password') {
-                passwordField.type = 'text';
-                toggleIcon.classList.remove('bx-hide');
-                toggleIcon.classList.add('bx-show');
-            } else {
-                passwordField.type = 'password';
-                toggleIcon.classList.remove('bx-show');
-                toggleIcon.classList.add('bx-hide');
-            }
+</script>
+
+
+
+{{-- function select2 --}}
+
+<script>
+
+    $('#position-select').select2({
+
+        placeholder: "Select Position",
+
+        allowClear: true,
+
+        ajax: {
+
+            url: "{{ url('/users/create') }}", 
+
+            type: "GET",
+
+            dataType: 'json',
+
+            delay: 250, // Delay to reduce server load
+
+            data: function (params) {
+
+                return {
+
+                    search: params.term // Search query
+
+                };
+
+            },
+
+            processResults: function (data) {
+
+                return {
+
+                    results: $.map(data, function (item) {
+
+                        return {
+
+                            id: item.id,
+
+                            text: item.name
+
+                        };
+
+                    })
+
+                };
+
+            },
+
+            cache: true
+
         }
-    </script>
 
-    {{-- function select2 --}}
-    <script>
-        $('#position-select').select2({
-            placeholder: "Select Position",
-            allowClear: true,
-            ajax: {
-                url: "{{ url('/users/create') }}", 
-                type: "GET",
-                dataType: 'json',
-                delay: 250, // Delay to reduce server load
-                data: function (params) {
-                    return {
-                        search: params.term // Search query
-                    };
-                },
-                processResults: function (data) {
-                    return {
-                        results: $.map(data, function (item) {
-                            return {
-                                id: item.id,
-                                text: item.name
-                            };
-                        })
-                    };
-                },
-                cache: true
-            }
-        });
+    });
 
-         // Preselect the old value if it exists
-        let oldPositionId = $('#old-position-id').val();
-        if (oldPositionId) {
-            $.ajax({
-                url: "{{ url('/users/edit') }}/" + "{{ $users->id ?? '' }}", // Use the same endpoint
-                type: "GET",
-                data: { search: '' }, // Adjust this if needed
-                success: function (data) {
-                    let selectedItem = data.find(item => item.id == oldPositionId);
-                    if (selectedItem) {
-                        let option = new Option(selectedItem.name, selectedItem.id, true, true);
-                        $('#position-select').append(option).trigger('change');
-                    }
+
+
+     // Preselect the old value if it exists
+
+    let oldPositionId = $('#old-position-id').val();
+
+    if (oldPositionId) {
+
+        $.ajax({
+
+            url: "{{ url('/users/edit') }}/" + "{{ $users->id ?? '' }}", // Use the same endpoint
+
+            type: "GET",
+
+            data: { search: '' }, // Adjust this if needed
+
+            success: function (data) {
+
+                let selectedItem = data.find(item => item.id == oldPositionId);
+
+                if (selectedItem) {
+
+                    let option = new Option(selectedItem.name, selectedItem.id, true, true);
+
+                    $('#position-select').append(option).trigger('change');
+
                 }
-            });
-        }
 
-        // Event listener for selection
-        $('#position-select').on('change', function () {
-            let selectedOption = $(this).val();
-            console.log('Selected option:', selectedOption);
+            }
+
         });
-    </script>
+
+    }
+
+
+
+    // Event listener for selection
+
+    $('#position-select').on('change', function () {
+
+        let selectedOption = $(this).val();
+
+        console.log('Selected option:', selectedOption);
+
+    });
+
+</script>
+
+
 
 @endsection

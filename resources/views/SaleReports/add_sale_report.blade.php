@@ -1,896 +1,424 @@
 @extends('layouts.homePages')
+
 @section('content')
-<style>
-    /* === Animated Row for Branch Dropdown === */
-.row.mb-6.branch-animate {
-    opacity: 0;
-    transform: translateY(15px);
-    animation: fadeInBranch 0.8s ease forwards;
-}
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-/* Keyframes for fade + slide effect */
-@keyframes fadeInBranch {
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
+    <style>
+        /* ==================== 100% FIT SCREEN UI ==================== */
+        :root {
+            --brand-red: #CE181E;
+            --brand-indigo: #4f46e5;
+            --bg-body: #f8fafc;
+            --text-heading: #0f172a;
+            --border-soft: #e2e8f0;
+        }
 
-/* Label styling */
-.branch-animate label {
-    font-weight: 600;
-    color: #333;
-    transition: all 0.3s ease;
-}
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif !important;
+            background-color: var(--bg-body);
+            margin: 0; padding: 0;
+        }
 
-/* Dropdown animation on hover/focus */
-.branch-animate select {
-    border-radius: 8px;
-    border: 1px solid #ccc;
-    transition: all 0.3s ease;
-}
+        /* FORCED 100% WIDTH WRAPPER */
+        .content-fluid-wrapper {
+            width: 100% !important;
+            max-width: 100% !important;
+            padding: 1.5rem !important;
+            animation: fadeIn 0.4s ease-out;
+        }
 
-.branch-animate select:hover {
-    border-color: #DEAA60;
-    box-shadow: 0 0 5px rgba(222, 170, 96, 0.3);
-}
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
 
-.branch-animate select:focus {
-    border-color: #DEAA60;
-    box-shadow: 0 0 8px rgba(222, 170, 96, 0.5);
-    transform: scale(1.02);
-}
+        /* ENTERPRISE CARD SYSTEM */
+        .card {
+            border: 1px solid var(--border-soft) !important;
+            border-radius: 1.25rem !important;
+            background: #ffffff !important;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05) !important;
+            margin-bottom: 1.5rem;
+            width: 100%;
+        }
 
-/* Label highlight when select is focused */
-.branch-animate select:focus + label,
-.branch-animate label:focus {
-    color: #DEAA60;
-    transform: translateX(3px);
-}
+        .card-header {
+            background: transparent !important;
+            padding: 1.25rem 1.5rem !important;
+            border-bottom: 1px solid var(--border-soft) !important;
+            font-weight: 800 !important;
+            color: var(--text-heading);
+            display: flex; align-items: center; justify-content: space-between;
+        }
 
-/* Error message fade-in animation */
-.branch-animate small.text-danger {
-    animation: fadeError 0.4s ease;
-}
+        .card-header i { color: var(--brand-red); margin-right: 10px; }
 
-@keyframes fadeError {
-    from { opacity: 0; transform: translateY(-3px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-/* === Animated Row for Form Fields === */
-.form-row-animate {
-    opacity: 0;
-    transform: translateY(15px);
-    animation: fadeInField 0.8s ease forwards;
-}
+        /* CLEAN FORM CONTROLS */
+        .form-label-custom {
+            font-size: 0.8rem !important;
+            font-weight: 800 !important;
+            text-transform: uppercase;
+            color: #64748b;
+            margin-bottom: 0.5rem;
+            display: block;
+            letter-spacing: 0.5px;
+        }
 
-/* Keyframes for fade + slide effect */
-@keyframes fadeInField {
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
+        .form-control, .form-select {
+            height: 46px !important;
+            border-radius: 0.75rem !important;
+            border: 1.5px solid var(--border-soft) !important;
+            font-size: 0.9rem !important;
+            font-weight: 700 !important;
+            color: var(--text-heading) !important;
+            transition: 0.3s;
+        }
 
-/* Label styling */
-.form-row-animate label {
-    font-weight: 600;
-    color: #333;
-    transition: all 0.3s ease;
-}
+        .form-control:focus, .form-select:focus {
+            border-color: var(--brand-indigo) !important;
+            box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1) !important;
+            outline: none;
+        }
 
-/* Dropdown / Input animation on hover/focus */
-.form-row-animate select,
-.form-row-animate input {
-    border-radius: 8px;
-    border: 1px solid #ccc;
-    transition: all 0.3s ease;
-}
+        /* HIGHLIGHT FOR SELECT2 CONTAINERS */
+        .select2-container--default .select2-selection--single {
+            height: 48px !important;
+            border: 1.5px solid var(--brand-indigo) !important;
+            border-radius: 0.75rem !important;
+            background-color: rgba(79, 70, 229, 0.02) !important;
+            display: flex; align-items: center;
+        }
 
-.form-row-animate select:hover,
-.form-row-animate input:hover {
-    border-color: #DEAA60;
-    box-shadow: 0 0 5px rgba(222, 170, 96, 0.3);
-}
+        .select2-container--default .select2-selection--single .select2-selection__rendered {
+            color: var(--brand-indigo) !important; font-weight: 800 !important;
+        }
 
-.form-row-animate select:focus,
-.form-row-animate input:focus {
-    border-color: #DEAA60;
-    box-shadow: 0 0 8px rgba(222, 170, 96, 0.5);
-    transform: scale(1.02);
-}
+        .btn-submit-node {
+            background: linear-gradient(135deg, var(--brand-red), #b91c1c) !important;
+            color: white !important;
+            padding: 14px 60px !important;
+            font-weight: 800 !important;
+            border-radius: 0.75rem !important;
+            border: none; cursor: pointer; transition: 0.3s;
+            box-shadow: 0 10px 20px rgba(206, 24, 30, 0.2);
+        }
 
-/* Label highlight when input/select is focused */
-.form-row-animate select:focus + label,
-.form-row-animate input:focus + label,
-.form-row-animate label:focus {
-    color: #DEAA60;
-    transform: translateX(3px);
-}
+        .img-preview-frame {
+            border-radius: 1rem !important; border: 2px dashed var(--border-soft);
+            padding: 8px; width: 160px; height: 110px; object-fit: contain; background: #fff;
+        }
 
-/* Error message fade-in animation */
-.form-row-animate small.text-danger {
-    animation: fadeError 0.4s ease;
-}
-
-@keyframes fadeError {
-    from { opacity: 0; transform: translateY(-3px); }
-    to { opacity: 1; transform: translateY(0); }
-}
+        /* HIGHLIGHT SPECIFIC TEXT */
+        .text-primary-bold { color: var(--brand-indigo) !important; font-weight: 800; }
 
 
-</style>
-    
+        
+    </style>
 
-<div class="container-xxl flex-grow-1 container-p-y">
+    <div class="content-fluid-wrapper">
+        @include('Helps.alert')
 
-    @include('Helps.alert')
+        <form action="{{ url('/sale-reports/store') }}" method="POST" enctype="multipart/form-data">
+            @csrf
 
-    <div class="row">
-        <div class="col-md-12">
-            <div class="card mb-4">
-                <h5 class="card-header">Add Sale Report</h5>
-                <hr class="my-0">
-                <div class="card-body">
-                    <form action="{{ url('/sale-reports/store') }}" method="POST" action="/upload" enctype="multipart/form-data">
-                        @csrf
-                        <div class="row mb-6">
-                            <label class="col-sm-2 col-form-label" for="basic-default-name">Brand Model</label>
-                            <div class="col-sm-10">
-                                <div class="d-flex align-items-start align-items-sm-center gap-4">
-                                    <img src="{{ asset('backend/assets/img/avatars/image.png') }}" alt="user-avatar" class="rounded-circle-custome" width="150" id="target">
-                                    <div class="button-wrapper">
-                                        <button type="button" class="btn btn-success mr-1" data-bs-toggle="modal" data-bs-target="#largeModal">Upload Brand Model</button>
-                                        <div class="modal fade" id="largeModal" tabindex="-1" style="display: none;"
-                                            aria-hidden="true">
-                                            <div class="modal-dialog modal-lg" role="document">
-                                                <div class="modal-content">
-                                                    <div class="modal-header">
-                                                        <h5 class="modal-title" id="exampleModalLabel3">Model Name</h5>
-                                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                                            aria-label="Close"></button>
-                                                    </div>
-                                                    <div class="modal-body">
-                                                        <div class="table-responsive text-nowrap">
-                                                            <table id="datatable" class="display">
-                                                                <thead>
-                                                                    <tr>
-                                                                        <th>No</th>
-                                                                        <th>Image</th>
-                                                                        <th style="text-align: start">Model Name</th>
-                                                                        <th style="text-align: start">Colors</th>
-                                                                    </tr>
-                                                                </thead>
-                                                                <tbody>
-                                                                    @foreach ($carImages as $index => $carImage)
-                                                                        <tr class="select-image"
-                                                                            data-id="{{ $carImage->id }}"
-                                                                            data-image="{{ url($carImage->image_name == '' ? 'backend/assets/img/avatars/1.png' : '/imageCar/' . $carImage->image_name) }}"
-                                                                            data-model="{{ $carImage->modelName }}">
-                                                                            <td style="text-align: center; width: 20px">
-                                                                                {{ $index + 1 }}
-                                                                            </td>
-                                                                            <td>
-                                                                                <img src="{{ url($carImage->image_name == '' ? 'backend/assets/img/avatars/1.png' : '/imageCar/' . $carImage->image_name) }}"
-                                                                                    alt="image"
-                                                                                    class="rounded-circle-custome"
-                                                                                    width="100">
-                                                                            </td>
-                                                                            <td style="text-align: start">
-                                                                                {{ $carImage->modelName }}
-                                                                            </td>
-                                                                            <td style="text-align: start">
-                                                                                {{ $carImage->colorName }}
-                                                                            </td>
-                                                                        </tr>
-
-                                                                    @endforeach
-                                                                </tbody>
-                                                            </table>
-                                                        </div>
-                                                    </div>
-                                                    <div class="modal-footer">
-                                                        <button type="button" class="btn btn-outline-secondary"
-                                                            data-bs-dismiss="modal">Close</button>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <p class="text-muted mb-0">Model Name: <span id="modelName"></span></p>
-                                        @error('image')
-                                            <small class="text-danger">{{ $message }}</small>
-                                        @enderror
-                                    </div>
+            <div class="row g-4">
+                <div class="col-xl-6">
+                    <div class="card h-100">
+                        <div class="card-header"><span><i class="fas fa-user-circle"></i> Customer & Branch Profile</span></div>
+                        <div class="card-body">
+                            <div class="row g-3">
+                                <div class="col-md-12">
+                                    <label class="form-label-custom">Customer Name *</label>
+                                    <input type="text" name="customer_name" class="form-control text-primary-bold" placeholder="Enter full name" value="{{ old('customer_name') }}" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label-custom">Phone Number</label>
+                                    <input type="text" name="phone_number" class="form-control" placeholder="012 345 678" value="{{ old('phone_number') }}">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label-custom">Gender</label>
+                                    <select name="gender" class="form-select">
+                                        <option value="Male" @selected(old('gender') == 'Male')>Male</option>
+                                        <option value="Female" @selected(old('gender') == 'Female')>Female</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label-custom">Date of Birth</label>
+                                    <input type="date" name="dob" class="form-control" value="{{ old('dob') }}">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label-custom">Province / Address</label>
+                                    <select name="province_id" class="form-select">
+                                        @foreach ($provinces as $item)
+                                            <option value="{{ $item->id }}">{{ $item->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label-custom">Branch</label>
+                                    <select name="branch_id" class="form-select">
+                                        @foreach ($branchs as $item)
+                                            <option value="{{ $item->id }}">{{ $item->branch_name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label-custom">Source Customer</label>
+                                    <select name="source_id" class="form-select">
+                                        <option value="Walk In">Walk In</option>
+                                        <option value="Call In">Call In</option>
+                                        <option value="Facebook">Facebook</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-12">
+                                    <label class="form-label-custom text-primary-bold"><i class="fas fa-id-card"></i> Member Card Identity</label>
+                                    <input type="hidden" id="old-memberCard-id" value="{{ old('member_card_id') }}">
+                                    <select id="memberCard-select" class="form-select" name="member_card_id"></select>
                                 </div>
                             </div>
                         </div>
+                    </div>
+                </div>
 
-                        <input type="hidden" name="image" id="carImageId">
-
-                        <div class="row mb-6 branch-animate">
-                            <label class="col-sm-2 col-form-label" for="basic-default-name">Branch</label>
-                            <div class="col-sm-10">
-                                <select name="branch_id"
-                                    class="form-select @error('branch_id') border-danger @enderror">
-                                    <option value="" disabled selected>select branch</option>
-                                    @foreach ($branchs as $item)
-                                        <option value="{{ $item->id }}" @if (old('branch_id') == $item->id){{ 'selected' }}
-                                        @endif>{{ $item->branch_name }}</option>
-                                    @endforeach
-                                </select>
-                                @error('branch_id')
-                                    <small class="text-danger">{{ $message }}</small>
-                                @enderror
+                <div class="col-xl-6">
+                    <div class="card h-100">
+                        <div class="card-header"><span><i class="fas fa-car"></i> Vehicle Specifications</span></div>
+                        <div class="card-body">
+                            <div class="d-flex align-items-center gap-4 mb-4 pb-3 border-bottom">
+                                <img src="{{ asset('backend/assets/img/avatars/image.png') }}" id="target" class="img-preview-frame shadow-sm" />
+                                <div>
+                                    <button type="button" class="btn btn-dark btn-sm fw-bold px-3" data-bs-toggle="modal" data-bs-target="#largeModal">
+                                        <i class="fas fa-search me-2"></i> Select Brand Model
+                                    </button>
+                                    <p class="mt-2 mb-0 small fw-800">MODEL: <span id="modelName" class="text-danger">NONE</span></p>
+                                </div>
+                                <input type="hidden" name="image" id="carImageId">
+                                <input type="hidden" name="model_name" id="modelNameInput">
+                            </div>
+                            <div class="row g-3">
+                                <div class="col-md-12">
+                                    <label class="form-label-custom text-primary-bold"><i class="fas fa-microchip"></i> Vehicle Model Selector (VIN/Engine) *</label>
+                                    <input type="hidden" id="old-logistic-id" value="{{ old('logistics_id') }}">
+                                    <select id="logistic-select" class="form-select" name="logistics_id"></select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label-custom">Brand Name</label>
+                                    <select name="brand_name" class="form-select">
+                                        <option value="MG">MG</option>
+                                        <option value="Maxus">Maxus</option>
+                                        <option value="LeapMotor">LeapMotor</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label-custom">Plate Number</label>
+                                    <input type="text" name="plate_number" class="form-control" placeholder="ABC-1234">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label-custom">Warranty MG</label>
+                                    <select name="warranty_id" class="form-select">
+                                        @foreach ($warrantys as $item)
+                                            <option value="{{ $item->id }}">{{ $item->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label-custom">Battery Warranty Leap</label>
+                                    <select name="warranty_leap_motor" class="form-select">
+                                        @foreach ($warrantys as $item)
+                                            <option value="{{ $item->id }}">{{ $item->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
                             </div>
                         </div>
+                    </div>
+                </div>
 
-                        <div class="row mb-6 form-row-animate">
-                            <label class="col-sm-2 col-form-label" for="basic-default-name">Member Card</label>
-                            <div class="col-sm-10">
-                                <input type="hidden" id="old-memberCard-id" value="{{ old('member_card') }}">
-                                <select id="memberCard-select" class="form-select" name="member_card">
-                                    <option value="">Select Member Card</option>
-                                    @if (old('member_card'))
-                                        <option value="{{ old('member_card') }}" selected>
-                                            {{ optional(App\Models\MemberCard::find(old('member_card')))->member_card }}
-                                        </option>
-                                    @endif
-                                </select>
-                                @error('member_card')
-                                    <small class="text-danger">{{ $message }}</small>
-                                @enderror
+                <div class="col-xl-12">
+                    <div class="card">
+                        <div class="card-header"><span><i class="fas fa-file-invoice-dollar"></i> Commercial Details & Offers</span></div>
+                        <div class="card-body">
+                            <div class="row g-3">
+                                <div class="col-md-3"><label class="form-label-custom">Contract No</label><input type="text" name="contract_no" class="form-control"></div>
+                                <div class="col-md-3"><label class="form-label-custom">Contract Date</label><input type="date" name="contract_date" class="form-control"></div>
+                                <div class="col-md-3"><label class="form-label-custom">Invoice No</label><input type="text" name="invoice_no" class="form-control highlight-input"></div>
+                                <div class="col-md-3"><label class="form-label-custom">Invoice Date</label><input type="date" name="invoice_date" class="form-control"></div>
+                                <div class="col-md-3"><label class="form-label-custom">Delivery Date</label><input type="date" name="delivery_date" class="form-control"></div>
+                                <div class="col-md-3"><label class="form-label-custom">Sale Person</label>
+                                    <select name="employee_id" class="form-select">
+                                        @foreach ($employees as $item)
+                                            <option value="{{ $item->id }}">{{ $item->full_name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="col-md-3"><label class="form-label-custom">Price ($) *</label><input type="text" name="price" class="form-control fw-bold text-primary-bold"></div>
+                                <div class="col-md-3"><label class="form-label-custom">VPC VDR</label><select name="vpc_vdr" class="form-select"><option value="Both">Both</option><option value="N/A">N/A</option></select></div>
+
+                                <div class="col-md-2"><label class="form-label-custom">Floor Mat</label><select name="offer_floor_mat" class="form-select"><option value="No">No</option><option value="Yes">Yes</option></select></div>
+                                <div class="col-md-2"><label class="form-label-custom">UV Film</label><select name="offer_uv_film" class="form-select"><option value="No">No</option><option value="Yes">Yes</option></select></div>
+                                <div class="col-md-2"><label class="form-label-custom">License Plate</label><select name="offer_license_plate" class="form-select"><option value="No">No</option><option value="Yes">Yes</option></select></div>
+                                <div class="col-md-2"><label class="form-label-custom">Side Step</label><select name="side_step" class="form-select"><option value="No">No</option><option value="Yes">Yes</option></select></div>
+                                <div class="col-md-2"><label class="form-label-custom">Auto Tailgate</label><select name="auto_tailgate" class="form-select"><option value="No">No</option><option value="Yes">Yes</option></select></div>
+                                <div class="col-md-2"><label class="form-label-custom">Rear Spoiler</label><select name="rear_spoiler" class="form-select"><option value="No">No</option><option value="Yes">Yes</option></select></div>
+
+                                <div class="col-md-3"><label class="form-label-custom">Pro Offer Oil</label><input type="text" name="pro_offer_oil" class="form-control"></div>
+                                <div class="col-md-3"><label class="form-label-custom">Pro Oil Date</label><input type="date" name="pro_offer_oil_date" class="form-control"></div>
+                                <div class="col-md-3"><label class="form-label-custom">Cert Engine Oil</label><input type="text" name="certificate_engine_oil" class="form-control"></div>
+                                <div class="col-md-3"><label class="form-label-custom">Battery IR Date</label><input type="date" name="vihicle_battery" class="form-control"></div>
+
+                                <div class="col-md-6"><label class="form-label-custom">Remark SA</label><input type="text" name="remark_sa" class="form-control"></div>
+                                <div class="col-md-6"><label class="form-label-custom">Feedback Command</label><textarea name="feedback_command" class="form-control" rows="1"></textarea></div>
+                                <div class="col-md-12"><label class="form-label-custom">Attachment (PDF)</label><input type="file" name="attach_file" class="form-control" accept=".pdf"></div>
                             </div>
                         </div>
-                        
+                    </div>
+                </div>
 
-                        <div class="row mb-6 branch-animate">
-                            <label class="col-sm-2 col-form-label" for="basic-default-name">Brand Name</label>
-                            <div class="col-sm-10">
-                                <select name="brand_name"
-                                    class="form-select @error('brand_name') border-danger @enderror">
-                                    <option value="" disabled selected>select brand name</option>
-                                    <option value="MG" @if (old('brand_name') == 'MG') selected @endif>MG</option>
-                                    <option value="Maxus" @if (old('brand_name') == 'Maxus') selected @endif>Maxus
-                                    </option>
-                                </select>
-                                @error('brand_name')
-                                    <small class="text-danger">{{ $message }}</small>
-                                @enderror
-                            </div>
-                        </div>
+                <div class="col-12 text-center pb-5">
+                    <button type="submit" class="btn-submit-node shadow-lg">CREATE SALE REPORT NODE</button>
+                </div>
+            </div>
+        </form>
+    </div>
 
-                        <div class="row mb-6 branch-animate">
-                            <label class="col-sm-2 col-form-label" for="basic-default-name">Customer Name</label>
-                            <div class="col-sm-10">
-                                <input type="text" placeholder="enter customer name"
-                                    class="form-control @error('customer_name') border-danger @enderror"
-                                    name="customer_name" value="{{ old('customer_name') }}">
-                                @error('customer_name')
-                                    <small class="text-danger">{{ $message }}</small>
-                                @enderror
-                            </div>
-                        </div>
-                        
-
-                        <div class="row mb-6 branch-animate">
-                            <label class="col-sm-2 col-form-label" for="basic-default-name">Phone Number</label>
-                            <div class="col-sm-10">
-                                <input type="text" placeholder="enter phone number"
-                                    class="form-control @error('phone_number') border-danger @enderror"
-                                    name="phone_number" value="{{ old('phone_number') }}">
-                                @error('phone_number')
-                                    <small class="text-danger">{{ $message }}</small>
-                                @enderror
-                            </div>
-                        </div>
-
-                        <div class="row mb-6 branch-animate">
-                            <label class="col-sm-2 col-form-label" for="basic-default-name">Gender</label>
-                            <div class="col-sm-10">
-                                <select name="gender" class="form-select @error('gender') border-danger @enderror">
-                                    <option value="" disabled selected>select gender</option>
-                                    <option value="Male" @if (old('gender') == 'Male') selected @endif>Male</option>
-                                    <option value="Female" @if (old('gender') == 'Female') selected @endif>Female</option>
-                                </select>
-                                @error('gender')
-                                    <small class="text-danger">{{ $message }}</small>
-                                @enderror
-                            </div>
-                        </div>
-
-                        <div class="row mb-6 branch-animate">
-                            <label class="col-sm-2 col-form-label" for="basic-default-name">Date of Birth</label>
-                            <div class="col-sm-10">
-                                <input id="dob" onchange="calculateAge()"
-                                    class="form-control @error('dob') border-danger @enderror" type="date"
-                                    id="html5-date-input" name="dob" value="{{ old('dob') }}">
-                                @error('dob')
-                                    <small class="text-danger">{{ $message }}</small>
-                                @enderror
-                            </div>
-                        </div>
-
-                        <div class="row mb-6 branch-animate">
-                            <label class="col-sm-2 col-form-label" for="basic-default-name">Age</label>
-                            <div class="col-sm-10">
-                                <input id="age" type="text" disabled placeholder="age" class="form-control" name="age" value="{{ old('age') }}">
-                            </div>
-                        </div>
-
-                        <div class="row mb-6 branch-animate">
-                            <label class="col-sm-2 col-form-label" for="basic-default-name">Source Customer</label>
-                            <div class="col-sm-10">
-                                <select name="source_id"
-                                    class="form-select @error('source_id') border-danger @enderror">
-                                    <option value="" disabled selected>select source customer</option>
-                                    <option value="Call In" @if (old('source_id') == 'Call In') selected @endif>Call In</option>
-                                    <option value="Referral" @if (old('source_id') == 'Referral') selected @endif>Referral</option>
-                                    <option value="Facebook Page" @if (old('source_id') == 'Facebook Page') selected @endif>Facebook Page</option>
-                                    <option value="Walk In" @if (old('source_id') == 'Walk In') selected @endif>Walk In</option>
-                                    <option value="Personal Page" @if (old('source_id') == 'Personal Page') selected @endif>Personal Page</option>
-                                </select>
-                                @error('source_id')
-                                    <small class="text-danger">{{ $message }}</small>
-                                @enderror
-                            </div>
-                        </div>
-
-                        <div class="row mb-6 branch-animate">
-                            <label class="col-sm-2 col-form-label" for="basic-default-name">Vehicle Model</label>
-                            <div class="col-sm-10">
-                                <input type="hidden" id="old-logistic-id" value="{{ old('logistics_id') }}">
-                                <select id="logistic-select" class="form-select" name="logistics_id">
-                                    <option value="">Select Logistioc</option>
-                                    @if (old('logistics_id'))
-                                        <option value="{{ old('logistics_id') }}" selected>
-                                            {{ optional(App\Models\LogisticsModel::find(old('logistics_id')))->model_name }}
-                                        </option>
-                                    @endif
-                                </select>
-                                @error('logistics_id')
-                                    <small class="text-danger">{{ $message }}</small>
-                                @enderror
-                            </div>
-                        </div>
-
-                        <div class="row mb-6 branch-animate">
-                            <label class="col-sm-2 col-form-label" for="basic-default-name">Plate Number</label>
-                            <div class="col-sm-10">
-                                <input type="text" placeholder="enter plate number"
-                                    class="form-control @error('plate_number') border-danger @enderror"
-                                    name="plate_number" value="{{ old('plate_number') }}">
-                                @error('plate_number')
-                                    <small class="text-danger">{{ $message }}</small>
-                                @enderror
-                            </div>
-                        </div>
-
-                        <div class="row mb-6 branch-animate">
-                            <label class="col-sm-2 col-form-label" for="basic-default-name">Invoice No</label>
-                            <div class="col-sm-10">
-                                <input type="text" placeholder="enter invoice no"
-                                    class="form-control @error('invoice_no') border-danger @enderror" name="invoice_no"
-                                    value="{{ old('invoice_no') }}">
-                                @error('invoice_no')
-                                    <small class="text-danger">{{ $message }}</small>
-                                @enderror
-                            </div>
-                        </div>
-
-                        <div class="row mb-6 branch-animate">
-                            <label class="col-sm-2 col-form-label" for="basic-default-name">Invoice Date</label>
-                            <div class="col-sm-10">
-                                <input class="form-control @error('invoice_date') border-danger @enderror" type="date"
-                                    id="html5-date-input" name="invoice_date" value="{{ old('invoice_date') }}">
-                                @error('invoice_date')
-                                    <small class="text-danger">{{ $message }}</small>
-                                @enderror
-                            </div>
-                        </div>
-
-                        <div class="row mb-6 branch-animate">
-                            <label class="col-sm-2 col-form-label" for="basic-default-name">Delivery Date</label>
-                            <div class="col-sm-10">
-                                <input class="form-control @error('delivery_date') border-danger @enderror" type="date"
-                                    id="html5-date-input" name="delivery_date" value="{{ old('delivery_date') }}">
-                                @error('delivery_date')
-                                    <small class="text-danger">{{ $message }}</small>
-                                @enderror
-                            </div>
-                        </div>
-
-                        <div class="row mb-6 branch-animate">
-                            <label class="col-sm-2 col-form-label" for="basic-default-name">Follow Up</label>
-                            <div class="col-sm-10">
-                                <select name="follow_up"
-                                    class="form-select">
-                                    <option value="" disabled selected>select follow up</option>
-                                    <option value="A" @if (old('follow_up') == 'A') selected @endif>A</option>
-                                    <option value="Not yet contact" @if (old('follow_up') == 'Not yet contact') selected @endif>Not yet contact</option>
-                                    <option value="Not pick up" @if (old('follow_up') == 'Not pick up') selected @endif>Not pick up</option>
-                                    <option value="Can not contact" @if (old('follow_up') == 'Can not contact') selected @endif>Can not contact</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div class="row mb-6 branch-animate">
-                            <label class="col-sm-2 col-form-label" for="basic-default-name">Feedback Command</label>
-                            <div class="col-sm-10">
-                                <input type="text" placeholder="enter feedback commnand" class="form-control" name="feedback_command" value="{{ old('feedback_command') }}">
-                            </div>
-                        </div>
-
-                        <div class="row mb-6 branch-animate">
-                            <label class="col-sm-2 col-form-label" for="basic-default-name">Warranty</label>
-                            <div class="col-sm-10">
-                                <select name="warranty_id"
-                                    class="form-select @error('warranty_id') border-danger @enderror">
-                                    <option value="" disabled selected>select warranty</option>
-                                    @foreach ($warrantys as $item)
-                                        <option value="{{ $item->id }}" @if (old('warranty_id') == $item->id){{ 'selected' }}
-                                        @endif>{{ $item->name }}</option>
-                                    @endforeach
-                                </select>
-                                @error('warranty_id')
-                                    <small class="text-danger">{{ $message }}</small>
-                                @enderror
-                            </div>
-                        </div>
-
-                        <div class="row mb-6 branch-animate">
-                            <label class="col-sm-2 col-form-label" for="basic-default-name">Battery Warranty For LeapMotor</label>
-                            <div class="col-sm-10">
-                                <select name="warranty_leap_motor"
-                                    class="form-select @error('warranty_leap_motor') border-danger @enderror">
-                                    <option value="" disabled selected>select battery warranty for leap motor</option>
-                                    @foreach ($warrantys as $item)
-                                        <option value="{{ $item->id }}" @if (old('warranty_leap_motor') == $item->id){{ 'selected' }}
-                                        @endif>{{ $item->name }}</option>
-                                    @endforeach
-                                </select>
-                                @error('warranty_leap_motor')
-                                    <small class="text-danger">{{ $message }}</small>
-                                @enderror
-                            </div>
-                        </div>
-
-                        <!-- Select from employee full name and position (sale) -->
-                        <div class="row mb-6 branch-animate">
-                            <label class="col-sm-2 col-form-label" for="basic-default-name">Sale Person</label>
-                            <div class="col-sm-10">
-                                <select name="employee_id"
-                                    class="form-select @error('employee_id') border-danger @enderror">
-                                    <option value="" disabled selected>select employee id</option>
-                                    @foreach ($employees as $item)
-                                        <option value="{{ $item->id }}" @if (old('employee_id') == $item->id){{ 'selected' }}
-                                        @endif>{{ $item->full_name }}</option>
-                                    @endforeach
-                                </select>
-                                @error('employee_id')
-                                    <small class="text-danger">{{ $message }}</small>
-                                @enderror
-                            </div>
-                        </div>
-
-                        <div class="row mb-6 branch-animate">
-                            <label class="col-sm-2 col-form-label" for="basic-default-name">Address</label>
-                            <div class="col-sm-10">
-                                <select name="province_id"
-                                    class="form-select @error('province_id') border-danger @enderror">
-                                    <option value="" disabled selected>select address</option>
-                                    @foreach ($provinces as $item)
-                                        <option value="{{ $item->id }}" @if (old('province_id') == $item->id){{ 'selected' }}
-                                        @endif>{{ $item->name }}</option>
-                                    @endforeach
-                                </select>
-                                @error('province_id')
-                                    <small class="text-danger">{{ $message }}</small>
-                                @enderror
-                            </div>
-                        </div>
-
-                        <div class="row mb-6 branch-animate">
-                            <label class="col-sm-2 col-form-label" for="basic-default-name">Contract No</label>
-                            <div class="col-sm-10">
-                                <input type="text" placeholder="enter contract no"
-                                    class="form-control @error('contract_no') border-danger @enderror"
-                                    name="contract_no" value="{{ old('contract_no') }}">
-                                @error('contract_no')
-                                    <small class="text-danger">{{ $message }}</small>
-                                @enderror
-                            </div>
-                        </div>
-
-                        <div class="row mb-6 branch-animate">
-                            <label class="col-sm-2 col-form-label" for="basic-default-name">Contract Date</label>
-                            <div class="col-sm-10">
-                                <input class="form-control @error('contract_date') border-danger @enderror" type="date"
-                                    id="html5-date-input" name="contract_date" value="{{ old('contract_date') }}">
-                                @error('contract_date')
-                                    <small class="text-danger">{{ $message }}</small>
-                                @enderror
-                            </div>
-                        </div>
-
-                        <div class="row mb-6 branch-animate">
-                            <label class="col-sm-2 col-form-label" for="basic-default-name">VPC VDR</label>
-                            <div class="col-sm-10">
-                                <select name="vpc_vdr" class="form-select @error('vpc_vdr') border-danger @enderror">
-                                    <option value="" disabled selected>select vpc vdr</option>
-                                    <option value="Both" @if (old('vpc_vdr') == 'Both') selected @endif>Both</option>
-                                    <option value="N/A" @if (old('vpc_vdr') == 'N/A') selected @endif>N/A</option>
-                                </select>
-                                @error('vpc_vdr')
-                                    <small class="text-danger">{{ $message }}</small>
-                                @enderror
-                            </div>
-                        </div>
-
-                        <div class="row mb-6 branch-animate">
-                            <label class="col-sm-2 col-form-label" for="basic-default-name">Offer License Plate</label>
-                            <div class="col-sm-10">
-                                <select name="offer_license_plate"
-                                    class="form-select @error('offer_license_plate') border-danger @enderror">
-                                    <option value="" disabled selected>select offer license plate</option>
-                                    <option value="Yes" @if (old('offer_license_plate') == 'Yes') selected @endif>Yes
-                                    </option>
-                                    <option value="No" @if (old('offer_license_plate') == 'No') selected @endif>No
-                                    </option>
-                                    <option value="Yes, Not Yet Install" @if (old('offer_license_plate') == 'Yes, Not Yet Install') selected @endif>Yes, Not Yet Install</option>
-                                </select>
-                                @error('offer_license_plate')
-                                    <small class="text-danger">{{ $message }}</small>
-                                @enderror
-                            </div>
-                        </div>
-
-                        <div class="row mb-6 branch-animate">
-                            <label class="col-sm-2 col-form-label" for="basic-default-name">Offer UV Film</label>
-                            <div class="col-sm-10">
-                                <select name="offer_uv_film"
-                                    class="form-select @error('offer_uv_film') border-danger @enderror">
-                                    <option value="" disabled selected>select offer uv film</option>
-                                    <option value="Yes" @if (old('offer_uv_film') == 'Yes') selected @endif>Yes</option>
-                                    <option value="No" @if (old('offer_uv_film') == 'No') selected @endif>No</option>
-                                    <option value="Yes, Not Yet Install" @if (old('offer_uv_film') == 'Yes, Not Yet Install') selected @endif>Yes, Not Yet Install</option>
-                                </select>
-                                @error('offer_uv_film')
-                                    <small class="text-danger">{{ $message }}</small>
-                                @enderror
-                            </div>
-                        </div>
-
-                        <div class="row mb-6 branch-animate">
-                            <label class="col-sm-2 col-form-label" for="basic-default-name">Offer Floor Mat</label>
-                            <div class="col-sm-10">
-                                <select name="offer_floor_mat"
-                                    class="form-select @error('offer_floor_mat') border-danger @enderror">
-                                    <option value="" disabled selected>select offer floor mat</option>
-                                    <option value="Yes" @if (old('offer_floor_mat') == 'Yes') selected @endif>Yes</option>
-                                    <option value="No" @if (old('offer_floor_mat') == 'No') selected @endif>No</option>
-                                    <option value="Yes, Not Yet Install" @if (old('offer_floor_mat') == 'Yes, Not Yet Install') selected @endif>Yes, Not Yet Install</option>
-                                </select>
-                                @error('offer_floor_mat')
-                                    <small class="text-danger">{{ $message }}</small>
-                                @enderror
-                            </div>
-                        </div>
-
-                        <div class="row mb-6 branch-animate">
-                            <label class="col-sm-2 col-form-label" for="basic-default-name">Side Step</label>
-                            <div class="col-sm-10">
-                                <select name="side_step"
-                                    class="form-select @error('side_step') border-danger @enderror">
-                                    <option value="" disabled selected>select side step</option>
-                                    <option value="Yes" @if (old('side_step') == 'Yes') selected @endif>Yes</option>
-                                    <option value="No" @if (old('side_step') == 'No') selected @endif>No</option>
-                                    <option value="Yes, Not Yet Install" @if (old('side_step') == 'Yes, Not Yet Install')
-                                    selected @endif>Yes, Not Yet Install</option>
-                                </select>
-                                @error('side_step')
-                                    <small class="text-danger">{{ $message }}</small>
-                                @enderror
-                            </div>
-                        </div>
-
-                        <div class="row mb-6 branch-animate">
-                            <label class="col-sm-2 col-form-label" for="basic-default-name">Auto Tailgate</label>
-                            <div class="col-sm-10">
-                                <select name="auto_tailgate"
-                                    class="form-select @error('auto_tailgate') border-danger @enderror">
-                                    <option value="" disabled selected>select auto tailgate</option>
-                                    <option value="Yes" @if (old('auto_tailgate') == 'Yes') selected @endif>Yes</option>
-                                    <option value="No" @if (old('auto_tailgate') == 'No') selected @endif>No</option>
-                                    <option value="Yes, Not Yet Install" @if (old('auto_tailgate') == 'Yes, Not Yet Install') selected @endif>Yes, Not Yet Install</option>
-                                </select>
-                                @error('auto_tailgate')
-                                    <small class="text-danger">{{ $message }}</small>
-                                @enderror
-                            </div>
-                        </div>
-
-                        <div class="row mb-6 branch-animate">
-                            <label class="col-sm-2 col-form-label" for="basic-default-name">Rear Spoiler</label>
-                            <div class="col-sm-10">
-                                <select name="rear_spoiler"
-                                    class="form-select @error('rear_spoiler') border-danger @enderror">
-                                    <option value="" disabled selected>select rear spoiler</option>
-                                    <option value="Yes" @if (old('rear_spoiler') == 'Yes') selected @endif>Yes</option>
-                                    <option value="No" @if (old('rear_spoiler') == 'No') selected @endif>No</option>
-                                    <option value="Yes, Not Yet Install" @if (old('rear_spoiler') == 'Yes, Not Yet Install') selected @endif>Yes, Not Yet Install</option>
-                                </select>
-                                @error('rear_spoiler')
-                                    <small class="text-danger">{{ $message }}</small>
-                                @enderror
-                            </div>
-                        </div>
-
-                        <div class="row mb-6 branch-animate">
-                            <label class="col-sm-2 col-form-label" for="basic-default-name">Certificate Engine
-                                Oil</label>
-                            <div class="col-sm-10">
-                                <select name="certificate_engine_oil"
-                                    class="form-select @error('certificate_engine_oil') border-danger @enderror">
-                                    <option value="" disabled selected>select certificate engine oil</option>
-                                    <option value="Yes" @if (old('certificate_engine_oil') == 'Yes') selected @endif>Yes
-                                    </option>
-                                    <option value="No" @if (old('certificate_engine_oil') == 'No') selected @endif>No
-                                    </option>
-                                    <option value="Yes, Not Yet Install" @if (old('certificate_engine_oil') == 'Yes, Not Yet Install') selected @endif>Yes, Not Yet Install</option>
-                                </select>
-                                @error('certificate_engine_oil')
-                                    <small class="text-danger">{{ $message }}</small>
-                                @enderror
-                            </div>
-                        </div>
-
-                        <div class="row mb-6 branch-animate">
-                            <label class="col-sm-2 col-form-label" for="basic-default-name">Pro Offer Oil</label>
-                            <div class="col-sm-10">
-                                <select name="pro_offer_oil"
-                                    class="form-select @error('pro_offer_oil') border-danger @enderror">
-                                    <option value="" disabled selected>select pro offer oil</option>
-                                    <option value="First" @if (old('pro_offer_oil') == 'First') selected @endif>First</option>
-                                    <option value="1" @if (old('pro_offer_oil') == '1') selected @endif>1</option>
-                                    <option value="2" @if (old('pro_offer_oil') == '2') selected @endif>2</option>
-                                    <option value="3" @if (old('pro_offer_oil') == '3') selected @endif>3</option>
-                                    <option value="4" @if (old('pro_offer_oil') == '4') selected @endif>4</option>
-                                    <option value="5" @if (old('pro_offer_oil') == '5') selected @endif>5</option>
-                                    <option value="6" @if (old('pro_offer_oil') == '6') selected @endif>6</option>
-                                    <option value="7" @if (old('pro_offer_oil') == '7') selected @endif>7</option>
-                                    <option value="8" @if (old('pro_offer_oil') == '8') selected @endif>8</option>
-                                    <option value="9" @if (old('pro_offer_oil') == '9') selected @endif>9</option>
-                                    <option value="10" @if (old('pro_offer_oil') == '10') selected @endif>10</option>
-                                    <option value="Completed" @if (old('pro_offer_oil') == 'Completed') selected @endif>
-                                        Completed</option>
-                                    <option value="N/A" @if (old('pro_offer_oil') == 'N/A') selected @endif>N/A</option>
-                                </select>
-                                @error('pro_offer_oil')
-                                    <small class="text-danger">{{ $message }}</small>
-                                @enderror
-                            </div>
-                        </div>
-
-                        <div class="row mb-6 branch-animate">
-                            <label class="col-sm-2 col-form-label" for="basic-default-name">Pro Offer Oil Date</label>
-                            <div class="col-sm-10">
-                                <input class="form-control @error('pro_offer_oil_date') border-danger @enderror"
-                                    type="date" id="html5-date-input" name="pro_offer_oil_date"
-                                    value="{{ old('pro_offer_oil_date') }}">
-                                @error('pro_offer_oil_date')
-                                    <small class="text-danger">{{ $message }}</small>
-                                @enderror
-                            </div>
-                        </div>
-
-                        <div class="row mb-6 branch-animate">
-                            <label class="col-sm-2 col-form-label" for="basic-default-name">Vehicle Battery IR</label>
-                            <div class="col-sm-10">
-                                <input class="form-control @error('vihicle_battery') border-danger @enderror"
-                                    type="date" id="html5-date-input" name="vihicle_battery"
-                                    value="{{ old('vihicle_battery') }}">
-                                @error('vihicle_battery')
-                                    <small class="text-danger">{{ $message }}</small>
-                                @enderror
-                            </div>
-                        </div>
-
-                        <div class="row mb-6 branch-animate">
-                            <label class="col-sm-2 col-form-label" for="basic-default-name">Price</label>
-                            <div class="col-sm-10">
-                                <input type="text" placeholder="enter price"
-                                    class="form-control @error('price') border-danger @enderror" name="price"
-                                    value="{{ old('price') }}">
-                                @error('price')
-                                    <small class="text-danger">{{ $message }}</small>
-                                @enderror
-                            </div>
-                        </div>
-
-                        <div class="row mb-6 branch-animate">
-                            <label class="col-sm-2 col-form-label" for="basic-default-name">Remark Sa</label>
-                            <div class="col-sm-10">
-                                <textarea name="remark_sa" class="form-control" placeholder="Enter remark sa" style="height: 103px;"></textarea>
-                            </div>
-                        </div>
-
-                        <div class="row mb-6 branch-animate">
-                            <label class="col-sm-2 col-form-label" for="basic-default-name">Attach File</label>
-                            <div class="col-sm-3">
-                                <input class="form-control" type="file" id="formFile" name="attach_file"
-                                    accept="application/pdf">
-                            </div>
-                        </div>
-
-                        <div class="mt-2">
-                            <button type="submit" class="btn btn-primary me-2">Save</button>
-                            <a href="{{ url('/sale-reports') }}" class="btn btn-outline-secondary">Cancel</a>
-                        </div>
-                    </form>
+    <div class="modal fade" id="largeModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content border-0">
+                <div class="modal-header border-bottom"><h5 class="fw-800 m-0">Select Model Node</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+                <div class="modal-body p-0">
+                    <table id="datatable" class="table table-hover mb-0">
+                        <thead><tr><th>No</th><th>Preview</th><th>Model Name</th><th>Color Specs</th></tr></thead>
+                        <tbody>
+                            @foreach ($carImages as $index => $c)
+                                <tr class="select-image" data-id="{{ $c->id }}" data-model="{{ $c->modelName }}" data-image="{{ url($c->image_name ? '/imageCar/'.$c->image_name : 'backend/assets/img/avatars/1.png') }}">
+                                    <td>{{ $index + 1 }}</td>
+                                    <td><img src="{{ url($c->image_name ? '/imageCar/'.$c->image_name : 'backend/assets/img/avatars/1.png') }}" width="60" height="40" style="object-fit: contain;"></td>
+                                    <td class="fw-800">{{ $c->modelName }}</td>
+                                    <td class="small fw-bold text-muted">{{ $c->colorName }}</td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
     </div>
-</div>
 
-<!------------- Script  ------------->
-<script>
-    $('#datatable').DataTable({
-        "iDisplayLength": 25
-    });
-
-    //
-    document.addEventListener("DOMContentLoaded", function () {
-        document.querySelectorAll(".select-image").forEach(row => {
-            row.addEventListener("click", function () {
-                let imageUrl = this.getAttribute("data-image");
-                let modelName = this.getAttribute("data-model");
-                let imageId = this.getAttribute("data-id");
-
-                document.getElementById("target").src = imageUrl;
-                document.getElementById("modelName").innerText = modelName;
-                document.getElementById("carImageId").value = imageId;
-
-                // Close the modal after selection
-                let modal = document.getElementById('largeModal');
-                let modalInstance = bootstrap.Modal.getInstance(modal);
-                if (modalInstance) {
-                    modalInstance.hide();
+    <script>
+        $(document).ready(function() {
+            $('#datatable').DataTable({
+                "pageLength": 10,
+                "language": {
+                    "search": "Search models:",
+                    "lengthMenu": "Show _MENU_ models per page"
                 }
+            })
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const table = document.getElementById('datatable');
+            table.addEventListener('click', function(e) {
+                const row = e.target.closest('tr.select-image');
+                if (!row) return;
+
+                const imageUrl = row.getAttribute('data-image');
+                const modelName = row.getAttribute('data-model');
+                const imageId = row.getAttribute('data-id');
+
+                document.getElementById('target').src = imageUrl;
+                document.getElementById('modelName').innerText = modelName;
+                document.getElementById('carImageId').value = imageId;
+
+                const modal = document.getElementById('largeModal');
+                bootstrap.Modal.getOrCreateInstance(modal).hide();
             });
         });
-    });
 
-    // ------------------------ Calulator Age ------------------------
-    function calculateAge() {
-        const dobInput = document.getElementById('dob');
-        const ageInput = document.getElementById('age');
-        const dob = new Date(dobInput.value);
-        const today = new Date();
-
-        if (dobInput.value) {
-            let age = today.getFullYear() - dob.getFullYear();
-            const monthDiff = today.getMonth() - dob.getMonth();
-            const dayDiff = today.getDate() - dob.getDate();
-
-            // Adjust age if the birthday hasn't occurred yet this year
-            if (monthDiff < 0 || (monthDiff === 0 && dayDiff < 0)) {
-                age--;
-            }
-
-            ageInput.value = age > 0 ? age : "Invalid Date of Birth";
-        } else {
-            ageInput.value = "";
-        }
-    }
-
-    // ------------------------ Get Logistic ---------------------
-    $('#logistic-select').select2({
-        placeholder: "Select Logistic",
-        allowClear: true,
-        ajax: {
-            url: "{{ url('/sale-reports/create') }}", // Replace with the correct route
-            type: "GET",
-            dataType: 'json',
-            delay: 250, // Delay to reduce server load
-            data: function (params) {
-                return {
-                    search: params.term, // Search query
-                    type: 'logistic'
-
-                };
-            },
-            processResults: function (data) {
-                return {
-                    results: $.map(data, function (item) {
-                        return {
-                            id: item.id,
-                            text: item.model_name + ' - ' + item.vin_number + ' - ' + item.engine_number
-                        };
-                    })
-                };
-            },
-            cache: true
-        }
-    });
-
-    let oldLogisticId = $('#old-logistic-id').val();
-    if (oldLogisticId) {
-        $.ajax({
-            url: "{{ url('/sale-reports/create') }}", // Use the same endpoint
-            type: "GET",
-            data: { search: '', type: 'logistic' }, // Adjust this if needed
-            success: function (data) {
-                let selectedItem = data.find(item => item.id == oldLogisticId);
-                if (selectedItem) {
-                    let optionText = selectedItem.model_name + ' - ' + selectedItem.vin_number + ' - ' + selectedItem.engine_number;
-                    let option = new Option(optionText, selectedItem.id, true, true);
-                    $('#logistic-select').append(option).trigger('change');
-                }
+        $('#logistic-select').select2({
+            placeholder: "Select Logistic",
+            allowClear: true,
+            ajax: {
+                url: "{{ url('/sale-reports/create') }}",
+                type: "GET",
+                dataType: 'json',
+                delay: 250,
+                data: function(params) {
+                    return {
+                        search: params.term,
+                        type: 'logistic'
+                    };
+                },
+                processResults: function(data) {
+                    return {
+                        results: $.map(data, function(item) {
+                            return {
+                                id: item.id,
+                                text: item.model_name + ' - ' + item.vin_number + ' - ' + item.engine_number
+                            };
+                        })
+                    };
+                },
+                cache: true
             }
         });
-    }
 
-
-    // Event listener for selection
-    $('#logistic-select').on('change', function () {
-        let selectedOption = $(this).val();
-        console.log('Selected option:', selectedOption);
-    });
-    // ------------------------ Get Logistic ---------------------
-
-    // ------------------------ Get Member Card ---------------------
-    $('#memberCard-select').select2({
-        placeholder: "Select Member Card",
-        allowClear: true,
-        ajax: {
-            url: "{{ url('/sale-reports/create') }}", // Replace with the correct route
-            type: "GET",
-            dataType: 'json',
-            delay: 250, // Delay to reduce server load
-            data: function (params) {
-                return {
-                    search: params.term, // Search query
-                    type: 'memberCard'
-
-                };
-            },
-            processResults: function (data) {
-                return {
-                    results: $.map(data, function (item) {
-                        return {
-                            id: item.id,
-                            text: item.member_card
-                        };
-                    })
-                };
-            },
-            cache: true
-        }
-    });
-
-    let oldMemberCardId = $('#old-memberCard-id').val();
-    if (oldMemberCardId) {
-        $.ajax({
-            url: "{{ url('/sale-reports/create') }}", // Use the same endpoint
-            type: "GET",
-            data: { search: '', type: 'memberCard' }, // Adjust this if needed
-            success: function (data) {
-                let selectedItem = data.find(item => item.id == oldMemberCardId);
-                if (selectedItem) {
-                    let optionText = selectedItem.member_card;
-                    let option = new Option(optionText, selectedItem.id, true, true);
-                    $('#memberCard-select').append(option).trigger('change');
+        let oldLogisticId = $('#old-logistic-id').val();
+        if (oldLogisticId) {
+            $.ajax({
+                url: "{{ url('/sale-reports/create') }}",
+                type: "GET",
+                data: { search: '', type: 'logistic' },
+                success: function(data) {
+                    let selectedItem = data.find(item => item.id == oldLogisticId);
+                    if (selectedItem) {
+                        let optionText = selectedItem.model_name + ' - ' + selectedItem.vin_number + ' - ' + selectedItem.engine_number;
+                        let option = new Option(optionText, selectedItem.id, true, true);
+                        $('#logistic-select').append(option).trigger('change');
+                    }
                 }
+            });
+        }
+
+        $('#memberCard-select').select2({
+            placeholder: "Select Member Card",
+            allowClear: true,
+            ajax: {
+                url: "{{ url('/sale-reports/create') }}",
+                type: "GET",
+                dataType: 'json',
+                delay: 250,
+                data: function(params) {
+                    return {
+                        search: params.term,
+                        type: 'memberCard'
+                    };
+                },
+                processResults: function(data) {
+                    return {
+                        results: $.map(data, function(item) {
+                            return { id: item.id, text: item.member_card };
+                        })
+                    };
+                },
+                cache: true
             }
         });
-    }
-    // Event listener for selection
-    $('#memberCard-select').on('change', function () {
-        let selectedOption = $(this).val();
-        console.log('Selected option:', selectedOption);
-    });
-    // ------------------------ Get Member Card ---------------------
-</script>
 
+        let oldMemberCardId = $('#old-memberCard-id').val();
+        if (oldMemberCardId) {
+            $.ajax({
+                url: "{{ url('/sale-reports/create') }}",
+                type: "GET",
+                data: { search: '', type: 'memberCard' },
+                success: function(data) {
+                    let selectedItem = data.find(item => item.id == oldMemberCardId);
+                    if (selectedItem) {
+                        let optionText = selectedItem.member_card;
+                        let option = new Option(optionText, selectedItem.id, true, true);
+                        $('#memberCard-select').append(option).trigger('change');
+                    }
+                }
+                
+            });
+        }
+    </script>
 @endsection

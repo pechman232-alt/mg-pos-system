@@ -1,207 +1,208 @@
 @extends('layouts.homePages')
 @section('content')
-    <style>
-      /* Table header with solid color */
-  #datatable thead th {
-            background-color: #DEAA5E;
-            /* gold-like header */
-            color: white;
-            font-weight: 600;
-            font-size: 16px;
-            text-align: center;
-            padding: 12px;
-            border-bottom: 2px solid #cfa060;
-            opacity: 0;
-            transform: translateY(-10px);
-            animation: fadeInHeader 0.5s forwards;
-        }
 
-        /* Header fade-in animation */
-        @keyframes fadeInHeader {
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-        /* Table row animation */
-        #datatable tbody tr {
-            opacity: 0;
-            transform: translateY(20px);
-            animation: fadeInRow 0.5s forwards;
-        }
+<style>
+    :root { --brand-indigo: #4f46e5; --brand-success: #10b981; }
+    body { font-family: 'Plus Jakarta Sans', 'Noto Sans Khmer', sans-serif !important; background-color: #f8fafc; }
+    
+    /* Summary Card Styling */
+    .stat-card { border: none; border-radius: 20px; transition: 0.3s; background: #fff; border: 1px solid #f1f5f9; }
+    .stat-card:hover { transform: translateY(-5px); box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
+    .icon-shape { width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; border-radius: 12px; }
+    
+    /* Table & Filter Styling */
+    .card-main { border: none; border-radius: 20px; box-shadow: 0 4px 25px rgba(0,0,0,0.05); background: #fff; overflow: hidden; }
+    .filter-wrapper { background: #fff; border-radius: 20px; border: 1px solid #eef2f6; margin-bottom: 25px; padding: 25px; }
+    .table thead th { background-color: #f8fafc; text-transform: uppercase; font-size: 11px; letter-spacing: 0.5px; color: #64748b; padding: 15px; border-bottom: 1px solid #f1f5f9; }
+    
+    .btn-action { border-radius: 10px; font-weight: 700; padding: 10px 20px; transition: 0.3s; }
+</style>
 
-        /* Stagger rows for sequential animation */
-        #datatable tbody tr:nth-child(1) {
-            animation-delay: 0.1s;
-        }
+<div class="container-xxl flex-grow-1 container-p-y">
+    
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h4 class="fw-bold mb-1">Personnel Intelligence</h4>
+            <p class="text-muted small mb-0">Manage organizational nodes and digital identities</p>
+        </div>
+        <div class="d-flex gap-2">
+            <button class="btn btn-outline-primary btn-action" data-bs-toggle="modal" data-bs-target="#importModal">
+                <i class="fas fa-file-import me-2"></i> IMPORT
+            </button>
+            <a href="{{ route('employees.export') }}" class="btn btn-outline-success btn-action">
+                <i class="fas fa-file-export me-2"></i> EXPORT
+            </a>
+            <a href="{{ route('employees.create') }}" class="btn btn-primary btn-action shadow-sm">
+                <i class="fas fa-plus me-2"></i> ADD STAFF
+            </a>
+        </div>
+    </div>
 
-        #datatable tbody tr:nth-child(2) {
-            animation-delay: 0.2s;
-        }
-
-        #datatable tbody tr:nth-child(3) {
-            animation-delay: 0.3s;
-        }
-
-        /* Add more if needed */
-
-        /* Row fade-in keyframe */
-        @keyframes fadeInRow {
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        /* Hover effect for rows */
-        #datatable tbody tr:hover {
-            background-color: #f5f5f5;
-            transform: scale(1.02);
-            transition: all 0.3s ease;
-        }
-
-        /* Action buttons hover effect */
-        .btn-outline-secondary {
-            transition: all 0.3s ease;
-        }
-
-        .btn-outline-secondary:hover {
-            transform: scale(1.1);
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-        }
-
-        /* Delete button specific hover effect */
-        .btn-outline-secondary[style*="background-color: red"]:hover {
-            transform: scale(1.1);
-            background-color: #ff4c4c;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-        }
-    </style>
-
-    <div class="container-xxl flex-grow-1 container-p-y">
-
-        <div class="card">
-            <nav class="navbar navbar-example navbar-expand-lg bg-light">
-                <div class="container-fluid">
-                    <div class="collapse navbar-collapse" id="navbar-ex-3">
-                        <div class="navbar-nav me-auto">
-                            <a class="nav-item nav-link active" href="" style="font-size: 18px;">
-                                <i class='bx bx-package'></i> List of Employees
-                            </a>
-                        </div>
-
-                        <button type="button" class="btn btn-success mr-1" data-bs-toggle="modal"
-                            data-bs-target="#basicModal">Import Excel</button>
-
-                        <div class="modal fade" id="basicModal" tabindex="-1" style="display: none;" aria-hidden="true">
-                            <form action="#" method="POST" enctype="multipart/form-data">
-                                @csrf
-                                <div class="modal-dialog" role="document">
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                            <h5 class="modal-title" id="exampleModalLabel1">Employees</h5>
-                                            <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                                aria-label="Close"></button>
-                                        </div>
-                                        <div class="modal-body">
-                                            <div class="row">
-                                                <div class="col mb-6">
-                                                    <a href="#" class="btn btn-outline-primary">Download Template Excel</a>
-                                                </div>
-                                            </div>
-                                            <div class="row">
-                                                <div class="col mb-6">
-                                                    <label for="nameBasic" class="form-label">Upload File Excel</label>
-                                                    <input type="file" name="file" class="form-control">
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="modal-footer">
-                                            <button type="button" class="btn btn-outline-secondary"
-                                                data-bs-dismiss="modal">Close</button>
-                                            <button class="btn btn-primary">Save changes</button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </form>
-                        </div>
-                        <a href="{{ url('/employees/create') }}" class="btn btn-outline-primary">Add Employees</a>
-                    </div>
+    <div class="row g-3 mb-4">
+        <div class="col-md-3">
+            <div class="stat-card p-3 d-flex align-items-center gap-3">
+                <div class="icon-shape bg-label-primary"><i class="fas fa-users text-primary"></i></div>
+                <div>
+                    <h5 class="fw-800 mb-0">{{ $employees->total() }}</h5>
+                    <small class="text-muted text-uppercase fw-bold" style="font-size: 10px;">Total Personnel</small>
                 </div>
-            </nav>
-            <div class="card-body">
-                <div class="table-responsive text-nowrap">
-                    <table id="datatable" class="display">
-                        <thead>
-                            <tr>
-                                <th style="width:25px;">No</th>
-                                <th style="text-align: start">Full Name</th>
-                                <th style="text-align: start">Position</th>
-                                <th style="text-align: start">Gender</th>
-                                <th style="text-align: start">UserID</th>
-                                <th style="text-align: start">Company</th>
-                                <th style="text-align: start">Department</th>
-                                <th style="text-align: start">Activate</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($employees as $index => $item)
-                                <tr>
-                                    <td style="text-align: center;">{{ $index + 1 }}</td>
-                                    <td style="text-align: start">
-                                        <a href="{{ url('/employees/details', encrypt($item->id)) }}">
-                                            <div class="d-flex justify-content-start align-items-center user-name">
-                                                <div class="avatar-wrapper">
-                                                    <div class="avatar me-2">
-                                                        <img src="{{ url($item->image_employee == '' ? 'backend/assets/img/avatars/1.png' : '/imageEmployee/' . $item->image_employee) }}"
-                                                            alt="Avatar" class="rounded-circle">
-                                                    </div>
-                                                </div>
-                                                <div class="d-flex flex-column">
-                                                    <span class="emp_name text-truncate">{{ $item->full_name }}</span>
-                                                </div>
-                                            </div>
-                                        </a>
-                                    </td>
-                                    <td style="text-align: start">{{ $item->postionName }}</td>
-                                    <td style="text-align: start">{{ $item->gender }}</td>
-                                    <td style="text-align: start">{{ $item->user_id }}</td>
-                                    <td style="text-align: start">{{ $item->companyName }}</td>
-                                    <td style="text-align: start">{{ $item->departmentName }}</td>
-                                    <td style="text-align: start">{{ $item->activate }}</td>
-                                    <td style="width: 100px">
-                                        <div class="btn-group" role="group" aria-label="First group">
-                                            <a href="" class="btn btn-outline-secondary"><i class="tf-icons bx bx-edit"></i></a>
-                                            <a onclick="return confirm('Are you sure, you want to delete?')" href=""
-                                                class="btn btn-outline-secondary" style="background-color: red; color:white"><i
-                                                    class="tf-icons bx bx-trash"></i></a>
-                                        </div>
-                                    </td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card p-3 d-flex align-items-center gap-3">
+                <div class="icon-shape bg-label-success"><i class="fas fa-user-check text-success"></i></div>
+                <div>
+                    <h5 class="fw-800 mb-0">{{ $employees->where('status', 1)->count() }}</h5>
+                    <small class="text-muted text-uppercase fw-bold" style="font-size: 10px;">Active Nodes</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card p-3 d-flex align-items-center gap-3">
+                <div class="icon-shape bg-label-warning"><i class="fas fa-building text-warning"></i></div>
+                <div>
+                    <h5 class="fw-800 mb-0">{{ $companies->count() }}</h5>
+                    <small class="text-muted text-uppercase fw-bold" style="font-size: 10px;">Entities</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card p-3 d-flex align-items-center gap-3">
+                <div class="icon-shape bg-label-info"><i class="fas fa-sitemap text-info"></i></div>
+                <div>
+                    <h5 class="fw-800 mb-0">{{ $departments->count() }}</h5>
+                    <small class="text-muted text-uppercase fw-bold" style="font-size: 10px;">Departments</small>
                 </div>
             </div>
         </div>
     </div>
 
-    <script>
-        $('#datatable').DataTable({
-            "iDisplayLength": 25
-        });
+    <div class="filter-wrapper shadow-sm">
+        <div class="row g-3">
+            <div class="col-md-4">
+                <label class="small fw-bold text-muted mb-1 text-uppercase">Live Search</label>
+                <div class="input-group input-group-merge">
+                    <span class="input-group-text border-0 bg-light"><i class="fas fa-search"></i></span>
+                    <input type="text" id="ajaxSearch" class="form-control border-0 bg-light fw-semibold" placeholder="Search name, ID, phone...">
+                </div>
+            </div>
+            <div class="col-md-3">
+                <label class="small fw-bold text-muted mb-1 text-uppercase">Entity</label>
+                <select id="ajaxCompany" class="form-select border-0 bg-light fw-semibold">
+                    <option value="">All Entities</option>
+                    @foreach($companies as $com)
+                        <option value="{{ $com->id }}">{{ $com->company_name }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label class="small fw-bold text-muted mb-1 text-uppercase">Department</label>
+                <select id="ajaxDept" class="form-select border-0 bg-light fw-semibold">
+                    <option value="">All Departments</option>
+                    @foreach($departments as $dept)
+                        <option value="{{ $dept->id }}">{{ $dept->name }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <div class="col-md-2 d-flex align-items-end">
+                <button class="btn btn-dark w-100 fw-bold shadow-sm" style="height: 45px;" onclick="location.reload()">
+                    <i class="fas fa-sync-alt"></i>
+                </button>
+            </div>
+        </div>
+    </div>
 
+    <div class="card card-main">
+        <div class="table-responsive text-nowrap">
+            <table class="table table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th class="ps-4">#</th>
+                        <th>Personnel Identity</th>
+                        <th>Organizational Unit</th>
+                        <th>Connection</th>
+                        <th>System Access</th>
+                        <th class="text-center">Status</th>
+                        <th class="text-end pe-4">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="employeeData">
+                    @include('Employees.employee_table_partial')
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
 
-        $(document).ready(function () {
-            $('.offcanvasTop').click(function (e) {
-                e.preventDefault();
+<div class="modal fade" id="importModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg" style="border-radius: 20px;">
+            <div class="modal-header border-bottom pb-3">
+                <h5 class="modal-title fw-bold"><i class="fas fa-file-excel me-2 text-success"></i> Import Personnel Data</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="{{ route('employees.import') }}" method="POST" enctype="multipart/form-data">
+                @csrf
+                <div class="modal-body py-4 text-center">
+                    <div class="mb-3">
+                        <i class="fas fa-cloud-upload-alt fa-3x text-light"></i>
+                    </div>
+                    <p class="text-muted small">Please select a valid <b>.xlsx</b> or <b>.csv</b> file based on the system template.</p>
+                    <input type="file" name="file" class="form-control" accept=".xlsx, .xls, .csv" required>
+                </div>
+                <div class="modal-footer border-0 pt-0">
+                    <button type="button" class="btn btn-label-secondary fw-bold" data-bs-dismiss="modal">CANCEL</button>
+                    <button type="submit" class="btn btn-primary fw-bold px-4">START SYNC</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 
-                var id = $(this).val();
-                $('#id').val(id);
-                $('#deleteModal').modal('show');
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function() {
+        function fetchData(page = 1) {
+            let search = $('#ajaxSearch').val();
+            let company = $('#ajaxCompany').val();
+            let dept = $('#ajaxDept').val();
+            $('#employeeData').css('opacity', '0.5');
+
+            $.ajax({
+                url: "{{ route('employees.index') }}?page=" + page + "&search=" + search + "&company=" + company + "&dept=" + dept,
+                success: function(data) {
+                    $('#employeeData').html(data).animate({opacity: 1}, 200);
+                }
             });
+        }
+
+        $('#ajaxSearch').on('keyup', function() { fetchData(1); });
+        $('#ajaxCompany, #ajaxDept').on('change', function() { fetchData(1); });
+
+        $(document).on('click', '#laravel-ajax-pagination a', function(e) {
+            e.preventDefault();
+            let page = $(this).attr('href').split('page=')[1];
+            fetchData(page);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         });
-    </script>
+
+        window.deleteEmployee = function(id) {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You want to archive this personnel node?",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#4f46e5',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, archive it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $(`#delete-form-${id}`).submit();
+                }
+            })
+        }
+    });
+</script>
 @endsection

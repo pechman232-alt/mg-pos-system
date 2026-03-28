@@ -1,352 +1,354 @@
 @extends('layouts.homePages')
 @section('content')
 
-    <style>
-        /* Fade-in the entire card */
-.card {
-    opacity: 0;
-    transform: translateY(20px);
-    animation: fadeInCard 0.6s forwards;
-}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-/* Animate the card header */
-.card-header {
-    background: linear-gradient(90deg, #DEAA5E, #F5C16C);
-    color: white;
-    font-size: 20px;
-    font-weight: 700;
-    padding: 15px 20px;
-    border-radius: 10px 10px 0 0;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-    opacity: 0;
-    transform: translateY(-20px);
-    animation: fadeInHeader 0.6s forwards;
-    animation-delay: 0.2s;
-}
+<style>
+    /* --- GLOBAL BRANDING --- */
+    :root {
+        --brand-indigo: #4f46e5;
+        --brand-purple: #7c3aed;
+        --brand-pink: #ec4899;
+        --brand-red: #ef4444;
+        --bg-body: #f8fafc;
+        --font-family: 'Plus Jakarta Sans', sans-serif !important;
+    }
 
-/* Row animation */
-.row {
-    opacity: 0;
-    transform: translateX(-20px);
-    animation: fadeInRow 0.5s forwards;
-}
+    body, .container-xxl {
+        font-family: var(--font-family);
+        background-color: var(--bg-body);
+        font-size: 0.85rem;
+        color: #1e293b;
+    }
 
-/* Stagger rows for sequential animation */
-.row:nth-child(1) { animation-delay: 0.3s; }
-.row:nth-child(2) { animation-delay: 0.4s; }
-.row:nth-child(3) { animation-delay: 0.5s; }
-.row:nth-child(4) { animation-delay: 0.6s; }
-.row:nth-child(5) { animation-delay: 0.7s; }
+    .container-xxl {
+        max-width: 100% !important;
+        width: 100% !important;
+        padding: 1.5rem 2rem !important;
+    }
 
-/* Input and select focus effect */
-.form-control, .form-select {
-    transition: all 0.3s ease;
-}
+    /* --- PREMIUM CARD STYLING --- */
+    .full-width-card {
+        width: 100% !important;
+        border: none;
+        border-radius: 16px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+        background: #fff;
+        overflow: hidden;
+    }
 
-.form-control:focus, .form-select:focus {
-    border-color: #DEAA5E;
-    box-shadow: 0 0 8px rgba(222, 170, 94, 0.5);
-}
+    /* 4-Color Gradient Header */
+    .card-header-gradient {
+        background: linear-gradient(90deg, var(--brand-indigo) 0%, var(--brand-purple) 33%, var(--brand-pink) 66%, var(--brand-red) 100%) !important;
+        padding: 20px 25px;
+        border-bottom: none;
+    }
 
-/* Buttons animation */
-.btn {
-    opacity: 0;
-    transform: translateY(10px);
-    animation: fadeInButton 0.5s forwards;
-    animation-delay: 0.8s;
-    transition: all 0.3s ease;
-}
+    .header-title {
+        color: #ffffff !important;
+        font-weight: 800;
+        font-size: 1.1rem;
+        margin: 0;
+        letter-spacing: -0.5px;
+    }
 
-.btn:hover {
-    transform: scale(1.05);
-}
+    /* --- FORM ELEMENTS --- */
+    .form-label {
+        font-weight: 700;
+        font-size: 0.75rem;
+        color: #475569;
+        text-transform: uppercase;
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        letter-spacing: 0.5px;
+    }
 
-/* Profile image hover effect */
-#target {
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
+    .form-control, .form-select {
+        height: 48px;
+        padding: 10px 16px;
+        border-radius: 10px;
+        border: 1.5px solid #e2e8f0;
+        font-size: 0.85rem;
+        background-color: #fcfdfe;
+        font-weight: 500;
+        transition: all 0.2s ease;
+    }
 
-#target:hover {
-    transform: scale(1.05);
-    box-shadow: 0 6px 15px rgba(0,0,0,0.2);
-}
+    .form-control:focus, .form-select:focus {
+        background-color: #ffffff;
+        border-color: var(--brand-indigo);
+        box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
+        outline: none;
+    }
 
-/* Keyframes */
-@keyframes fadeInCard {
-    to { opacity: 1; transform: translateY(0); }
-}
+    .is-invalid {
+        border-color: var(--brand-red) !important;
+        background-color: #fef2f2 !important;
+    }
 
-@keyframes fadeInHeader {
-    to { opacity: 1; transform: translateY(0); }
-}
+    /* --- BUTTONS --- */
+    .btn-save {
+        background-color: #1e293b;
+        color: white;
+        border: none;
+        font-weight: 800;
+        padding: 14px 30px;
+        border-radius: 12px;
+        font-size: 0.95rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 12px rgba(30, 41, 59, 0.2);
+        text-transform: uppercase;
+    }
 
-@keyframes fadeInRow {
-    to { opacity: 1; transform: translateX(0); }
-}
+    .btn-save:hover { 
+        background-color: #000; 
+        transform: translateY(-2px); 
+        color: white; 
+    }
 
-@keyframes fadeInButton {
-    to { opacity: 1; transform: translateY(0); }
-}
+    .btn-back {
+        background: rgba(255, 255, 255, 0.2);
+        color: #fff;
+        border: 1px solid rgba(255, 255, 255, 0.4);
+        font-size: 0.75rem;
+        font-weight: 700;
+        padding: 8px 18px;
+        text-decoration: none;
+        border-radius: 8px;
+        transition: 0.2s;
+    }
+    .btn-back:hover { background: rgba(255, 255, 255, 0.3); color: #fff; }
 
+    /* --- AVATAR PREVIEW --- */
+    #target {
+        border-radius: 16px;
+        object-fit: cover;
+        border: 4px solid #f8fafc;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+    }
 
-    </style>
+    /* --- SELECT2 OVERRIDES --- */
+    .select2-container .select2-selection--single {
+        height: 48px !important;
+        border: 1.5px solid #e2e8f0 !important;
+        border-radius: 10px !important;
+        background-color: #fcfdfe !important;
+        display: flex;
+        align-items: center;
+    }
+    .select2-container--default .select2-selection--single .select2-selection__rendered {
+        padding-left: 15px !important;
+        font-weight: 500;
+        color: #1e293b !important;
+    }
+    .select2-container--default .select2-selection--single .select2-selection__arrow { height: 46px !important; }
 
-    <div class="container-xxl flex-grow-1 container-p-y">
+    .input-group-text {
+        background: #f8fafc;
+        border: 1.5px solid #e2e8f0;
+        border-radius: 0 10px 10px 0;
+        color: #94a3b8;
+    }
 
-        <div class="row">
-            <div class="col-md-12">
-                <div class="card mb-4">
-                    <h5 class="card-header">Add Users</h5>
-                    <hr class="my-0">
-                    <div class="card-body">
-                        <form action="{{ url('/users/store') }}" method="POST" action="/upload" enctype="multipart/form-data">
-                            @csrf
-                            <div class="row">
-                                <div class="mb-3 col-md-4">
-                                    <label class="form-label" for="basic-default-fullname">Full-Name</label>
-                                    <input type="text" placeholder="Enter full-name" class="form-control @error('full_name') border-danger @enderror" name="full_name" value="{{ old('full_name') }}">
-                                    @error('full_name')
-                                        <small class="text-danger">{{ $message }}</small>
-                                    @enderror
-                                </div>
+    /* Animation */
+    .animate-up {
+        opacity: 0;
+        transform: translateY(15px);
+        animation: fadeInUp 0.4s ease forwards;
+    }
+    @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
+</style>
 
-                                <div class="mb-3 col-md-4">
-                                    <label class="form-label" for="basic-default-fullname">Username</label>
-                                    <input type="text" placeholder="Enter username" class="form-control @error('username') border-danger @enderror" name="username" value="{{ old('username') }}">
-                                    @error('username')
-                                        <small class="text-danger">{{ $message }}</small>
-                                    @enderror
-                                </div>
+<div class="container-xxl flex-grow-1 container-p-y">
+    <div class="row">
+        <div class="col-12">
+            <div class="card full-width-card animate-up">
+                <div class="card-header-gradient d-flex justify-content-between align-items-center">
+                    <h5 class="header-title">
+                        <i class="fas fa-user-plus me-2"></i>CREATING PERSONNEL ACCOUNT
+                    </h5>
+                    <a href="{{ url('/users') }}" class="btn btn-back">
+                        <i class="fas fa-times me-1"></i> CANCEL
+                    </a>
+                </div>
 
-                                <div class="mb-3 col-md-4">
-                                    <label class="form-label" for="basic-default-fullname">User-ID</label>
-                                    <input type="text" placeholder="Enter UserID" class="form-control @error('user_id') border-danger @enderror" name="user_id" value="{{ old('user_id') }}">
-                                    @error('user_id')
-                                        <small class="text-danger">{{ $message }}</small>
-                                    @enderror
+                <div class="card-body p-5">
+                    <form action="{{ url('/users/store') }}" method="POST" enctype="multipart/form-data" id="mainForm">
+                        @csrf
+                        
+                        <div class="row g-4">
+                            <div class="col-md-4">
+                                <label class="form-label"><i class="fas fa-id-card text-primary"></i> Full Name</label>
+                                <input type="text" class="form-control @error('full_name') is-invalid @enderror"
+                                    name="full_name" value="{{ old('full_name') }}" placeholder="John Doe">
+                                @error('full_name') <small class="text-danger mt-1 d-block">{{ $message }}</small> @enderror
+                            </div>
+
+                            <div class="col-md-4">
+                                <label class="form-label"><i class="fas fa-user-tag text-purple"></i> Username</label>
+                                <input type="text" class="form-control @error('username') is-invalid @enderror"
+                                    name="username" value="{{ old('username') }}" placeholder="johndoe">
+                                @error('username') <small class="text-danger mt-1 d-block">{{ $message }}</small> @enderror
+                            </div>
+
+                            <div class="col-md-4">
+                                <label class="form-label"><i class="fas fa-fingerprint text-pink"></i> User-ID</label>
+                                <input type="text" class="form-control" name="user_id" value="{{ old('user_id') }}" placeholder="EMP-XXX">
+                            </div>
+
+                            <div class="col-md-4">
+                                <label class="form-label"><i class="fas fa-venus-mars text-info"></i> Gender</label>
+                                <select name="gender" class="form-select">
+                                    <option value="" disabled selected>Choose Gender</option>
+                                    <option value="Male" {{ old('gender') == 'Male' ? 'selected' : '' }}>Male</option>
+                                    <option value="Female" {{ old('gender') == 'Female' ? 'selected' : '' }}>Female</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label class="form-label"><i class="fas fa-envelope text-danger"></i> Email Address</label>
+                                <input type="email" class="form-control @error('email') is-invalid @enderror"
+                                    name="email" value="{{ old('email') }}" placeholder="name@domain.com">
+                                @error('email') <small class="text-danger mt-1 d-block">{{ $message }}</small> @enderror
+                            </div>
+
+                            <div class="col-md-4">
+                                <label class="form-label"><i class="fas fa-phone text-success"></i> Phone Number</label>
+                                <input type="text" class="form-control" name="phone_number" value="{{ old('phone_number') }}" placeholder="+855 ...">
+                            </div>
+
+                            <div class="col-md-4">
+                                <label class="form-label"><i class="fas fa-building text-warning"></i> Branch</label>
+                                <select name="branch_id" class="form-select">
+                                    <option value="" disabled selected>Select Branch</option>
+                                    @foreach ($branchs as $item)
+                                        <option value="{{ $item->id }}" {{ old('branch_id') == $item->id ? 'selected' : '' }}>{{ $item->branch_name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label class="form-label"><i class="fas fa-sitemap text-secondary"></i> Department</label>
+                                <select name="department_id" class="form-select">
+                                    <option value="" disabled selected>Select Department</option>
+                                    @foreach ($departs as $item)
+                                        <option value="{{ $item->id }}" {{ old('department_id') == $item->id ? 'selected' : '' }}>{{ $item->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label class="form-label"><i class="fas fa-briefcase text-primary"></i> Position</label>
+                                <select id="position-select" class="form-control" name="position_id" style="width: 100%"></select>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label class="form-label"><i class="fas fa-calendar-check text-success"></i> Date Start Work</label>
+                                <input type="date" class="form-control" name="start_work_date" value="{{ old('start_work_date') }}">
+                            </div>
+
+                            <div class="col-md-4">
+                                <label class="form-label"><i class="fas fa-lock text-danger"></i> Password Access</label>
+                                <div class="input-group">
+                                    <input type="password" name="password" class="form-control" id="show-password" placeholder="••••••••">
+                                    <span class="input-group-text" onclick="togglePasswordVisibility()" style="cursor: pointer;">
+                                        <i class="fas fa-eye-slash" id="toggle-icon"></i>
+                                    </span>
                                 </div>
                             </div>
 
-                            <div class="row">
-                                <div class="mb-3 col-md-4">
-                                    <label class="form-label" for="basic-default-fullname">Gender</label>
-                                    <select name="gender" class="form-select @error('gender') border-danger @enderror">
-                                        <option value="" disabled selected>Gender select</option>
-                                        <option value="Male" @if (old('gender') == 'Male') selected @endif>Male</option>
-                                        <option value="Female" @if (old('gender') == 'Female') selected @endif>Female</option>
-                                    </select>
-                                    @error('gender')
-                                        <small class="text-danger">{{ $message }}</small>
-                                    @enderror
-                                </div>
-
-                                <div class="mb-3 col-md-4">
-                                    <label class="form-label" for="basic-default-fullname">Email</label>
-                                    <input type="text" placeholder="example@gmail.com" class="form-control @error('email') border-danger @enderror" name="email" value="{{ old('email') }}">
-                                    @error('email')
-                                        <small class="text-danger">{{ $message }}</small>
-                                    @enderror
-                                </div>
-
-                                <div class="mb-3 col-md-4">
-                                    <label class="form-label" for="basic-default-fullname">Phone Number</label>
-                                    <input type="text" placeholder="+00 000 000" class="form-control @error('phone_number') border-danger @enderror" name="phone_number" value="{{ old('phone_number') }}">
-                                    @error('phone_number')
-                                        <small class="text-danger">{{ $message }}</small>
-                                    @enderror
-                                </div>
+                            <div class="col-md-4">
+                                <label class="form-label"><i class="fas fa-user-shield text-purple"></i> System Role</label>
+                                <select name="role_id" class="form-select">
+                                    <option value="" disabled selected>Select Role</option>
+                                    @foreach ($userRole as $item)
+                                        <option value="{{ $item->id }}" {{ old('role_id') == $item->id ? 'selected' : '' }}>{{ $item->name }}</option>
+                                    @endforeach
+                                </select>
                             </div>
 
-                            <div class="row">
-                                <div class="mb-3 col-md-4">
-                                    <label class="form-label" for="basic-default-fullname">Branch</label>
-                                    <select name="branch_id" class="form-select @error('branch_id') border-danger @enderror">
-                                        <option value="" disabled selected>Branch select</option>
-                                        @foreach ($branchs as $item)
-                                            <option value="{{ $item->id }}" @if (old('branch_id') == $item->id){{ 'selected' }} @endif>{{ $item->branch_name }}</option>
-                                        @endforeach
-                                    </select>
-                                    @error('branch_id')
-                                        <small class="text-danger">{{ $message }}</small>
-                                    @enderror
-                                </div>
-
-                                <div class="mb-3 col-md-4">
-                                    <label class="form-label" for="basic-default-fullname">Department</label>
-                                    <select name="department_id" class="form-select @error('department_id') border-danger @enderror">
-                                        <option value="" disabled selected>Department select</option>
-                                        @foreach ($departs as $item)
-                                            <option value="{{ $item->id }}" @if (old('department_id') == $item->id){{ 'selected' }} @endif>{{ $item->name }}</option>
-                                        @endforeach
-                                    </select>
-                                    @error('department_id')
-                                        <small class="text-danger">{{ $message }}</small>
-                                    @enderror
-                                </div>
-
-                                <div class="mb-3 col-md-4">
-                                    <label class="form-label" for="basic-default-fullname">Position</label>
-                                    <input type="hidden" id="old-position-id" value="{{ old('position_id') }}">
-                                    <select id="position-select" class="form-select" name="position_id">
-                                        <option value="">Select Position</option>
-                                        @if (old('position_id'))
-                                            <option value="{{ old('position_id') }}" selected>
-                                                {{ optional(App\Models\PositionModel::find(old('position_id')))->name }}
-                                            </option>
-                                        @endif
-                                    </select>
-                                    @error('position_id')
-                                        <small class="text-danger">{{ $message }}</small>
-                                    @enderror
-                                </div>
-                            </div>
-
-                            <div class="row">
-                                <div class="mb-3 col-md-4">
-                                    <label class="form-label" for="basic-default-fullname">Date Start Work</label>
-                                    <input class="form-control @error('start_work_date') border-danger @enderror" type="date" id="html5-date-input" name="start_work_date" value="{{ old('start_work_date') }}">
-                                    @error('start_work_date')
-                                        <small class="text-danger">{{ $message }}</small>
-                                    @enderror
-                                </div>
-
-                                <div class="mb-3 col-md-4">
-                                    <label class="form-label" for="basic-default-fullname">Passowrd</label>
-                                    <div class="input-group">
-                                        <input type="password" name="password" class="form-control @error('password') border-danger @enderror" id="show-password" placeholder="············" aria-describedby="show-password">
-                                        <span id="basic-default-password2" class="input-group-text cursor-pointer" onclick="togglePasswordVisibility()"><i class="bx bx-hide" id="toggle-icon"></i></span>
-                                    </div>
-                                    @error('password')
-                                        <small class="text-danger">{{ $message }}</small>
-                                    @enderror
-                                </div>
-
-                                <div class="mb-3 col-md-4">
-                                    <label class="form-label" for="basic-default-fullname">UserRole</label>
-                                    <select name="role_id" class="form-select @error('role_id') border-danger @enderror">
-                                        <option value="" disabled selected>UserRoles select</option>
-                                        @foreach ($userRole as $item)
-                                            <option value="{{ $item->id }}" @if (old('role_id') == $item->id){{ 'selected' }} @endif>{{ $item->name }}</option>
-                                        @endforeach
-                                    </select>
-                                    @error('role_id')
-                                        <small class="text-danger">{{ $message }}</small>
-                                    @enderror
-                                </div>
-                            </div>
-
-                            <div class="mb-4 mt-3">
-                                <div class="d-flex align-items-start align-items-sm-center gap-4">
-                                    <img src="{{ url('backend/assets/img/avatars/1.png') }}" alt="user-avatar" class="d-block rounded" height="100" width="100" id="target">
-                                    <div class="button-wrapper">
-                                        <label for="select_image" class="btn btn-primary me-2 mb-1">
-                                            <span class="d-none d-sm-block">Upload new photo</span>
-                                            <i class="bx bx-upload d-block d-sm-none"></i>
-                                            <input type="file" name="profile_pic" id="select_image" onchange="selectImg()" hidden accept="image/png, image/jpeg">
+                            <div class="col-12 mt-4">
+                                <div class="d-flex align-items-center gap-4 p-3 rounded-3" style="background: #f8fafc; border: 1px dashed #cbd5e1;">
+                                    <img src="{{ url('backend/assets/img/avatars/1.png') }}" id="target" width="100" height="100">
+                                    <div>
+                                        <label for="select_image" class="btn btn-outline-primary btn-sm mb-2 fw-bold">
+                                            <i class="fas fa-upload me-1"></i> UPLOAD PROFILE PHOTO
+                                            <input type="file" name="profile_pic" id="select_image" hidden onchange="selectImg()">
                                         </label>
-                                        <p class="text-muted mb-0">Allowed JPEG, JPG or PNG. Max size of 1024K</p>
-                                        @error('profile_pic')
-                                            <small class="text-danger">{{ $message }}</small>
-                                        @enderror
+                                        <p class="text-muted mb-0 small">Supported formats: JPG, PNG. Recommended size: 500x500px.</p>
                                     </div>
                                 </div>
                             </div>
 
-                            <div class="mt-2">
-                                <button type="submit" class="btn btn-primary me-2">Save</button>
-                                <a href="{{ url('users') }}" class="btn btn-outline-secondary">Cancel</a>
+                            <div class="col-12 mt-5">
+                                <button type="submit" class="btn btn-save w-100" id="btnSubmit">
+                                    <i class="fas fa-user-check me-2"></i> INITIALIZE NEW ACCOUNT
+                                </button>
                             </div>
-                        </form>
-                    </div>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
     </div>
+</div>
 
-    <script>
-        function showImage(src, target) {
-            var fr = new FileReader();
-            fr.onload = function() {
-                target.src = fr.result;
+<script>
+    function selectImg() {
+        let input = document.getElementById("select_image");
+        if (input.files && input.files[0]) {
+            let reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById("target").src = e.target.result;
             }
-            fr.readAsDataURL(src.files[0]);
+            reader.readAsDataURL(input.files[0]);
         }
+    }
 
-        function selectImg() {
-            var src = document.getElementById("select_image");
-            var target = document.getElementById("target");
-            showImage(src, target);
+    function togglePasswordVisibility() {
+        let field = document.getElementById('show-password');
+        let icon = document.getElementById('toggle-icon');
+        if (field.type === 'password') {
+            field.type = 'text';
+            icon.classList.replace('fa-eye-slash', 'fa-eye');
+        } else {
+            field.type = 'password';
+            icon.classList.replace('fa-eye', 'fa-eye-slash');
         }
-    </script>
+    }
 
-    <script>
-        function togglePasswordVisibility() {
-            const passwordField = document.getElementById('show-password');
-            const toggleIcon = document.getElementById('toggle-icon');
-
-            if (passwordField.type === 'password') {
-                passwordField.type = 'text';
-                toggleIcon.classList.remove('bx-hide');
-                toggleIcon.classList.add('bx-show');
-            } else {
-                passwordField.type = 'password';
-                toggleIcon.classList.remove('bx-show');
-                toggleIcon.classList.add('bx-hide');
+    // Position Select2 Ajax
+    $('#position-select').select2({
+        placeholder: "Select Position",
+        allowClear: true,
+        ajax: {
+            url: "{{ url('/users/create') }}",
+            type: "GET",
+            dataType: 'json',
+            delay: 250,
+            data: function(params) {
+                return { search: params.term };
+            },
+            processResults: function(data) {
+                return {
+                    results: $.map(data, function(item) {
+                        return { id: item.id, text: item.name }
+                    })
+                };
             }
         }
-    </script>
+    });
 
-    {{-- function select2 --}}
-    <script>
-        $('#position-select').select2({
-            placeholder: "Select Position",
-            allowClear: true,
-            ajax: {
-                url: "{{ url('/users/create') }}", // Replace with the correct route
-                type: "GET",
-                dataType: 'json',
-                delay: 250, // Delay to reduce server load
-                data: function (params) {
-                    return {
-                        search: params.term // Search query
-                    };
-                },
-                processResults: function (data) {
-                    return {
-                        results: $.map(data, function (item) {
-                            return {
-                                id: item.id,
-                                text: item.name
-                            };
-                        })
-                    };
-                },
-                cache: true
-            }
-        });
-
-         // Preselect the old value if it exists
-        let oldPositionId = $('#old-position-id').val();
-        if (oldPositionId) {
-            $.ajax({
-                url: "{{ url('/users/create') }}", // Use the same endpoint
-                type: "GET",
-                data: { search: '' }, // Adjust this if needed
-                success: function (data) {
-                    let selectedItem = data.find(item => item.id == oldPositionId);
-                    if (selectedItem) {
-                        let option = new Option(selectedItem.name, selectedItem.id, true, true);
-                        $('#position-select').append(option).trigger('change');
-                    }
-                }
-            });
-        }
-
-        // Event listener for selection
-        $('#position-select').on('change', function () {
-            let selectedOption = $(this).val();
-            console.log('Selected option:', selectedOption);
-        });
-    </script>
-
+    document.getElementById('mainForm').onsubmit = function() {
+        document.getElementById('btnSubmit').disabled = true;
+        document.getElementById('btnSubmit').innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> INITIALIZING...';
+    };
+</script>
 @endsection

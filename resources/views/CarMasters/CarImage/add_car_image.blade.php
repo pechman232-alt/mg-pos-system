@@ -1,164 +1,244 @@
 @extends('layouts.homePages')
 @section('content')
 
-    <style>
-        #datatable thead th {
-            background-color: #DEAA5E;
-            /* gold-like header */
-            color: white;
-            font-weight: 600;
-            font-size: 16px;
-            text-align: center;
-            padding: 12px;
-            border-bottom: 2px solid #cfa060;
-            opacity: 0;
-            transform: translateY(-10px);
-            animation: fadeInHeader 0.5s forwards;
-        }
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-        /* Header fade-in animation */
-        @keyframes fadeInHeader {
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
+<style>
+    /* ====== BRAND IDENTITY & COLORS ====== */
+    :root {
+        --brand-indigo: #4f46e5;
+        --brand-purple: #7c3aed;
+        --brand-pink: #ec4899;
+        --brand-red: #ef4444;
+        --bg-body: #f8fafc;
+        --border-color: #e2e8f0;
+    }
 
-        /* Table row animation */
-        #datatable tbody tr {
-            opacity: 0;
-            transform: translateY(20px);
-            animation: fadeInRow 0.5s forwards;
-        }
+    body {
+        background-color: var(--bg-body);
+        font-family: 'Plus Jakarta Sans', sans-serif !important;
+        color: #1e293b;
+        margin: 0;
+    }
 
-        /* Stagger rows for sequential animation */
-        #datatable tbody tr:nth-child(1) {
-            animation-delay: 0.1s;
-        }
+    /* ====== 100% FIT SCREEN WRAPPER ====== */
+    .fluid-upload-wrapper {
+        width: 100% !important;
+        max-width: 100% !important;
+        padding: 1.5rem !important;
+        animation: slideUp 0.5s ease-out;
+    }
 
-        #datatable tbody tr:nth-child(2) {
-            animation-delay: 0.2s;
-        }
+    .card-custom {
+        border: none !important;
+        border-radius: 20px !important;
+        box-shadow: 0 10px 40px rgba(79, 70, 229, 0.06) !important;
+        background-color: #fff;
+        overflow: hidden;
+        width: 100%;
+    }
 
-        #datatable tbody tr:nth-child(3) {
-            animation-delay: 0.3s;
-        }
+    .card-header-gradient {
+        background: linear-gradient(90deg, var(--brand-indigo) 0%, var(--brand-purple) 50%, var(--brand-pink) 100%) !important;
+        color: #ffffff !important;
+        padding: 1.5rem 2.5rem !important;
+        font-size: 1.1rem !important;
+        font-weight: 800;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        letter-spacing: 0.5px;
+    }
 
-        /* Add more if needed */
+    /* ====== UPLOAD AREA ====== */
+    .upload-zone {
+        background: #fcfdfe;
+        border: 2px dashed #cbd5e1;
+        border-radius: 18px;
+        padding: 3rem;
+        transition: 0.3s ease;
+        text-align: center;
+        margin-bottom: 2.5rem;
+    }
 
-        /* Row fade-in keyframe */
-        @keyframes fadeInRow {
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
+    .upload-zone:hover {
+        border-color: var(--brand-indigo);
+        background: #f8faff;
+        transform: scale(1.005);
+    }
 
-        /* Hover effect for rows */
-        #datatable tbody tr:hover {
-            background-color: #f5f5f5;
-            transform: scale(1.02);
-            transition: all 0.3s ease;
-        }
+    #target {
+        border-radius: 15px;
+        object-fit: contain;
+        border: 4px solid #fff;
+        box-shadow: 0 12px 30px rgba(0,0,0,0.12);
+        background: white;
+        transition: 0.3s;
+    }
 
-        /* Action buttons hover effect */
-        .btn-outline-secondary {
-            transition: all 0.3s ease;
-        }
+    /* ====== FORM CONTROLS ====== */
+    .form-label {
+        font-weight: 700;
+        color: #64748b;
+        font-size: 12px !important;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 0.7rem;
+    }
 
-        .btn-outline-secondary:hover {
-            transform: scale(1.1);
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-        }
+    .form-control, .form-select {
+        height: 48px !important;
+        border-radius: 12px;
+        border: 1.5px solid var(--border-color);
+        padding: 12px 20px;
+        font-size: 14px !important;
+        font-weight: 600;
+        transition: 0.3s;
+        background-color: #f8fafc;
+    }
 
-        /* Delete button specific hover effect */
-        .btn-outline-secondary[style*="background-color: red"]:hover {
-            transform: scale(1.1);
-            background-color: #ff4c4c;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-        }
+    .form-control:focus, .form-select:focus {
+        background-color: #fff;
+        border-color: var(--brand-indigo) !important;
+        box-shadow: 0 0 0 5px rgba(79, 70, 229, 0.1) !important;
+        outline: none;
+    }
 
-    </style>
+    /* ====== BUTTONS ====== */
+    .btn-save {
+        background: linear-gradient(135deg, var(--brand-indigo), var(--brand-purple)) !important;
+        border: none !important;
+        color: #fff !important;
+        font-weight: 800;
+        padding: 14px 40px !important;
+        border-radius: 12px;
+        transition: 0.3s;
+        letter-spacing: 0.5px;
+    }
 
-    <div class="container-xxl flex-grow-1 container-p-y">
+    .btn-save:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 25px rgba(124, 58, 237, 0.3);
+    }
 
+    .btn-upload-trigger {
+        background-color: var(--brand-indigo) !important;
+        color: white !important;
+        font-weight: 800;
+        border-radius: 10px;
+        padding: 12px 25px !important;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        transition: 0.2s;
+    }
 
-        <div class="row">
-            <div class="col-md-12">
-                <div class="card mb-4">
-                    <h5 class="card-header">Add Car Images</h5>
-                    <hr class="my-0">
-                    <div class="card-body">
-                        <form action="{{ url('/car-images/store') }}" method="POST" action="/upload" enctype="multipart/form-data">
-                            @csrf
-                            <div class="mb-4 mt-3">
-                                <div class="d-flex align-items-start align-items-sm-center gap-4">
-                                    <img src="{{ url('backend/assets/img/avatars/1.png') }}" alt="user-avatar" class="rounded-circle-custome" width="120" id="target">
-                                    <div class="button-wrapper">
-                                        <label for="select_image" class="btn btn-primary me-2 mb-1">
-                                            <span class="d-none d-sm-block">Upload new photo</span>
-                                            <i class="bx bx-upload d-block d-sm-none"></i>
-                                            <input type="file" name="image_name" id="select_image" onchange="selectImg()" hidden accept="image/png, image/jpeg">
-                                        </label>
-                                        <p class="text-muted mb-0">Allowed JPEG, JPG or PNG. Max size of 2048K (2MB)</p>
-                                        @error('image_name')
-                                            <small class="text-danger">{{ $message }}</small>
-                                        @enderror
-                                    </div>
-                                </div>
-                            </div>
+    .btn-cancel {
+        border: 1.5px solid var(--border-color) !important;
+        background-color: #fff;
+        color: #64748b !important;
+        font-weight: 700;
+        padding: 14px 30px !important;
+        border-radius: 12px;
+        text-decoration: none !important;
+        display: inline-block;
+    }
 
-                            <div class="row">
-                                <div class="mb-3 col-md-6">
-                                    <label class="form-label" for="basic-default-fullname">Model name</label>
-                                    <select name="model_id" class="form-select @error('model_id') border-danger @enderror">
-                                        <option value="" disabled selected>--- select model name ---</option>
-                                        @foreach ($carModels as $item)
-                                            <option value="{{ $item->id }}" @if (old('model_id') == $item->id){{ 'selected' }} @endif>{{ $item->model_name }}</option>
-                                        @endforeach
-                                    </select>
-                                    @error('model_id')
-                                        <small class="text-danger">{{ $message }}</small>
-                                    @enderror
-                                </div>
-                                <div class="mb-3 col-md-6">
-                                    <label class="form-label" for="basic-default-fullname">Colors</label>
-                                    <select name="color_id" class="form-select @error('color_id') border-danger @enderror">
-                                        <option value="" disabled selected>--- select color ---</option>
-                                        @foreach ($colors as $item)
-                                            <option value="{{ $item->id }}" @if (old('color_id') == $item->id){{ 'selected' }} @endif>{{ $item->color_name }}</option>
-                                        @endforeach
-                                    </select>
-                                    @error('color_id')
-                                        <small class="text-danger">{{ $message }}</small>
-                                    @enderror
-                                </div>
-                            </div>
-                            <div class="mt-2">
-                                <button type="submit" class="btn btn-primary me-2">Save</button>
-                                <a href="{{ url('/car-images') }}" class="btn btn-outline-secondary">Cancel</a>
-                            </div>
-                        </form>
+    .btn-cancel:hover { background-color: #fef2f2; color: var(--brand-red) !important; border-color: #fecaca !important; }
+
+    @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+</style>
+
+<div class="fluid-upload-wrapper">
+    <div class="card-custom">
+        <div class="card-header-gradient">
+            <i class="fas fa-plus-circle"></i> ADD NEW VEHICLE ASSET
+        </div>
+
+        <div class="card-body p-4 p-lg-5">
+            <form action="{{ url('/car-images/store') }}" method="POST" enctype="multipart/form-data">
+                @csrf
+
+                <div class="upload-zone shadow-sm">
+                    <img src="{{ url('backend/assets/img/avatars/image.png') }}" 
+                         alt="preview" width="220" height="150" id="target">
+                    
+                    <div class="mt-4">
+                        <label for="select_image" class="btn-upload-trigger shadow-sm">
+                            <i class="fas fa-cloud-upload-alt"></i> CHOOSE VEHICLE PHOTO
+                            <input type="file" name="image_name" id="select_image" onchange="selectImg()" hidden accept="image/*">
+                        </label>
+                        <p class="text-muted small mt-3 mb-0 fw-600">Supports: JPG, PNG, WEBP (Max: 2MB)</p>
+                        @error('image_name')
+                            <div class="text-danger mt-2 fw-800 small">{{ $message }}</div>
+                        @enderror
                     </div>
                 </div>
-            </div>
+
+                <div class="row">
+                    <div class="col-xl-6 mb-4">
+                        <label class="form-label">Vehicle Model Assignment</label>
+                        <select name="model_id" class="form-select @error('model_id') border-danger @enderror">
+                            <option value="" disabled selected>Select from active inventory...</option>
+                            @foreach ($carModels as $item)
+                                <option value="{{ $item->id }}" {{ old('model_id') == $item->id ? 'selected' : '' }}>
+                                    {{ $item->model_name }}
+                                </option>
+                            @endforeach
+                        </select>
+                        @error('model_id')
+                            <div class="text-danger mt-1 fw-700 small">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    <div class="col-xl-6 mb-4">
+                        <label class="form-label">Color Specification</label>
+                        <select name="color_id" class="form-select @error('color_id') border-danger @enderror">
+                            <option value="" disabled selected>Assign visual color theme...</option>
+                            @foreach ($colors as $item)
+                                <option value="{{ $item->id }}" {{ old('color_id') == $item->id ? 'selected' : '' }}>
+                                    {{ $item->color_name }}
+                                </option>
+                            @endforeach
+                        </select>
+                        @error('color_id')
+                            <div class="text-danger mt-1 fw-700 small">{{ $message }}</div>
+                        @enderror
+                    </div>
+                </div>
+
+                <div class="mt-5 pt-4 border-top d-flex gap-3 justify-content-start">
+                    <button type="submit" class="btn-save shadow-sm">
+                        <i class="fas fa-check-circle me-2"></i> PUBLISH TO REPOSITORY
+                    </button>
+                    <a href="{{ url('/car-images') }}" class="btn btn-cancel">
+                        DISCARD
+                    </a>
+                </div>
+            </form>
         </div>
     </div>
+</div>
 
-    <script>
-        function showImage(src, target) {
-            var fr = new FileReader();
-            fr.onload = function() {
-                target.src = fr.result;
-            }
-            fr.readAsDataURL(src.files[0]);
+<script>
+    // PRESERVED YOUR ORIGINAL LOGIC
+    function showImage(src, target) {
+        var fr = new FileReader();
+        fr.onload = function() {
+            target.src = fr.result;
         }
+        fr.readAsDataURL(src.files[0]);
+    }
 
-        function selectImg() {
-            var src = document.getElementById("select_image");
-            var target = document.getElementById("target");
+    function selectImg() {
+        var src = document.getElementById("select_image");
+        var target = document.getElementById("target");
+        if(src.files && src.files[0]) {
             showImage(src, target);
         }
-    </script>
+    }
+</script>
 
 @endsection

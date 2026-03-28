@@ -17,7 +17,7 @@ class LogisticImport implements ToModel, WithHeadingRow ,WithValidation
     public function model(array $row)
     {
         return new LogisticsModel([
-            'model_name' => $row['model_name'],
+            'model_name' => $row['model_name_id'],
             'exterior_color' => $row['exterior_color'],
             'interior_color' => $row['interior_color'],
             'model_year' => $row['model_year'],

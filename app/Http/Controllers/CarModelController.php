@@ -23,23 +23,34 @@ class CarModelController extends Controller
     public function storeCarModel(Request $request){
         $request->validate([
             'model_name' => 'required',
-            'color_id' => 'required'
         ],
             [
-                'model_name' => 'please enter model name.',
-                'color_id' => 'please enter color id.'
+                'model_name' => 'please enter model name.'
             ]
         );
         $carModels = new CarModelModel();
         $carModels->model_name = $request->model_name;
-        $carModels->color_id = $request->color_id;
         $carModels->save();
         return redirect('/car-models/create')->with('success', 'The Car Model is Created Succesfully!');
     }
 
     public function editCarModel($id){
         $ID = decrypt($id);
-        
+        $carModels = CarModelModel::where('id' , $ID)->first();
+        return view('CarMasters.edit_car_model',['carModels'=>$carModels]);
+    }
+
+    public function updateCarModel(Request $request, $id){
+        $ID = decrypt($id);
+        $carModels = CarModelModel::where('id' , $ID)->firstorfail();
+        $carModels->update($request->all());
+        return redirect('car-models')->with('info', 'The Car Model is Updated Succesfully!');
+    }
+
+    public function destroyCarModel($id){
+        $ID = decrypt($id);
+        $carModels = CarModelModel::where('id' , $ID)->firstorfail()->delete();
+        return redirect('car-models')->with('error', 'The Car Model is Deleted successfully.');
     }
 
     // Car image ---------------------------------------------------------------------------
@@ -53,7 +64,7 @@ class CarModelController extends Controller
 
     public function carImageIndex(){
         $carImages = CarImage::selectRaw(
-            '
+            'car_images.id,
             car_images.image_name,
             car_images.created_at,
             car_models.model_name as modelName,
@@ -99,6 +110,37 @@ class CarModelController extends Controller
         }
         $carImage->save();
         return redirect('/car-images/create')->with('success', 'The Car Image is Created Succesfully!');
+    }
+
+    public function editCarImage($id){
+        $ID = decrypt($id);
+        $carImage = CarImage::where('id', $ID)->first();
+        $colors = ColorModel::get();
+        $carModels = CarModelModel::get();
+        return view('CarMasters.CarImage.edit_car_image', ['carImage'=>$carImage, 'colors'=>$colors, 'carModels'=>$carModels]);
+    }
+
+    public function updateCarImage(Request $request, $id){
+        $ID = decrypt($id);
+        $carImage = CarImage::where('id', $ID)->firstorfail();
+
+        if ($request->hasFile('image_name')) {
+            $file = $request->file('image_name');
+            $name = md5($file->getFilename() . time()) . '.' . $file->getClientOriginalExtension();
+            $file_dir = 'carImages';
+            $file->move(storage_path("app/public/$file_dir"), $name);
+            $carImage['image_name'] = $name;
+        }
+
+        $updateData = $request->except(['image_name']);
+        $carImage->update($updateData);
+        return redirect('car-images')->with('info', 'The Car Image is Updated Succesfully!');
+    }
+
+    public function destroyCarImage($id){
+        $ID = decrypt($id);
+        $carImage = CarImage::where('id' , $ID)->firstorfail()->delete();
+        return redirect('car-images')->with('error', 'The Car Image is deleted Succesfully!');
     }
 
     // Colors ---------------------------------------------------------------------------

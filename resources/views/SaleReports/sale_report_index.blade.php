@@ -1,224 +1,328 @@
-@extends('layouts.homePages')
-@section('content')
+    @extends('layouts.homePages')
+    @section('content')
+
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <style>
-        .navbar.bg-light {
-            /* background-color: #fde9e9 !important; */
-            background-color: #fde9e9 !important;
-            border-radius: 10px;
-            margin-top: 15px;
-            margin-left: 15px;
-            margin-right: 15px;
+        /* ================= PROFESSIONAL UI SYSTEM ================= */
+        :root {
+            --brand-red: #CE181E;
+            --brand-red-hover: #b91c1c;
+            --text-heading: #0f172a;
+            --text-body: #475569;
+            --bg-main: #f8fafc;
+            --border-color: #e2e8f0;
+            --glass-bg: rgba(255, 255, 255, 0.9);
         }
 
-        .navbar-expand-lg .navbar-collapse {
-            display: flex !important;
-            flex-basis: auto;
-        }
-        .dataTables_filter{
-            margin-bottom: 20px;
-        }
-        .dataTables_paginate, .dataTables_info{
-            margin-top: 20px;
-        }
-        table#datatable{
-            border: 1px solid #ccc;
-        }
-        table.dataTable thead>tr>th.sorting:after, table.dataTable thead>tr>th.sorting_asc:after{
-            display: none;
-        }
-        table.dataTable thead>tr>th.sorting:before, table.dataTable thead>tr>th.sorting_asc:before{
-            display: none;
-        }
-        #datatable thead tr th{
-            height: 35px;
-            background-color: #fde9e9;
-        }
-        #datatable thead tr th, #datatable tbody tr td{
-            text-align: center;
-        }
-        #cls_bg_icon{
-            background: #fff2d6;
-            max-width: 80px;
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif !important;
+            background-color: var(--bg-main);
+            color: var(--text-body);
+            margin: 0;
+            padding: 0;
         }
 
-        .badge {
+        /* 100% FIT SCREEN WRAPPER */
+        .content-fluid-wrapper {
+            width: 100% !important;
+            max-width: 100% !important;
+            padding: 1.5rem !important;
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+
+        /* MODERN NAVBAR */
+        .nav-command-bar {
+            background: #ffffff;
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            padding: 15px 25px;
+            margin-bottom: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+
+        .nav-title { font-size: 1.25rem; font-weight: 800; color: var(--text-heading); display: flex; align-items: center; gap: 12px; }
+        .nav-title i { color: var(--brand-red); font-size: 1.5rem; }
+
+        /* COMMAND SUMMARY TILES */
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            background: #ffffff;
+            border-radius: 18px;
+            padding: 1.5rem;
+            border: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 1.25rem;
+            transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .stat-card:hover { transform: translateY(-5px); border-color: var(--brand-red); box-shadow: 0 20px 25px -5px rgba(0,0,0,0.05); }
+
+        .stat-icon {
+            width: 56px; height: 56px; border-radius: 14px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.5rem; color: #fff;
+        }
+        .icon-total { background: linear-gradient(135deg, #1e293b, #334155); }
+        .icon-active { background: linear-gradient(135deg, #10b981, #059669); }
+        .icon-inactive { background: linear-gradient(135deg, var(--brand-red), #991b1b); }
+        .icon-today { background: linear-gradient(135deg, #3b82f6, #1d4ed8); }
+
+        .stat-content h3 { font-size: 0.75rem; font-weight: 800; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.05em; margin: 0; }
+        .stat-content .number { font-size: 1.75rem; font-weight: 800; color: var(--text-heading); line-height: 1.2; }
+
+        /* PROFESSIONAL FILTERS */
+        .filter-cockpit {
+            background: #ffffff;
+            border-radius: 18px;
+            padding: 20px;
+            margin-bottom: 24px;
+            border: 1px solid var(--border-color);
+        }
+
+        .form-control-modern {
+            border-radius: 10px !important;
+            border: 1.5px solid var(--border-color) !important;
+            padding: 10px 16px !important;
+            font-weight: 600;
+            transition: 0.2s;
+        }
+        .form-control-modern:focus { border-color: var(--brand-red) !important; box-shadow: 0 0 0 4px rgba(206, 24, 30, 0.1) !important; }
+
+        /* ENTERPRISE DATA TABLE */
+        .table-container {
+            background: #ffffff;
+            border-radius: 18px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
+        }
+
+        #posts thead th {
+            background: #f8fafc;
+            color: #64748b;
+            font-weight: 700;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            padding: 18px 16px;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        #posts tbody td {
+            padding: 16px;
             vertical-align: middle;
-            padding: 7px 12px;
+            border-bottom: 1px solid #f1f5f9;
+            font-size: 0.9rem;
             font-weight: 500;
-            border-radius: 30px;
-            font-size: 11px;
+            color: var(--text-body);
         }
+        #posts tbody tr:hover { background-color: #fbfcfe; }
 
-        .bg_red {
-            background-color: #CE181E;
-        }
+        /* STATUS & ACTION PILLS */
+        .badge-modern { padding: 6px 12px; border-radius: 8px; font-weight: 700; font-size: 0.7rem; text-transform: uppercase; }
+        .bg-active { background: #ecfdf5; color: #059669; border: 1px solid #10b98133; }
+        .bg-inactive { background: #fef2f2; color: #dc2626; border: 1px solid #ef444433; }
 
-        .bg_yellow {
-            background-color: #FAA61A;
+        .btn-action {
+            width: 34px; height: 34px; border-radius: 8px;
+            display: inline-flex; align-items: center; justify-content: center;
+            transition: 0.2s; border: 1px solid var(--border-color);
+            background: #fff; color: #64748b;
         }
-        
+        .btn-action:hover { background: var(--brand-red); color: #fff; border-color: var(--brand-red); transform: translateY(-2px); }
+
+        .btn-primary-solid { background: var(--brand-red); color: white; border: none; border-radius: 10px; font-weight: 700; padding: 10px 20px; transition: 0.3s; }
+        .btn-primary-solid:hover { background: var(--brand-red-hover); box-shadow: 0 10px 15px -3px rgba(206, 24, 30, 0.3); }
+
+        .invoice-tag { font-family: 'JetBrains Mono', monospace; font-weight: 700; color: var(--brand-red); background: #fff5f5; padding: 4px 8px; border-radius: 6px; font-size: 0.8rem; }
     </style>
 
-    <div class="container-xxl flex-grow-1 container-p-y">
-        <div class="card">
-            <nav class="navbar navbar-example navbar-expand-lg bg-light">
-                <div class="container-fluid">
+    <div class="content-fluid-wrapper">
+        
+        <div class="nav-command-bar">
+            <div class="nav-title">
+                <i class="fa-solid fa-layer-group"></i> Sale Reports Directory
+            </div>
+            <a href="{{ url('sale-reports/create') }}" class="btn-primary-solid">
+                <i class="fa-solid fa-circle-plus me-2"></i> New Report
+            </a>
+        </div>
 
-                    <div class="collapse navbar-collapse" id="navbar-ex-3">
-                        <div class="navbar-nav me-auto">
-                            <a class="nav-item nav-link active" href="" style="font-size: 18px;"> <i class='bx bx-package'></i>List of Sale Reports</a>
-                        </div>
-
-                        <button type="button" class="btn btn-success mr-1" data-bs-toggle="modal" data-bs-target="#basicModal">Import Excel</button>
-                        <div class="modal fade" id="basicModal" tabindex="-1" style="display: none;" aria-hidden="true">
-                            <form action="{{ url('/member-cards/import') }}" method="POST" enctype="multipart/form-data">
-                                @csrf
-                                <div class="modal-dialog" role="document">
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                            <h5 class="modal-title" id="exampleModalLabel1">Sale Reports</h5>
-                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                        </div>
-                                        <div class="modal-body">
-                                            <div class="row">
-                                                <div class="col mb-6">
-                                                    <a href="{{ url('/download-template-member-card')}}" class="btn btn-outline-primary">Download Template Excel</a>
-                                                </div>
-                                            </div>
-                                            <div class="row">
-                                                <div class="col mb-6">
-                                                    <label for="nameBasic" class="form-label">Upload File Excel</label>
-                                                    <input type="file" name="file" class="form-control">
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="modal-footer">
-                                            <button type="button" class="btn btn-outline-secondary"
-                                                data-bs-dismiss="modal">Close</button>
-                                            <button class="btn btn-primary">Save changes</button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </form>
-                        </div>
-
-                        <a href="{{ url('sale-reports/create') }}" class="btn btn-outline-primary">Add Sale-Report</a>
-                    </div>
-
-
-                </div>
-
-            </nav>
-            <nav class="navbar navbar-example navbar-expand-lg bg-light" style="background-color: white !important;">
-                <div class="container-fluid">
-                    <p style="padding-right: 15px">Invoice Date</p>
-                    <form id="filterForm" method="GET" action="{{ url('sale-reports') }}">
-                        <div class="input-group">
-                            <input class="form-control" type="date" id="date_from" name="date_from" value="{{ $date_from }}">
-                            <input class="form-control" type="date" id="date_to" name="date_to" value="{{ $date_to }}">
-                            <button type="submit" class="btn btn-success mr-1" style="width: 120px">Filter</button>
-                            <button type="button" id="exportBtn" class="btn btn-danger mr-1">Export Excel</button>
-                        </div>
-                    </form>
-                    <div class="collapse navbar-collapse" id="navbar-ex-3">
-                        <div class="navbar-nav me-auto">
-                            <a class="nav-item nav-link active" href="" style="font-size: 18px;"></a>
-                        </div>
-                        <form action="{{ route('search.sale-reports') }}" method="GET">
-                            @csrf
-                            <div class="input-group input-group-merge" style="width: 350px;">
-                                <span class="input-group-text" id="basic-addon-search31"><i class="bx bx-search"></i></span>
-                                <input type="text" class="form-control" placeholder="Search..." name="keyword" value="{{ request()->input('keyword') }}">
-                                @if(request()->input('keyword') !="")
-                                    <a class="cls_btn_clear" href="{{ url('sale-reports') }}">X</a>
-                                @endif
-                                <button type="submit" class="btn btn-outline-primary">Search</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </nav>
-            <div class="card-body">
-                <div class="table-responsive text-nowrap">
-                    <table id="posts" class="table table-hover">
-                        <thead>
-                            <tr>
-                                <th style="width:25px;">No</th>
-                                <th style="text-align: start">Customer Name</th>
-                                <th style="text-align: start">Phone Number</th>
-                                <th style="text-align: start">Gender</th>
-                                <th style="text-align: start">Member Card</th>
-                                <th style="text-align: start">Invoice No</th>
-                                <th style="text-align: start">Invoice Date</th>
-                                <th style="text-align: start">Brand Name</th>
-                                <th style="text-align: start">Status</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @if ($saleReports->count())
-                                @foreach ($saleReports as $index => $item)
-                                    <tr>
-                                        <td>{{ $saleReports->firstItem() + $index}}</td>
-                                        <td style="text-align: start">{{ $item->customer_name }} </td>
-                                        <td style="text-align: start">{{ $item->phone_number }}</td>
-                                        <td style="text-align: start">{{ $item->gender }}</td>
-                                        <td style="text-align: start">{{ $item->member_card }}</td>
-                                        <td style="text-align: start">{{ $item->invoice_no }}</td>
-                                        <td style="text-align: start">{{ $item->invoice_date }}</td>
-                                        <td style="text-align: start">{{ $item->brand_name }}</td>
-                                        <td>
-                                            @if ($item->status == 1) 
-                                                <span class="badge bg-label-success">Active</span>
-                                            @else
-                                                <span class="badge bg_red">0</span>
-                                            @endif
-                                        </td>
-                                        <td>
-                                            <div class="btn-group" role="group" aria-label="First group">
-                                                <a href="{{ url('sale-reports/view', encrypt($item->id)) }}" class="btn btn-outline-secondary me-1">view</a>
-                                                <a href="{{ url('sale-reports/edit', encrypt($item->id)) }}" class="btn bg-label-info"><i class="tf-icons bx bx-edit"></i></a>
-                                                <a onclick="return confirm('Are you sure, you want to delete ?')" title="Delete user" href="{{ url('sale-reports/destroy', encrypt($item->id)) }}" class="btn btn-outline-secondary" style="background-color: red; color:white"><i class="tf-icons bx bx-trash"></i></a>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            @else
-                                <tr>
-                                    <td colspan="10" style="text-align: center">
-                                        Result not found.
-                                    </td>
-                                </tr>
-                            @endif
-                        </tbody>
-                    </table>
+        <div class="summary-grid">
+            <div class="stat-card">
+                <div class="stat-icon icon-total"><i class="fa-solid fa-file-invoice"></i></div>
+                <div class="stat-content">
+                    <h3>Total Reports</h3>
+                    <div class="number">{{ $countSaleReports }}</div>
                 </div>
             </div>
-
-            <div class="container-fluid d-flex flex-md-row flex-column justify-content-between align-items-md-center gap-1 container-p-x py-3">
-                <div>
-                    Showing
-                    {{ $saleReports->firstItem() }}
-                    to
-                    {{ $saleReports->lastItem() }}
-                    of
-                    {{ $countSaleReports }}
-                    entries
+            <div class="stat-card">
+                <div class="stat-icon icon-active"><i class="fa-solid fa-check-double"></i></div>
+                <div class="stat-content">
+                    <h3>Active</h3>
+                    <div class="number">{{ $saleReports->where('status', 1)->count() }}</div>
                 </div>
-                <div>
-                    {{ $saleReports->appends(request()->input())->links('paginitaion_backend') }}
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon icon-inactive"><i class="fa-solid fa-triangle-exclamation"></i></div>
+                <div class="stat-content">
+                    <h3>Inactive</h3>
+                    <div class="number">{{ $saleReports->where('status', 0)->count() }}</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon icon-today"><i class="fa-solid fa-calendar-day"></i></div>
+                <div class="stat-content">
+                    <h3>Today</h3>
+                    <div class="number">{{ $saleReports->where('created_at', '>=', now()->startOfDay())->count() }}</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="filter-cockpit shadow-sm">
+            <div class="row align-items-center g-3">
+                <div class="col-xl-6">
+                    <form id="filterForm" method="GET" action="{{ url('sale-reports') }}" class="d-flex align-items-center gap-2">
+                        <label class="fw-800 text-dark text-nowrap mb-0">Date Node:</label>
+                        <div class="input-group">
+                            <input class="form-control form-control-modern" type="date" id="date_from" name="date_from" value="{{ $date_from }}">
+                            <span class="input-group-text bg-transparent border-0 fw-bold">to</span>
+                            <input class="form-control form-control-modern" type="date" id="date_to" name="date_to" value="{{ $date_to }}">
+                        </div>
+                        <button type="submit" class="btn btn-dark fw-bold rounded-3 px-4">Filter</button>
+                        <button type="button" id="exportBtn" class="btn btn-outline-danger fw-bold rounded-3 px-4">Excel</button>
+                    </form>
+                </div>
+                <div class="col-xl-6">
+                    <form action="{{ route('search.sale-reports') }}" method="GET">
+                        @csrf
+                        <div class="input-group">
+                            <span class="input-group-text bg-light border-end-0"><i class="fa-solid fa-magnifying-glass text-muted"></i></span>
+                            <input type="text" class="form-control form-control-modern border-start-0" placeholder="Search by customer, phone, or invoice..." name="keyword" value="{{ request()->input('keyword') }}">
+                            @if (request()->input('keyword'))
+                                <a class="btn btn-light border-top border-bottom" href="{{ url('sale-reports') }}"><i class="fa-solid fa-xmark"></i></a>
+                            @endif
+                            <button type="submit" class="btn btn-primary-solid rounded-start-0">Search</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="table-container shadow-sm">
+            <div class="table-responsive text-nowrap">
+                <table id="posts" class="table mb-0">
+                    <thead>
+                        <tr>
+                            <th class="text-center" style="width: 50px;">#</th>
+                            <th>Customer / Operator</th>
+                            <th>Contact No</th>
+                            <th>Gender</th>
+                            <th>Invoice No</th>
+                            <th>Sync Date</th>
+                            <th>Brand Node</th>
+                            <th class="text-center">Status</th>
+                            <th class="text-center">Manage</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($saleReports as $index => $item)
+                            <tr>
+                                <td class="text-center text-muted fw-800">{{ $saleReports->firstItem() + $index }}</td>
+                                <td>
+                                    <div class="d-flex align-items-center gap-3">
+                                        <div class="bg-light text-primary rounded-circle d-flex align-items-center justify-content-center fw-800" style="width:34px; height:34px; font-size: 11px; border: 1px solid #eef2ff;">
+                                            {{ strtoupper(substr($item->customer_name, 0, 1)) }}
+                                        </div>
+                                        <span class="fw-800 text-heading">{{ $item->customer_name }}</span>
+                                    </div>
+                                </td>
+                                <td class="fw-700 text-primary">{{ $item->phone_number }}</td>
+                                <td><span class="badge rounded-pill bg-light text-dark border">{{ $item->gender }}</span></td>
+                                <td><span class="invoice-tag">#{{ $item->invoice_no }}</span></td>
+                                <td class="text-muted small fw-700">{{ \Carbon\Carbon::parse($item->invoice_date)->format('d M, Y') }}</td>
+                                <td><span class="badge bg-light text-info fw-800 px-3">{{ $item->brand_name }}</span></td>
+                                <td class="text-center">
+                                    @if ($item->status == 1)
+                                        <span class="badge-modern bg-active"><i class="fa-solid fa-circle-check me-1"></i>Active</span>
+                                    @else
+                                        <span class="badge-modern bg-inactive"><i class="fa-solid fa-circle-xmark me-1"></i>Inactive</span>
+                                    @endif
+                                </td>
+                                <td class="text-center">
+                                    <div class="d-flex justify-content-center gap-2">
+                                        <a href="{{ url('sale-reports/view', encrypt($item->id)) }}" class="btn-action" title="View"><i class="fa-solid fa-eye"></i></a>
+                                        <a href="{{ url('sale-reports/edit', encrypt($item->id)) }}" class="btn-action" title="Edit"><i class="fa-solid fa-pen-to-square"></i></a>
+                                        <button type="button" class="btn-action text-danger delete-btn" data-customer-name="{{ $item->customer_name }}" data-delete-url="{{ url('sale-reports/destroy', encrypt($item->id)) }}" title="Delete"><i class="fa-solid fa-trash-can"></i></button>
+                                    </div>
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="mt-4 d-flex justify-content-between align-items-center px-2">
+            <span class="text-muted small fw-800 uppercase tracking-widest">Entry {{ $saleReports->firstItem() }} - {{ $saleReports->lastItem() }} of {{ $countSaleReports }}</span>
+            <div>{{ $saleReports->appends(request()->input())->links('paginitaion_backend') }}</div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg" style="border-radius: 20px;">
+                <div class="modal-body text-center p-5">
+                    <div class="mb-4 text-danger"><i class="fa-solid fa-circle-exclamation" style="font-size: 4.5rem;"></i></div>
+                    <h3 class="fw-800 text-dark">Confirm Deletion</h3>
+                    <p class="text-muted">You are about to permanently remove the report for:</p>
+                    <div class="p-3 bg-light rounded-3 fw-800 text-danger border-start border-danger border-4 mb-4" id="deleteCustomerName"></div>
+                    <div class="d-flex gap-2 justify-content-center">
+                        <button class="btn btn-light fw-bold px-4" data-bs-dismiss="modal">Cancel</button>
+                        <a href="#" id="confirmDeleteBtn" class="btn-primary-solid px-4">Delete Permanently</a>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        document.getElementById('exportBtn').addEventListener('click', function () {
-            const form = document.getElementById('filterForm');
-            const oldAction = form.action;
-            form.action = "{{ url('sale-reports/export') }}";
-            form.submit();
-            form.action = oldAction;
+        document.addEventListener('DOMContentLoaded', function() {
+            // DELETE MODAL LOGIC
+            const deleteModal = new bootstrap.Modal(document.getElementById('deleteConfirmModal'));
+            const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
+            const deleteCustomerName = document.getElementById('deleteCustomerName');
+            
+            document.querySelectorAll('.delete-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    deleteCustomerName.textContent = this.getAttribute('data-customer-name');
+                    confirmDeleteBtn.href = this.getAttribute('data-delete-url');
+                    deleteModal.show();
+                });
+            });
+
+            // EXCEL EXPORT LOGIC
+            document.getElementById('exportBtn').addEventListener('click', function() {
+                const form = document.getElementById('filterForm');
+                const oldAction = form.action;
+                form.action = "{{ url('sale-reports/export') }}";
+                form.submit();
+                form.action = oldAction;
+            });
         });
     </script>
-@endsection
+    @endsection

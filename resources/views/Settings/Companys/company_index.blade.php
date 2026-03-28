@@ -1,147 +1,238 @@
 @extends('layouts.homePages')
 @section('content')
-    <style>
-        /* Table header with solid color */
-        #datatable thead th {
-            background-color: #DEAA5E;
-            /* gold-like header */
-            color: white;
-            font-weight: 600;
-            font-size: 16px;
-            text-align: center;
-            padding: 12px;
-            border-bottom: 2px solid #cfa060;
-            opacity: 0;
-            transform: translateY(-10px);
-            animation: fadeInHeader 0.5s forwards;
-        }
 
-        /* Header fade-in animation */
-        @keyframes fadeInHeader {
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-        /* Table row animation */
-        #datatable tbody tr {
-            opacity: 0;
-            transform: translateY(20px);
-            animation: fadeInRow 0.5s forwards;
-        }
+<style>
+    /* --- GLOBAL BRANDING --- */
+    :root {
+        --brand-indigo: #4f46e5;
+        --brand-purple: #7c3aed;
+        --brand-pink: #ec4899;
+        --brand-red: #ef4444;
+        --bg-body: #f8fafc;
+        --font-family: 'Plus Jakarta Sans', sans-serif !important;
+    }
 
-        /* Stagger table rows */
-        #datatable tbody tr:nth-child(1) {
-            animation-delay: 0.1s;
-        }
+    body, .container-xxl {
+        font-family: var(--font-family);
+        background-color: var(--bg-body);
+        font-size: 0.85rem;
+        color: #1e293b;
+    }
 
-        #datatable tbody tr:nth-child(2) {
-            animation-delay: 0.2s;
-        }
+    .container-xxl {
+        max-width: 100% !important;
+        width: 100% !important;
+        padding: 15px 30px !important;
+    }
 
-        #datatable tbody tr:nth-child(3) {
-            animation-delay: 0.3s;
-        }
+    /* --- CARD & ANIMATIONS --- */
+    .card-main {
+        border: none;
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.06);
+        background: #ffffff;
+        animation: fadeInUp 0.6s ease-out forwards;
+    }
 
-        /* Add more as needed */
+    @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Row fade-in keyframe */
-        @keyframes fadeInRow {
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
+    /* Professional Multi-Color Header Gradient */
+    .card-header-main {
+        background: linear-gradient(90deg, var(--brand-indigo) 0%, var(--brand-purple) 33%, var(--brand-pink) 66%, var(--brand-red) 100%);
+        padding: 20px 25px;
+        border: none;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
 
-        /* Hover effect for table rows */
-        #datatable tbody tr:hover {
-            background-color: #f5f5f5;
-            transform: scale(1.02);
-            transition: all 0.3s ease;
-        }
+    .header-title { color: #fff; font-weight: 800; font-size: 1.1rem; margin: 0; letter-spacing: -0.5px; }
 
-        /* Action buttons hover effect */
-        .btn-outline-secondary {
-            transition: all 0.3s ease;
-        }
+    /* Action Button (Add New) */
+    .btn-add-company {
+        background: rgba(255,255,255,0.2);
+        color: white; border: 1px solid rgba(255,255,255,0.4);
+        padding: 8px 18px; border-radius: 10px; font-weight: 700;
+        transition: all 0.3s ease;
+        text-transform: uppercase;
+        font-size: 0.75rem;
+    }
+    .btn-add-company:hover { background: #fff; color: var(--brand-purple); transform: translateY(-2px); }
 
-        .btn-outline-secondary:hover {
-            transform: scale(1.1);
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-        }
+    /* --- TABLE STYLING --- */
+    .table thead th { 
+        background: #f1f5f9; color: #475569; font-weight: 700; 
+        text-transform: uppercase; font-size: 0.7rem; letter-spacing: 1px;
+        padding: 15px 20px; border: none; text-align: center;
+    }
+    .table tbody td { padding: 18px 20px; border-bottom: 1px solid #f1f5f9; vertical-align: middle; }
 
-        /* Delete button hover effect */
-        .btn-outline-secondary[style*="background-color: red"]:hover {
-            transform: scale(1.1);
-            background-color: #ff4c4c;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-        }
-    </style>
+    .company-name-text { font-weight: 800; color: #0f172a; font-size: 14px; }
+    
+    /* Status Badges */
+    .badge-status {
+        cursor: pointer;
+        padding: 6px 14px; border-radius: 50px; font-weight: 800; font-size: 10px;
+        display: inline-flex; align-items: center; gap: 6px;
+        transition: all 0.3s ease;
+        text-transform: uppercase;
+    }
+    .status-active { background: #ecfdf5; color: #059669; border: 1px solid #d1fae5; }
+    .status-active:hover { background: #059669; color: #fff; transform: translateY(-2px); }
+    .status-inactive { background: #fef2f2; color: #dc2626; border: 1px solid #fee2e2; }
+    .status-inactive:hover { background: #dc2626; color: #fff; transform: translateY(-2px); }
 
-    <div class="container-xxl flex-grow-1 container-p-y">
+    /* Operations Buttons */
+    .action-btn {
+        width: 36px; height: 36px; border-radius: 10px; display: inline-flex;
+        align-items: center; justify-content: center; background: #fff;
+        color: #64748b; border: 1px solid #e2e8f0; transition: 0.2s;
+    }
+    .action-btn:hover { border-color: var(--brand-indigo); color: var(--brand-indigo); transform: scale(1.1); }
+    .btn-delete:hover { border-color: var(--brand-red); color: var(--brand-red); background: #fef2f2; }
 
-        {{-- @include('alert') --}}
+    /* DataTables Custom Search */
+    .dataTables_filter input {
+        border: 1.5px solid #e2e8f0; border-radius: 10px; padding: 6px 12px; outline: none; margin-bottom: 10px;
+    }
+</style>
 
-        <div class="card">
-            <nav class="navbar navbar-example navbar-expand-lg bg-light">
-                <div class="container-fluid">
-                    <div class="collapse navbar-collapse" id="navbar-ex-3">
-                        <div class="navbar-nav me-auto">
-                            <a class="nav-item nav-link active" href="" style="font-size: 18px;"> 
-                                <i class='bx bx-package'></i> List of Company
-                            </a>
-                        </div>
-                        <a href="{{ url('/companys/create') }}" class="btn btn-outline-primary">Add Company</a>
-                    </div>
-                </div>
-            </nav>
-            <div class="card-body">
-                <div class="table-responsive text-nowrap">
-                    <table id="datatable" class="display">
-                        <thead>
-                            <tr>
-                                <th style="width:25px;">No</th>
-                                <th style="text-align: start">Name Company</th>
-                                <th>Created At</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($companys as $index => $company)
-                                <tr>
-                                    <td style="text-align: center;">{{ $index + 1 }}</td>
-                                    <td style="text-align: start">{{ $company->company_name }}</td>
-                                    <td>{{ $company->created_at }}</td>
-                                    <td style="width: 100px">
-                                        <div class="btn-group" role="group" aria-label="First group">
-                                            <a href="" class="btn btn-outline-secondary"><i class="tf-icons bx bx-edit"></i></a>
-                                            <a onclick="return confirm('Are you sure, you want to delete?')" href="" class="btn btn-outline-secondary" style="background-color: red; color:white"><i class="tf-icons bx bx-trash"></i></a>
-                                        </div>
-                                    </td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
+<div class="container-xxl">
+
+    @if(session('success'))
+    <script>
+        Swal.fire({
+            toast: true, position: 'top-end', icon: 'success',
+            title: 'Action Successful', text: "{{ session('success') }}",
+            showConfirmButton: false, timer: 3000, timerProgressBar: true
+        });
+    </script>
+    @endif
+
+    <div class="card-main">
+        <div class="card-header-main">
+            <h5 class="header-title">
+                <i class='fas fa-buildings me-2'></i>ENTERPRISE ENTITY DIRECTORY
+            </h5>
+            <a href="{{ url('/companys/create') }}" class="btn btn-add-company">
+                <i class='fas fa-plus-circle me-1'></i> Add New Company
+            </a>
+        </div>
+
+        <div class="card-body p-4">
+            <div class="table-responsive">
+                <table id="datatable" class="table table-hover align-middle m-0">
+                    <thead>
+                        <tr>
+                            <th style="width: 70px;">Rank</th>
+                            <th style="text-align: left;">Company Legal Name</th>
+                            <th>Operation Status</th>
+                            <th>Entry Created</th>
+                            <th style="width: 150px;">Operations</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($companys as $index => $company)
+                        <tr>
+                            <td class="text-center fw-bold text-muted">{{ $index + 1 }}</td>
+                            <td style="text-align: left;">
+                                <div class="d-flex align-items-center gap-3">
+                                    <div style="width: 40px; height: 40px; background: #f0f4ff; color: var(--brand-indigo); display: flex; align-items: center; justify-content: center; border-radius: 10px; font-size: 1.1rem;">
+                                        <i class="fas fa-city"></i>
+                                    </div>
+                                    <div>
+                                        <span class="d-block company-name-text">{{ $company->company_name }}</span>
+                                        <small class="text-muted fw-bold">UUID: #{{ str_pad($company->id, 4, '0', STR_PAD_LEFT) }}</small>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="text-center">
+                                <span onclick="toggleStatus('{{ encrypt($company->id) }}', '{{ $company->status }}')" 
+                                      class="badge-status {{ $company->status == 'active' ? 'status-active' : 'status-inactive' }}">
+                                    <i class="fas {{ $company->status == 'active' ? 'fa-check-circle' : 'fa-times-circle' }}"></i>
+                                    {{ $company->status }}
+                                </span>
+                            </td>
+                            <td class="text-center text-muted">
+                                <i class="far fa-calendar-alt me-1"></i>
+                                {{ $company->created_at->format('d M, Y') }}
+                            </td>
+                            <td class="text-center">
+                                <div class="d-flex justify-content-center gap-2">
+                                    <a href="{{ url('/companys/edit', encrypt($company->id)) }}" 
+                                       class="action-btn" title="Edit Company">
+                                        <i class="fas fa-pen-to-square"></i>
+                                    </a>
+                                    <button type="button" 
+                                            class="action-btn btn-delete" 
+                                            onclick="confirmDelete('{{ encrypt($company->id) }}', '{{ $company->company_name }}')">
+                                        <i class="fas fa-trash-can"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        @endforeach
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
+</div>
 
-    <script>
+<script>
+    $(document).ready(function() {
         $('#datatable').DataTable({
-            "iDisplayLength": 25
+            "pageLength": 15,
+            "dom": '<"d-flex justify-content-between align-items-center mb-3"f>rt<"d-flex justify-content-between align-items-center mt-3"ip>',
+            "language": {
+                "search": "",
+                "searchPlaceholder": "Search companies..."
+            }
         });
+    });
 
-
-        $(document).ready(function() {
-            $('.offcanvasTop').click(function(e) {
-                e.preventDefault();
-
-                var id = $(this).val();
-                $('#id').val(id);
-                $('#deleteModal').modal('show');
-            });
+    function toggleStatus(id, currentStatus) {
+        const nextStatus = currentStatus === 'active' ? 'inactive' : 'active';
+        Swal.fire({
+            title: 'Transition to ' + nextStatus.toUpperCase() + '?',
+            text: "This changes the visibility and access rights of this company.",
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#4f46e5',
+            confirmButtonText: 'Confirm Update',
+            cancelButtonText: 'Abort',
+            fontFamily: 'Plus Jakarta Sans'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = "{{ url('/companys/toggle') }}/" + id;
+            }
         });
-    </script>
+    }
+
+    function confirmDelete(id, name) {
+        Swal.fire({
+            title: 'Delete ' + name + '?',
+            html: 'Are you sure? This will permanently remove the record from the <b>Enterprise Entity Directory</b>.',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#ef4444',
+            confirmButtonText: 'Delete Record',
+            cancelButtonText: 'Keep it',
+            reverseButtons: true,
+            fontFamily: 'Plus Jakarta Sans'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = "{{ url('/companys/destroy') }}/" + id;
+            }
+        });
+    }
+</script>
+
 @endsection

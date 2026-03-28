@@ -1,190 +1,298 @@
 @extends('layouts.homePages')
 @section('content')
-    <style>
-     .card {
-        border-radius: 12px;
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
-        animation: fadeInUp 0.8s ease-in-out;
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<style>
+    /* ====== BRAND IDENTITY & COLORS ====== */
+    :root {
+        --brand-indigo: #4f46e5;
+        --brand-purple: #7c3aed;
+        --brand-pink: #ec4899;
+        --brand-red: #ef4444;
+        --brand-success: #71dd37;
+        --bg-body: #f8fafc;
+        --font-family: 'Plus Jakarta Sans', sans-serif !important;
+    }
+
+    body {
+        background-color: var(--bg-body);
+        font-family: var(--font-family);
+        font-size: 13px;
+        color: #1e293b;
+        margin: 0;
+    }
+
+    /* ====== 100% FIT SCREEN WRAPPER ====== */
+    .fluid-page-wrapper {
+        width: 100% !important;
+        max-width: 100% !important;
+        padding: 1.5rem !important;
+        animation: fadeInPage 0.5s ease-out;
+    }
+
+    @keyframes fadeInPage {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ====== CARD STYLING ====== */
+    .card-main {
+        border: none !important;
+        border-radius: 16px !important;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05) !important;
+        background: #fff;
         overflow: hidden;
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        width: 100%;
     }
 
-    .card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 8px 18px rgba(0, 0, 0, 0.1);
+    /* ====== BRANDED GRADIENT HEADER ====== */
+    .branded-header {
+        background: linear-gradient(90deg, var(--brand-indigo) 0%, var(--brand-purple) 50%, var(--brand-pink) 100%) !important;
+        padding: 1.2rem 2rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
     }
 
-    @keyframes fadeInUp {
-        from {
-            opacity: 0;
-            transform: translateY(20px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
+    .header-title {
+        color: white !important;
+        font-weight: 800;
+        font-size: 1.2rem;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin: 0;
     }
 
-    /* ====== Header & Footer ====== */
-    .card-header, .card-footer {
-        background: #f5e2c5;
+    /* ====== ADD BUTTON ====== */
+    .btn-add-color {
+        background: rgba(255, 255, 255, 0.2) !important;
+        backdrop-filter: blur(8px);
+        color: white !important;
+        border: 1px solid rgba(255, 255, 255, 0.3) !important;
+        border-radius: 8px !important;
+        font-weight: 700;
+        font-size: 12px !important;
+        padding: 10px 22px !important;
+        transition: 0.3s;
+        text-decoration: none !important;
+    }
+
+    .btn-add-color:hover {
+        background: white !important;
+        color: var(--brand-indigo) !important;
+        transform: translateY(-2px);
+    }
+
+    /* ====== TABLE & STYLING ====== */
+    .table-responsive {
+        width: 100%;
+        margin: 0;
+    }
+
+    #datatable {
+        width: 100% !important;
+        border-collapse: collapse !important;
+    }
+
+    #datatable thead th {
+        background-color: #fcfdfe !important;
+        color: #64748b !important;
+        font-weight: 800;
+        text-transform: uppercase;
+        font-size: 11px;
+        letter-spacing: 1px;
+        padding: 1.5rem 2rem !important;
+        border-bottom: 2px solid #f1f5f9 !important;
+    }
+
+    #datatable tbody td {
+        padding: 14px 2rem !important;
+        vertical-align: middle;
+        border-bottom: 1px solid #f1f5f9;
         font-weight: 600;
-        color: #333;
-        animation: slideDown 0.6s ease;
     }
 
-    @keyframes slideDown {
-        from {
-            opacity: 0;
-            transform: translateY(-10px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-
-    /* ====== Form Styling ====== */
-    form {
-        animation: fadeIn 1s ease-in;
-    }
-
-    @keyframes fadeIn {
-        from { opacity: 0; }
-        to { opacity: 1; }
-    }
-
-    label.form-label {
-        font-weight: 600;
-        color: #444;
-        transition: color 0.3s ease;
-    }
-
-    label.form-label:hover {
-        color: #DEAA5E;
-    }
-
-    .form-control, .form-select {
+    .highlight-text {
+        color: var(--brand-indigo);
+        font-weight: 700;
+        background: rgba(79, 70, 229, 0.08);
+        padding: 6px 14px;
         border-radius: 8px;
-        border: 1px solid #ccc;
-        padding: 10px;
-        transition: all 0.3s ease-in-out;
+        display: inline-block;
+        font-size: 12px;
     }
 
-    .form-control:focus, .form-select:focus {
-        border-color: #DEAA5E;
-        box-shadow: 0 0 6px rgba(222, 170, 94, 0.5);
-        transform: scale(1.01);
-    }
-
-    /* ====== Buttons ====== */
-    .btn {
+    .color-swatch {
+        width: 26px;
+        height: 26px;
         border-radius: 8px;
-        transition: all 0.3s ease;
+        display: inline-block;
+        vertical-align: middle;
+        margin-right: 12px;
+        border: 2px solid #fff;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
     }
 
-    .btn-primary {
-        background-color: #DEAA5E;
-        border-color: #DEAA5E;
-        color: #fff;
+    .code-text {
+        font-family: 'Monaco', 'Consolas', monospace;
+        color: #64748b;
+        font-weight: 700;
+        background: #f1f5f9;
+        padding: 4px 12px;
+        border-radius: 8px;
+        font-size: 12px;
     }
 
-    .btn-primary:hover {
-        background-color: #c8944b;
-        transform: scale(1.05);
-        box-shadow: 0 4px 10px rgba(222, 170, 94, 0.4);
+    /* ====== ACTIONS ====== */
+    .action-btn {
+        width: 38px;
+        height: 38px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 10px;
+        border: 1.5px solid #e2e8f0;
+        color: #64748b;
+        transition: 0.2s;
+        text-decoration: none !important;
     }
+    .action-btn:hover { background: var(--brand-indigo); color: white; border-color: var(--brand-indigo); transform: scale(1.1); }
+    .btn-delete:hover { background: var(--brand-red); border-color: var(--brand-red); }
 
-    .btn-outline-secondary:hover {
-        background-color: #DEAA5E;
-        color: #fff;
-        transform: scale(1.05);
+    /* Custom Search UI */
+    .dataTables_wrapper .dataTables_filter {
+        padding: 20px 2rem;
+        float: left !important;
+        width: 100%;
     }
-
-    /* ====== Image Style (Optional Future Use) ====== */
-    .rounded-circle {
-        object-fit: fill;
+    .dataTables_filter input {
+        border: 1.5px solid #e2e8f0 !important;
+        border-radius: 12px !important;
+        padding: 10px 20px !important;
+        background-color: #f8fafc !important;
+        width: 300px !important;
+        outline: none;
+        margin-left: 0 !important;
     }
+    .dataTables_filter input:focus { border-color: var(--brand-indigo) !important; background-color: #fff !important; }
+</style>
 
-    .my-img {
-        background: black;
-        height: 200px;
-        width: 200px;
-        border-radius: 50%;
-    }
+<div class="fluid-page-wrapper">
+    <div class="card-main">
+        <div class="branded-header">
+            <h5 class="header-title">
+                <i class="fas fa-eye-dropper"></i> COLOR MASTER REGISTRY
+            </h5>
+            <a href="{{ url('/colors/create') }}" class="btn btn-add-color">
+                <i class="fas fa-plus-circle me-1"></i> ADD NEW COLOR
+            </a>
+        </div>
 
-    .my-img-2 {
-        height: 70px;
-        width: 70px;
-        object-fit: fill;
-    }
-    </style>
-
-    <div class="container-xxl flex-grow-1 container-p-y">
-
-        {{-- @include('alert') --}}
-
-        <div class="card">
-            <nav class="navbar navbar-example navbar-expand-lg bg-light">
-                <div class="container-fluid">
-                    <div class="collapse navbar-collapse" id="navbar-ex-3">
-                        <div class="navbar-nav me-auto">
-                            <a class="nav-item nav-link active" href="" style="font-size: 18px;"> 
-                                <i class='bx bx-package'></i> List of Colors
-                            </a>
-                        </div>
-                        <a href="{{ url('/colors/create') }}" class="btn btn-outline-primary">Add Colors</a>
-                    </div>
-                </div>
-            </nav>
-            <div class="card-body">
-                <div class="table-responsive text-nowrap">
-                    <table id="datatable" class="display">
-                        <thead>
+        <div class="card-body p-0">
+            <div class="table-responsive text-nowrap">
+                <table id="datatable" class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th class="text-center" style="width: 80px;">No</th>
+                            <th>Color Identification</th>
+                            <th>Hexadecimal Code</th>
+                            <th class="text-center">System Date</th>
+                            <th class="text-center" style="width: 150px;">Management</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($colors as $index => $color)
                             <tr>
-                                <th style="width:25px;">No</th>
-                                <th style="text-align: center">Color Name</th>
-                                <th style="text-align: start">Code</th>
-                                <th>Created At</th>
-                                <th>Actions</th>
+                                <td class="text-center text-muted fw-bold">#{{ $index + 1 }}</td>
+                                <td>
+                                    <span class="highlight-text text-uppercase">{{ $color->color_name }}</span>
+                                </td>
+                                <td>
+                                    <span class="color-swatch" style="background-color: {{ $color->code }};"></span>
+                                    <span class="code-text">{{ strtoupper($color->code) }}</span>
+                                </td>
+                                <td class="text-center text-muted small">
+                                    <i class="far fa-calendar-alt me-1"></i> {{ \Carbon\Carbon::parse($color->created_at)->format('d M, Y') }}
+                                </td>
+                                <td class="text-center">
+                                    <div class="d-flex justify-content-center gap-2">
+                                        <a href="{{ url('colors/edit', encrypt($color->id)) }}" 
+                                           class="action-btn" title="Modify Record">
+                                            <i class="fas fa-pen-nib"></i>
+                                        </a>
+                                        <button type="button" 
+                                           onclick="confirmDelete('{{ url('colors/destroy', encrypt($color->id)) }}')" 
+                                           class="action-btn btn-delete" title="Delete Record">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </button>
+                                    </div>
+                                </td>
                             </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($colors as $index => $color)
-                                <tr>
-                                    <td style="text-align: center;">{{ $index + 1 }}</td>
-                                    <td style="text-align: start">{{ $color->color_name }}</td>
-                                    <td style="text-align: start">{{ $color->code }}</td>
-                                    <td>{{ $color->created_at }}</td>
-                                    <td style="width: 100px">
-                                        <div class="btn-group" role="group" aria-label="First group">
-                                            <a href="" class="btn btn-outline-secondary"><i class="tf-icons bx bx-edit"></i></a>
-                                            <a onclick="return confirm('Are you sure, you want to delete?')" href="" class="btn btn-outline-secondary" style="background-color: red; color:white"><i class="tf-icons bx bx-trash"></i></a>
-                                        </div>
-                                    </td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
+                        @endforeach
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
+</div>
 
-    <script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+    function confirmDelete(url) {
+        Swal.fire({
+            title: 'Delete this color record?',
+            text: "This asset will be permanently removed from the system registry.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#4f46e5',
+            cancelButtonColor: '#ef4444',
+            confirmButtonText: 'Yes, delete it',
+            customClass: {
+                confirmButton: 'btn btn-primary px-4 me-3',
+                cancelButton: 'btn btn-label-secondary px-4'
+            },
+            buttonsStyling: false
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = url;
+            }
+        });
+    }
+
+    $(document).ready(function() {
         $('#datatable').DataTable({
-            "iDisplayLength": 25
+            "iDisplayLength": 25,
+            "ordering": true,
+            "dom": '<"top"f>rt<"bottom"lip><"clear">',
+            "language": {
+                "search": "",
+                "searchPlaceholder": "Search by name or hex code...",
+                "paginate": {
+                    "next": '<i class="fas fa-chevron-right"></i>',
+                    "previous": '<i class="fas fa-chevron-left"></i>'
+                }
+            }
         });
 
-
-        $(document).ready(function() {
-            $('.offcanvasTop').click(function(e) {
-                e.preventDefault();
-
-                var id = $(this).val();
-                $('#id').val(id);
-                $('#deleteModal').modal('show');
-            });
+        const Toast = Swal.mixin({
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true
         });
-    </script>
+
+        @if(session('success'))
+            Toast.fire({ icon: 'success', title: "{{ session('success') }}" });
+        @endif
+    });
+</script>
+
 @endsection

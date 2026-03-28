@@ -1,175 +1,161 @@
 @php
-    
-    $activeSubMenus = session()->get('activeSubMenus');
-    $activeMenus = session()->get('activeMenus');
-
+    $activeSubMenus = session()->get('activeSubMenus') ?? [];
+    $activeMenus = session()->get('activeMenus') ?? [];
 @endphp
 
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
 <style>
-   /* Sidebar container animation */
+/* ==================== SIDEBAR STYLING ==================== */
 #layout-menu {
-    width: 250px; /* Adjust sidebar width */
-    opacity: 0;
-    transform: translateX(-50px);
-    animation: slideInSidebar 0.6s forwards;
+    font-family: 'Plus Jakarta Sans', sans-serif !important;
+    width: 260px;
+    background: linear-gradient(180deg, #667eea 0%, #764ba2 100%) !important;
     transition: width 0.3s ease;
 }
 
-/* Slide-in sidebar */
-@keyframes slideInSidebar {
-    to {
-        opacity: 1;
-        transform: translateX(0);
-    }
-}
-/* Sidebar logo container */
 .logo-center {
-    display: flex;
-    flex-direction: column;
-    align-items: center; /* Horizontal center */
-    justify-content: center; /* Vertical center inside its container */
-    padding: 20px 0;
-    position: relative;
+    display: flex; flex-direction: column; align-items: center; padding: 25px 0;
+    background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-/* Logo image */
-.logo-center img {
-    width: 120px;
-    opacity: 0;
-    transform: scale(0.8);
-    animation: fadeInLogo 0.6s forwards;
-    animation-delay: 0.2s;
+.logo-center img { width: 110px; }
+
+.menu-inner .menu-item { margin: 4px 15px; border-radius: 10px; }
+
+.menu-inner .menu-link {
+    color: rgba(255, 255, 255, 0.85) !important;
+    font-size: 14px; font-weight: 600; padding: 12px 16px; border-radius: 10px;
+    background: rgba(255, 255, 255, 0.05); transition: all 0.3s ease;
+    cursor: pointer;
 }
 
-/* Optional: app brand toggle (for mobile) */
-.logo-center .app-brand {
-    margin-top: 10px;
-    display: flex;
-    align-items: center;
-}
-
-/* Logo fade-in keyframes */
-@keyframes fadeInLogo {
-    to {
-        opacity: 1;
-        transform: scale(1);
-    }
-}
-
-
-@keyframes fadeInLogo {
-    to {
-        opacity: 1;
-        transform: scale(1);
-    }
-}
-
-/* Menu item fade-in & slide */
-.menu-inner .menu-item {
-    opacity: 0;
-    transform: translateX(-20px);
-    animation: fadeInMenuItem 0.5s forwards;
-}
-
-/* Stagger menu items */
-.menu-inner .menu-item:nth-child(1) { animation-delay: 0.3s; }
-.menu-inner .menu-item:nth-child(2) { animation-delay: 0.4s; }
-.menu-inner .menu-item:nth-child(3) { animation-delay: 0.5s; }
-/* Extend for more items dynamically if needed */
-
-/* Fade-in animation */
-@keyframes fadeInMenuItem {
-    to {
-        opacity: 1;
-        transform: translateX(0);
-    }
-}
-
-/* Hover effect for menu items */
-
-/* Icon and text hover slide */
-.menu-inner .menu-link i,
-.menu-inner .menu-link div {
-    transition: all 0.3s ease;
-}
-
-.menu-inner .menu-item:hover i,
-.menu-inner .menu-item:hover div {
+.menu-inner .menu-link:hover {
+    background: rgba(255, 255, 255, 0.15); color: #ffffff !important;
     transform: translateX(5px);
 }
 
-/* Active menu styling */
-
-
-/* Submenu collapse & fade animation */
-.menu-inner .menu-sub {
-    max-height: 0;
-    overflow: hidden;
-    opacity: 0;
-    transition: max-height 0.4s ease, opacity 0.4s ease;
+.menu-item.active > .menu-link {
+    background: #ffffff !important; color: #764ba2 !important;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
 }
 
-.menu-item.open > .menu-sub {
-    max-height: 500px; /* enough to show all submenus */
-    opacity: 1;
+/* Logout Button Specific Style */
+.logout-btn { 
+    background: rgba(255, 77, 77, 0.15) !important; color: #ffb3b3 !important; margin-top: 20px;
+}
+.logout-btn:hover {
+    background: #ff4d4d !important; color: #ffffff !important;
 }
 </style>
 
 <aside id="layout-menu" class="layout-menu menu-vertical menu bg-menu-theme">
     <div class="logo-center">
-        <img src="{{ asset('assets/images/logo.png') }}" alt="">
-        <div class="app-brand">
-            <a href="javascript:void(0);" class="layout-menu-toggle menu-link text-large ms-auto d-xl-none">
-                <i class="bx bx-chevron-left bx-sm align-middle"></i>
-            </a>
-        </div>
+        <img src="{{ asset('assets/images/logo.png') }}" alt="Logo">
     </div>
 
-    <ul class="menu-inner py-1">
-
-        <li class="menu-item active">
-            <a href="/" class="menu-link">
+    <ul class="menu-inner py-2">
+        <li class="menu-item @if(Request::is('/')) active @endif">
+            <a href="{{ url('') }}" class="menu-link app-click-trigger">
                 <i class="menu-icon tf-icons bx bx-home-circle"></i>
-                <div data-i18n="Analytics">Dashboard</div>
+                <div>Dashboard</div>
             </a>
         </li>
 
-        <li class="menu-header small text-uppercase">
-            <span class="menu-header-text">View Pages</span>
-        </li>
+        <li class="menu-header"><span class="menu-header-text">View Pages</span></li>
 
-        @foreach ($activeMenus as $activeMenu)
+        @foreach ($activeMenus as $index => $activeMenu)
             <li class="menu-item">
                 <a href="{{ $activeMenu->route }}"
-                    class="menu-link @if ($activeMenu->route == '#')menu-toggle @endif">
+                   class="menu-link app-click-trigger @if ($activeMenu->route == '#') menu-toggle @endif">
                     <i class="menu-icon tf-icons bx {{ $activeMenu->icon }}"></i>
-                    <div data-i18n="Layouts">{{ $activeMenu->menuName }}</div>
+                    <div>{{ $activeMenu->menuName }}</div>
                 </a>
+                @if ($activeMenu->route == '#')
                 <ul class="menu-sub">
                     @foreach ($activeSubMenus as $activeSubMenu)
                         @if ($activeSubMenu->sub_of == $activeMenu->menuid)
                             <li class="menu-item @if (request()->is($activeSubMenu->route)) active @endif">
-                                <a href="{{ url($activeSubMenu->route) }}" class="menu-link">
-                                    <div data-i18n="Notifications">{{ $activeSubMenu->menuName }}</div>
+                                <a href="{{ url($activeSubMenu->route) }}" class="menu-link app-click-trigger">
+                                    <div>{{ $activeSubMenu->menuName }}</div>
                                 </a>
                             </li>
                         @endif
                     @endforeach
                 </ul>
+                @endif
             </li>
         @endforeach
 
-        <script>
-            $('.active').parent('ul').parent('li').addClass('open');
-        </script>
-
-        {{-- ------------------------------------------- Logouts ------------------------------------------------ --}}
-        <li class="menu-header small text-uppercase"><span class="menu-header-text">Logout</span></li>
         <li class="menu-item">
-            <a href="{{ url('/logout') }}" class="menu-link logout-btn">
+            <a href="{{ url('/logout') }}" class="menu-link logout-btn logout-trigger">
                 <i class="menu-icon tf-icons bx bx-exit"></i>
-                <div data-i18n="Analytics" style="font-weight: bold">Logout</div>
+                <div style="font-weight: 800">Logout</div>
             </a>
         </li>
     </ul>
 </aside>
+
+<audio id="sound-default" preload="auto">
+    <source src="https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3" type="audio/mpeg">
+</audio>
+<audio id="sound-logout" preload="auto">
+    <source src="https://assets.mixkit.co/active_storage/sfx/2574/2574-preview.mp3" type="audio/mpeg">
+</audio>
+
+<script>
+    /**
+     * Reusable Sound Function
+     * Usage: playClickSound('default') or playClickSound('logout')
+     */
+    function playClickSound(type = 'default') {
+        const audio = document.getElementById('sound-' + type);
+        if (audio) {
+            audio.pause();
+            audio.currentTime = 0;
+            audio.play().catch(e => {});
+        }
+    }
+
+    document.addEventListener("DOMContentLoaded", function() {
+        
+        // 1. Standard Menu Links
+        document.querySelectorAll('.app-click-trigger').forEach(link => {
+            link.addEventListener('click', function(e) {
+                const href = this.getAttribute('href');
+                playClickSound('default');
+
+                if (href && href !== '#' && !href.startsWith('javascript')) {
+                    e.preventDefault();
+                    setTimeout(() => { window.location.href = href; }, 150);
+                }
+            });
+        });
+
+        // 2. Logout Specific Link
+        document.querySelectorAll('.logout-trigger').forEach(link => {
+            link.addEventListener('click', function(e) {
+                const href = this.getAttribute('href');
+                playClickSound('logout'); // Unique sound for logout
+
+                e.preventDefault();
+                setTimeout(() => { window.location.href = href; }, 400); // Slightly longer delay for logout sound
+            });
+        });
+
+        // 3. Browser Audio Unlocker
+        const unlock = () => {
+            playClickSound('default');
+            document.removeEventListener('click', unlock);
+        };
+        document.addEventListener('click', unlock);
+
+        // Sidebar Auto-Expansion
+        const activeSub = document.querySelector('.menu-sub .menu-item.active');
+        if (activeSub) {
+            const parent = activeSub.closest('.menu-item');
+            if (parent) parent.classList.add('open', 'active');
+        }
+    });
+</script>
