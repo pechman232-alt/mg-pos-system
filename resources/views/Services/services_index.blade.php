@@ -666,6 +666,7 @@
                             <th class="text-center">Service Advisor</th>
                             <th class="text-center">Technician</th>
                             <th class="text-center">Branch</th>
+                            <th class="text-center">Created Date</th>
                             <th class="text-center">Date & Time</th>
                             <th class="text-center">Status</th>
                             <th class="text-center">Customer Remark</th>
@@ -690,25 +691,25 @@
                                         $durationStr = ($diff->h > 0 ? $diff->h . 'h ' : '') . $diff->i . 'm';
                                     }
                                 }
-
+                
                                 $saName = $booking->sa_name ?? 'N/A';
                                 $techName = $booking->technician_name ?? 'N/A';
-
+                
                                 $rawLoc = $booking->location;
                                 $locObj = isset($branches) ? collect($branches)->firstWhere('id', $rawLoc) : null;
                                 $displayLocation = $locObj
                                     ? str_ireplace(['MG ', 'Mg '], '', $locObj->branch_name)
                                     : str_ireplace(['MG ', 'Mg '], '', $rawLoc);
                                 $displayLocation = ucwords(trim($displayLocation) ?: 'N/A');
-
+                
                                 $statusDisplay = trim((string) ($booking->status ?? 'Pending'));
                                 $statusKey = strtolower($statusDisplay);
-
+                
                                 $isOverdue = false;
                                 $overdueText = '';
                                 $isSoon = false;
                                 $soonText = '';
-
+                
                                 if (
                                     in_array($statusKey, ['pending', 'waiting approved', 'waiting', 'waiting service'])
                                 ) {
@@ -726,7 +727,7 @@
                                         $timeMatch,
                                     );
                                     $cleanTime = $timeMatch[0] ?? '00:00:00';
-
+                
                                     if ($cleanDate && $cleanDate !== '0000-00-00') {
                                         $bookTs = strtotime($cleanDate . ' ' . $cleanTime);
                                         if ($bookTs !== false && $bookTs > 0) {
@@ -754,7 +755,7 @@
                                         }
                                     }
                                 }
-
+                
                                 $class = match ($statusKey) {
                                     'completed', 'close' => 'status-completed',
                                     'in progress', 'wip', 'under repair' => 'status-under-repair',
@@ -771,10 +772,10 @@
                                     'archived', 'archive' => 'status-archived',
                                     default => 'status-pending',
                                 };
-
+                
                                 $customerRemark = $booking->remark ?? '';
                                 $adminNoteText = $booking->note ?? '';
-
+                
                                 if (in_array($statusKey, ['completed', 'close'])) {
                                     $adminNoteText = 'បានបញ្ចប់ (Close)';
                                 } elseif (in_array($statusKey, ['archived', 'archive'])) {
@@ -787,28 +788,38 @@
                                 ) {
                                     $adminNoteText = 'កំពុងដំណើរការ (WIP)';
                                 }
-
+                
+                                // 🌟 ថ្ងៃយកឡានមកធ្វើ (Booking Date & Time) 🌟
                                 $displayDate = !empty($booking->booking_date)
                                     ? date('d-M-Y', strtotime(substr(trim($booking->booking_date), 0, 10)))
                                     : 'N/A';
                                 $displayTime = !empty($booking->booking_time)
                                     ? date('h:i A', strtotime(substr(trim($booking->booking_time), 0, 8)))
                                     : 'N/A';
+                
+                                // 🌟 ថ្ងៃបង្កើតទិន្នន័យ (Created Date & Time) 🌟
+                                $displayCreatedDate = !empty($booking->created_at)
+                                    ? \Carbon\Carbon::parse($booking->created_at)->format('d-M-Y')
+                                    : 'N/A';
+                                $displayCreatedTime = !empty($booking->created_at)
+                                    ? \Carbon\Carbon::parse($booking->created_at)->format('h:i A')
+                                    : 'N/A';
+                
                                 $displayMileage = !empty($booking->mileage)
                                     ? number_format($booking->mileage) . ' KM'
                                     : 'N/A';
                             @endphp
-
+                
                             <tr class="booking-row" data-book-ts="{{ $bookTs }}"
                                 data-status="{{ $statusKey }}"
                                 data-customer="{{ addslashes($booking->customer_name ?? 'N/A') }}">
                                 <td class="text-center text-slate-500">
                                     {{ ($bookings->currentPage() - 1) * $bookings->perPage() + $index + 1 }}</td>
-
+                
                                 <td class="text-slate-800">
                                     <div class="fw-bold" style="font-size: 0.95rem;">
                                         {{ $booking->customer_name ?? 'N/A' }}</div>
-
+                
                                     <div class="mt-1 mb-1">
                                         @if (isset($booking->is_walk_in) && $booking->is_walk_in == 1)
                                             <span
@@ -824,7 +835,7 @@
                                             </span>
                                         @endif
                                     </div>
-
+                
                                     @if ($isOverdue && !empty($overdueText))
                                         <div class="mt-1 animate__animated animate__pulse animate__infinite">
                                             <span class="alert-badge-late"><i class="fas fa-clock-rotate-left me-1"></i>
@@ -837,7 +848,7 @@
                                         </div>
                                     @endif
                                 </td>
-
+                
                                 <td class="text-center text-primary"><i
                                         class="fas fa-phone-alt me-1 text-slate-300"></i>{{ $booking->contact ?? 'N/A' }}
                                 </td>
@@ -852,10 +863,23 @@
                                 <td class="text-center text-emerald-600">{{ $techName }}</td>
                                 <td class="text-center"><i class="fas fa-map-marker-alt text-danger me-1"></i> <span
                                         class="fw-bold text-slate-700 branch-name-text">{{ $displayLocation }}</span></td>
+                                
+                                <!-- 🌟 1. Created Date (ដាក់មកនៅពីមុខ) 🌟 -->
+                                <td class="text-center bg-slate-50" title="ថ្ងៃបញ្ចូលទិន្នន័យចូលប្រព័ន្ធ">
+                                    <div class="fw-bold text-slate-600" style="font-size: 0.85rem;">
+                                        <i class="fas fa-plus-circle text-success me-1"></i> {{ $displayCreatedDate }}
+                                    </div>
+                                    <div class="mt-1 text-slate-400" style="font-size: 0.75rem; font-weight: 700;">
+                                        {{ $displayCreatedTime }}
+                                    </div>
+                                </td>
+                
+                                <!-- 🌟 2. Date & Time (ថ្ងៃយកឡានមកធ្វើ - នៅពីក្រោយ) 🌟 -->
                                 <td class="text-center text-slate-700">
                                     <div>{{ $displayDate }}</div>
                                     <div style="font-size: 11px; color:#64748b;">{{ $displayTime }}</div>
                                 </td>
+                                
                                 <td class="text-center"><span
                                         class="status-badge {{ $class }}">{{ str_ireplace('Waiting Parts Order', 'Parts', $statusDisplay) }}</span>
                                 </td>
@@ -887,14 +911,12 @@
                                 </td>
                                 <td class="text-center no-export">
                                     <div class="d-flex justify-content-center flex-wrap gap-1">
-
-                                        {{-- 🌟 ប៊ូតុង Quick View 🌟 --}}
+                
                                         <button
                                             onclick="showQuickView('{{ addslashes($booking->customer_name ?? 'N/A') }}', '{{ addslashes($booking->contact ?? 'N/A') }}', '{{ addslashes($booking->model ?? 'N/A') }}', '{{ addslashes($booking->plate ?? 'N/A') }}', '{{ addslashes($displayMileage) }}', '{{ addslashes($booking->service_type ?? 'N/A') }}', '{{ $displayDate }}', '{{ $displayTime }}', '{{ $durationStr }}', '{{ addslashes($displayLocation) }}', '{{ addslashes($saName) }}', '{{ addslashes($techName) }}', '{{ addslashes($statusDisplay) }}', '{{ $class }}', '{{ addslashes($customerRemark) }}', '{{ addslashes($adminNoteText) }}')"
                                             class="btn-action-icon btn-act-view" title="Quick View"><i
                                                 class="fas fa-eye"></i></button>
-
-                                        {{-- 🌟 ប៊ូតុង Arrived (ថ្មី) បង្ហាញតែពេល Pending ឬ Waiting 🌟 --}}
+                
                                         @if (in_array($statusKey, ['pending', 'waiting approved', 'waiting']))
                                             <button
                                                 onclick="markAsArrivedIndex('{{ $booking->id }}', '{{ addslashes($booking->plate ?? '') }}')"
@@ -902,27 +924,27 @@
                                                 title="សម្គាល់ថាអតិថិជនមកដល់ (Mark as Arrived)"><i
                                                     class="fas fa-map-marker-alt"></i></button>
                                         @endif
-
+                
                                         @if (!in_array($statusKey, ['completed', 'close', 'archived', 'archive', 'cancel', 'cancelled']))
                                             <button
                                                 onclick="editNotePopup('{{ encrypt($booking->id ?? 0) }}', '{{ addslashes($adminNoteText) }}', '{{ $booking->status }}')"
                                                 class="btn-action-icon btn-act-note" title="Add / Edit Note"><i
                                                     class="fas fa-sticky-note"></i></button>
                                         @endif
-
+                
                                         @if (in_array($statusKey, ['completed', 'close']))
                                             <button
                                                 onclick="showCompleteJobPopup('{{ $booking->id ?? '' }}', '{{ addslashes($booking->customer_name ?? '') }}', '{{ $booking->contact ?? '' }}', '{{ $booking->model ?? '' }}', '{{ $booking->plate ?? '' }}', '{{ addslashes($displayMileage) }}', '{{ $booking->service_type ?? '' }}', '{{ $displayDate }}', '{{ $startTimeStr }}', '{{ $endTimeStr }}', '{{ $durationStr }}', '{{ addslashes($displayLocation) }}', '{{ addslashes($saName) }}', '{{ addslashes($techName) }}')"
                                                 class="btn-action-icon btn-act-receipt" title="Receipt"><i
                                                     class="fas fa-receipt"></i></button>
                                         @endif
-
+                
                                         @if (!in_array($statusKey, ['cancel', 'cancelled', 'archived', 'archive']))
                                             <a href="{{ route('services.edit', encrypt($booking->id ?? 0)) }}"
                                                 class="btn-action-icon btn-act-edit" title="Edit"><i
                                                     class="fas fa-edit"></i></a>
                                         @endif
-
+                
                                         @if (!in_array($statusKey, ['cancel', 'cancelled', 'completed', 'close', 'expired', 'overdue', 'archived', 'archive']))
                                             <button
                                                 onclick="confirmCancel('{{ $booking->id }}', '{{ addslashes($booking->customer_name ?? '') }}')"
@@ -932,7 +954,7 @@
                                                 action="{{ url('/services/cancel/' . encrypt($booking->id ?? 0)) }}"
                                                 method="POST" class="d-none">@csrf @method('POST')</form>
                                         @endif
-
+                
                                         @if (!in_array($statusKey, ['archived', 'archive']))
                                             <button
                                                 onclick="confirmArchive('{{ $booking->id }}', '{{ addslashes($booking->customer_name ?? '') }}')"
@@ -947,8 +969,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="15" class="text-center py-5"><i
-                                        class="fas fa-inbox fa-3x mb-3 text-slate-300"></i>
+                                <td colspan="16" class="text-center py-5">
                                     <h5 class="fw-bold text-slate-500">មិនទាន់មានទិន្នន័យនៅឡើយទេ</h5>
                                 </td>
                             </tr>

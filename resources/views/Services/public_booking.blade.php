@@ -642,192 +642,208 @@
 
     <div class="footer">Designed by Pech &copy; ២០២៦</div>
 
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script>
-    function fetchAvailableSlots() {
-        const dateInput = $('#booking_date').val();
-        const loc = $('#location').val();
-
-        if (!dateInput || !loc) {
-            $('#slot-container').html('<div class="slot-empty">Please select a branch and date first.</div>');
-            return;
-        }
-
-        const selectedDate = new Date(dateInput);
-        if (selectedDate.getDay() === 0) {
-            $('#slot-container').html('<div class="slot-empty" style="color:#f87171">Closed on Sundays. Please choose another day.</div>');
-            $('#btnSubmit').prop('disabled', true);
-            return;
-        }
-        $('#btnSubmit').prop('disabled', false);
-
-        $('#slot-container').html('<div class="slot-loading"><i class="fas fa-circle-notch fa-spin"></i> Loading slots...</div>');
-
-        $.get("{{ route('slots.check') }}", { date: dateInput, location: loc }, function(data) {
-
-            if (data && data.isHoliday) {
-                Swal.fire({
-                    icon: 'warning',
-                    title: 'Public Holiday',
-                    text: data.message,
-                    confirmButtonColor: '#B70101',
-                    confirmButtonText: 'Choose Another Date',
-                    allowOutsideClick: false,
-                }).then(() => {
-                    $('#booking_date').val('');
-                    $('#slot-container').html('<div class="slot-empty">Please select another date.</div>');
-                    $('#btnSubmit').prop('disabled', true);
-                });
-                return;
-            }
-
-            if (!data || data.length === 0) {
-                $('#slot-container').html('<div class="slot-empty" style="color:#f87171">No available slots for this date.</div>');
-                return;
-            }
-
-            const now = new Date();
-            const todayStr = now.getFullYear() + '-' +
-                String(now.getMonth() + 1).padStart(2, '0') + '-' +
-                String(now.getDate()).padStart(2, '0');
-
-            let html = '';
-            data.forEach(function(slot) {
-                let isPast = false;
-                if (dateInput === todayStr) {
-                    const [time, mod] = slot.time.split(' ');
-                    let [h, m] = time.split(':');
-                    if (h === '12') h = '00';
-                    if (mod === 'PM') h = parseInt(h) + 12;
-                    const slotDt = new Date();
-                    slotDt.setHours(parseInt(h), parseInt(m), 0, 0);
-                    if (slotDt <= now) isPast = true;
-                }
-
-                const isDisabled = (slot.isFull || isPast);
-                const disabledAttr = isDisabled ? 'disabled' : '';
-                const cardClass = isDisabled ? 'slot-card disabled' : 'slot-card';
-
-                let statusHtml = '';
-                if (isPast) {
-                    statusHtml = '<span class="slot-status past">Passed</span>';
-                } else if (slot.isFull) {
-                    statusHtml = '<span class="slot-status full">Full</span>';
-                } else {
-                    statusHtml = '<span class="slot-status avail">' + slot.remaining + ' left</span>';
-                }
-
-                html += '<label class="' + cardClass + '">' +
-                    '<input type="radio" name="booking_time" value="' + slot.time + '" ' + disabledAttr + ' required>' +
-                    '<div class="slot-content">' +
-                    '<span class="slot-time">' + slot.time + '</span>' +
-                    statusHtml +
-                    '</div></label>';
-            });
-
-            $('#slot-container').html(html);
-
-        }).fail(function() {
-            $('#slot-container').html('<div class="slot-empty" style="color:#f87171">Server connection error. Please try again.</div>');
-        });
-    }
-
-    $(document).ready(function() {
-        fetchAvailableSlots();
-
-        $('#booking_date, #location').on('change', function() {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        function fetchAvailableSlots() {
             const dateInput = $('#booking_date').val();
-            const today = new Date().toISOString().split('T')[0];
-            if (dateInput < today) {
-                Swal.fire({
-                    icon: 'warning',
-                    title: 'Invalid Date',
-                    text: 'Please select today or a future date.',
-                    confirmButtonColor: '#002663'
-                });
-                $('#booking_date').val(today);
-            }
-            fetchAvailableSlots();
-        });
-
-        $('#plate').on('input', function() {
-            $(this).val($(this).val().toUpperCase());
-        });
-
-        $('#bookingForm').on('submit', function(e) {
-            e.preventDefault();
-
-            if (!$("input[name='booking_time']:checked").val()) {
-                Swal.fire({
-                    icon: 'info',
-                    title: 'Select a Time Slot',
-                    text: 'Please choose your preferred time slot.',
-                    confirmButtonColor: '#002663'
-                });
+            const loc = $('#location').val();
+    
+            // ឆែកមើលប្រសិនបើមិនទាន់ជ្រើសរើស Branch ឬ Date
+            if (!dateInput || !loc) {
+                $('#slot-container').html('<div class="slot-empty">Please select a branch and date first.</div>');
                 return;
             }
-
-            const $btn = $('#btnSubmit');
-            $btn.prop('disabled', true).html('<i class="fas fa-circle-notch fa-spin"></i> Submitting...');
-
-            Swal.fire({ title: 'Processing...', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
-
-            $.ajax({
-                url: $(this).attr('action'),
-                method: 'POST',
-                data: $(this).serialize(),
-                success: function(response) {
-                    if (response.success) {
-                        const name    = $('#customer_name').val();
-                        const phone   = $('#contact').val();
-                        const model   = $('#model').val();
-                        const plate   = $('#plate').val();
-                        const service = $('#service_type').val();
-                        const branch  = $('#location option:selected').text();
-                        const date    = $('#booking_date').val();
-                        const time    = $("input[name='booking_time']:checked").val();
-
-                        const ticket = `
-                        <div class="ticket-wrap">
-                            <div class="ticket-head">
-                                <div style="width:52px;height:52px;background:#ECFDF5;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 10px;">
-                                    <i class="fas fa-check" style="color:#059669;font-size:1.4rem;"></i>
-                                </div>
-                                <div style="font-size:15px;font-weight:700;color:#0F172A;">Booking Confirmed!</div>
-                                <div class="ref-badge">#MG-${response.booking_id}</div>
-                            </div>
-                            <div class="ticket-body">
-                                <div class="ticket-row"><span class="tl">Name</span><span class="tv">${name}</span></div>
-                                <div class="ticket-row"><span class="tl">Phone</span><span class="tv">${phone}</span></div>
-                                <div class="ticket-row"><span class="tl">Vehicle</span><span class="tv">${model} · ${plate}</span></div>
-                                <div class="ticket-row"><span class="tl">Service</span><span class="tv" style="color:#B70101">${service}</span></div>
-                                <div class="ticket-divider"></div>
-                                <div class="ticket-row"><span class="tl">Date</span><span class="tv">${date}</span></div>
-                                <div class="ticket-row"><span class="tl">Time</span><span class="tv" style="color:#002663">${time}</span></div>
-                                <div class="ticket-row"><span class="tl">Branch</span><span class="tv" style="font-size:0.8rem">${branch}</span></div>
-                                <div style="margin-top:12px;font-size:11px;color:#94A3B8;text-align:center;">Please screenshot this as reference.</div>
-                            </div>
-                        </div>`;
-
-                        Swal.fire({
-                            html: ticket,
-                            confirmButtonText: 'Done',
-                            confirmButtonColor: '#0F172A',
-                            allowOutsideClick: false,
-                            width: '380px',
-                            customClass: { popup: 'swal2-popup' }
-                        }).then(() => { window.location.reload(); });
-                    }
-                },
-                error: function(xhr) {
-                    $btn.prop('disabled', false).html('<i class="far fa-paper-plane"></i> Confirm Booking');
-                    let msg = 'Technical error. Please try again.';
-                    if (xhr.responseJSON && xhr.responseJSON.message) msg = xhr.responseJSON.message;
-                    Swal.fire({ icon: 'error', title: 'Failed', text: msg, confirmButtonColor: '#B70101' });
+    
+            // ឆែកមើលថ្ងៃអាទិត្យ (Closed on Sundays)
+            const selectedDate = new Date(dateInput + 'T00:00:00');
+            if (selectedDate.getDay() === 0) {
+                $('#slot-container').html('<div class="slot-empty" style="color:#f87171">Closed on Sundays. Please choose another day.</div>');
+                $('#btnSubmit').prop('disabled', true);
+                return;
+            }
+            $('#btnSubmit').prop('disabled', false);
+    
+            // បង្ហាញ Loading Status
+            $('#slot-container').html('<div class="slot-loading"><i class="fas fa-circle-notch fa-spin"></i> Loading slots...</div>');
+    
+            // ទាញយក Slot ម៉ោងពី Server
+            $.get("{{ route('slots.check') }}", { date: dateInput, location: loc }, function(data) {
+    
+                if (data && data.isHoliday) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Public Holiday',
+                        text: data.message,
+                        confirmButtonColor: '#B70101',
+                        confirmButtonText: 'Choose Another Date',
+                        allowOutsideClick: false,
+                    }).then(() => {
+                        $('#booking_date').val('');
+                        $('#slot-container').html('<div class="slot-empty">Please select another date.</div>');
+                        $('#btnSubmit').prop('disabled', true);
+                    });
+                    return;
                 }
+    
+                if (!data || data.length === 0) {
+                    $('#slot-container').html('<div class="slot-empty" style="color:#f87171">No available slots for this date.</div>');
+                    return;
+                }
+    
+                const now = new Date();
+                const todayStr = now.getFullYear() + '-' +
+                    String(now.getMonth() + 1).padStart(2, '0') + '-' +
+                    String(now.getDate()).padStart(2, '0');
+    
+                let html = '';
+                data.forEach(function(slot) {
+                    let isPast = false;
+                    if (dateInput === todayStr) {
+                        const [time, mod] = slot.time.split(' ');
+                        let [h, m] = time.split(':');
+                        if (h === '12') h = '00';
+                        if (mod === 'PM') h = parseInt(h) + 12;
+                        const slotDt = new Date();
+                        slotDt.setHours(parseInt(h), parseInt(m), 0, 0);
+                        if (slotDt <= now) isPast = true;
+                    }
+    
+                    const isDisabled = (slot.isFull || isPast);
+                    const disabledAttr = isDisabled ? 'disabled' : '';
+                    const cardClass = isDisabled ? 'slot-card disabled' : 'slot-card';
+    
+                    let statusHtml = '';
+                    if (isPast) {
+                        statusHtml = '<span class="slot-status past">Passed</span>';
+                    } else if (slot.isFull) {
+                        statusHtml = '<span class="slot-status full">Full</span>';
+                    } else {
+                        statusHtml = '<span class="slot-status avail">' + slot.remaining + ' left</span>';
+                    }
+    
+                    html += '<label class="' + cardClass + '">' +
+                        '<input type="radio" name="booking_time" value="' + slot.time + '" ' + disabledAttr + ' required>' +
+                        '<div class="slot-content">' +
+                        '<span class="slot-time">' + slot.time + '</span>' +
+                        statusHtml +
+                        '</div></label>';
+                });
+    
+                $('#slot-container').html(html);
+    
+            }).fail(function() {
+                $('#slot-container').html('<div class="slot-empty" style="color:#f87171">Server connection error. Please try again.</div>');
+            });
+        }
+    
+        $(document).ready(function() {
+            // 🌟 1. ដំណើរការពេលផ្លាស់ប្តូរ Branch ឬ Date 🌟
+            $(document).on('change', '#booking_date, #location', function() {
+                const dateInput = $('#booking_date').val();
+                const today = new Date().toISOString().split('T')[0];
+    
+                if (dateInput && dateInput < today) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Invalid Date',
+                        text: 'Please select today or a future date.',
+                        confirmButtonColor: '#002663'
+                    });
+                    $('#booking_date').val(today);
+                }
+                fetchAvailableSlots();
+            });
+    
+            // 🌟 2. ឆែកមើលប្រសិនបើមាន Value ស្រាប់ ឱ្យរត់ទាញ Slot ភ្លាមៗ 🌟
+            if ($('#location').val() && $('#booking_date').val()) {
+                fetchAvailableSlots();
+            }
+    
+            $('#plate').on('input', function() {
+                $(this).val($(this).val().toUpperCase());
+            });
+    
+            $('#bookingForm').on('submit', function(e) {
+                e.preventDefault();
+    
+                if (!$("input[name='booking_time']:checked").val()) {
+                    Swal.fire({
+                        icon: 'info',
+                        title: 'Select a Time Slot',
+                        text: 'Please choose your preferred time slot.',
+                        confirmButtonColor: '#002663'
+                    });
+                    return;
+                }
+    
+                const $btn = $('#btnSubmit');
+                $btn.prop('disabled', true).html('<i class="fas fa-circle-notch fa-spin"></i> Submitting...');
+    
+                Swal.fire({ title: 'Processing...', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
+    
+                $.ajax({
+                    url: $(this).attr('action'),
+                    method: 'POST',
+                    data: $(this).serialize(),
+                    success: function(response) {
+                        if (response.success) {
+                            const name    = $('#customer_name').val();
+                            const phone   = $('#contact').val();
+                            const model   = $('#model').val();
+                            const plate   = $('#plate').val();
+                            const service = $('#service_type').val();
+                            const branch  = $('#location option:selected').text();
+                            const date    = $('#booking_date').val();
+                            const time    = $("input[name='booking_time']:checked").val();
+    
+                            const ticket = `
+                            <div class="ticket-wrap">
+                                <div class="ticket-head">
+                                    <div style="width:52px;height:52px;background:#ECFDF5;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 10px;">
+                                        <i class="fas fa-check" style="color:#059669;font-size:1.4rem;"></i>
+                                    </div>
+                                    <div style="font-size:15px;font-weight:700;color:#0F172A;">Booking Confirmed!</div>
+                                    <div class="ref-badge">#MG-${response.booking_id}</div>
+                                </div>
+                                <div class="ticket-body">
+                                    <div class="ticket-row"><span class="tl">Name</span><span class="tv">${name}</span></div>
+                                    <div class="ticket-row"><span class="tl">Phone</span><span class="tv">${phone}</span></div>
+                                    <div class="ticket-row"><span class="tl">Vehicle</span><span class="tv">${model} · ${plate}</span></div>
+                                    <div class="ticket-row"><span class="tl">Service</span><span class="tv" style="color:#B70101">${service}</span></div>
+                                    <div class="ticket-divider"></div>
+                                    <div class="ticket-row"><span class="tl">Date</span><span class="tv">${date}</span></div>
+                                    <div class="ticket-row"><span class="tl">Time</span><span class="tv" style="color:#002663">${time}</span></div>
+                                    <div class="ticket-row"><span class="tl">Branch</span><span class="tv" style="font-size:0.8rem">${branch}</span></div>
+                                    <div style="margin-top:12px;font-size:11px;color:#94A3B8;text-align:center;">Please screenshot this as reference.</div>
+                                </div>
+                            </div>`;
+    
+                            Swal.fire({
+                                html: ticket,
+                                confirmButtonText: 'Done',
+                                confirmButtonColor: '#0F172A',
+                                allowOutsideClick: false,
+                                width: '380px',
+                                customClass: { popup: 'swal2-popup' }
+                            }).then(() => { window.location.reload(); });
+                        }
+                    },
+                    error: function(xhr) {
+                        $btn.prop('disabled', false).html('<i class="far fa-paper-plane"></i> Confirm Booking');
+                        let msg = 'Technical error. Please try again.';
+                        if (xhr.responseJSON && xhr.responseJSON.message) msg = xhr.responseJSON.message;
+    
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'មិនអាចកក់បានទេ!',
+                            text: msg,
+                            confirmButtonColor: '#002663',
+                            customClass: { popup: 'swal2-popup' }
+                        });
+                    }
+                });
             });
         });
-    });
-</script>
+    </script>
 </body>
 </html>

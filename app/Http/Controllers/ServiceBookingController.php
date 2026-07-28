@@ -159,39 +159,86 @@ class ServiceBookingController extends Controller
 
         return response()->json($data);
     }
-
     public function publicStore(Request $request)
     {
-        $request->validate(['customer_name' => 'required', 'contact' => 'required', 'plate' => 'required', 'model' => 'required', 'mileage' => 'required', 'service_type' => 'required', 'location' => 'required', 'booking_date' => 'required|date', 'booking_time' => 'required']);
+        $request->validate([
+            'customer_name' => 'required', 
+            'contact'       => 'required', 
+            'plate'         => 'required', 
+            'model'         => 'required', 
+            'mileage'       => 'required', 
+            'service_type'  => 'required', 
+            'location'      => 'required', 
+            'booking_date'  => 'required|date', 
+            'booking_time'  => 'required'
+        ]);
+
         $holidays = $this->getCambodiaHolidays();
         if (in_array($request->booking_date, $holidays)) {
             return response()->json(['success' => false, 'message' => 'សូមអភ័យទោស! ថ្ងៃដែលអ្នកជ្រើសរើសគឺជាថ្ងៃឈប់សម្រាកបុណ្យជាតិ។'], 422);
         }
+
+        // 🌟 កូដថ្មី៖ ឆែកមើលក្រែងលោឡាននេះកំពុងជាប់កក់ (Status មិនទាន់ Completed/Cancel) 🌟
+        // លុបដកឃ្លា និងសញ្ញា - ចេញទាំងអស់ ដើម្បីកុំឱ្យអតិថិជនវាយបំភាន់ប្រព័ន្ធបាន
+        $cleanPlate = strtoupper(preg_replace('/[^A-Za-z0-9]/', '', $request->plate));
+        
+        $activeBooking = \App\Models\ServiceBooking::whereRaw("UPPER(REPLACE(REPLACE(plate, ' ', ''), '-', '')) = ?", [$cleanPlate])
+            ->whereNotIn('status', [
+                'completed', 'close', 'cancel', 'cancelled', 'archived', 'archive',
+                'Completed', 'Close', 'Cancel', 'Cancelled', 'Archived', 'Archive'
+            ])
+            ->first();
+
+        // បើរកឃើញថាមានកក់មែន បោះសារ Error ជា JSON ទៅកាន់ SweetAlert
+        if ($activeBooking) {
+            return response()->json([
+                'success' => false, 
+                'message' => 'សុំទោស! ស្លាកលេខរថយន្តនេះ កំពុងមានការកក់នៅក្នុងប្រព័ន្ធរួចហើយ។ សូមរង់ចាំការកក់ចាស់បញ្ចប់សិន។'
+            ], 422);
+        }
+        // 🌟 បញ្ចប់កូដឆែក 🌟
+
         try {
-            $formattedTime = Carbon::parse($request->booking_time)->format('H:i:s');
+            $formattedTime = \Carbon\Carbon::parse($request->booking_time)->format('H:i:s');
             $locationValue = $request->location;
             $branchId = is_numeric($locationValue) ? $locationValue : null;
+            
             if ($branchId) {
                 $branch = DB::table('branches')->where('id', $locationValue)->first();
                 if ($branch) {
                     $locationValue = $branch->branch_name;
                 }
             }
+            
             $cleanMileage = (int) preg_replace('/[^0-9]/', '', $request->mileage);
             $bookingStatus = ($request->has('is_walk_in') && $request->is_walk_in == 1) ? 'Arrived' : 'Pending';
 
-            $booking = new ServiceBooking;
-            $booking->fill(['customer_name' => $request->customer_name, 'contact' => $request->contact, 'plate' => strtoupper($request->plate), 'model' => $request->model, 'mileage' => $cleanMileage, 'service_type' => $request->service_type, 'remark' => $request->remark, 'booking_date' => $request->booking_date, 'booking_time' => $formattedTime, 'location' => $locationValue, 'branch_id' => $branchId, 'status' => $bookingStatus, 'is_walk_in' => 0]);
+            $booking = new \App\Models\ServiceBooking;
+            $booking->fill([
+                'customer_name' => $request->customer_name, 
+                'contact'       => $request->contact, 
+                'plate'         => strtoupper($request->plate), 
+                'model'         => $request->model, 
+                'mileage'       => $cleanMileage, 
+                'service_type'  => $request->service_type, 
+                'remark'        => $request->remark, 
+                'booking_date'  => $request->booking_date, 
+                'booking_time'  => $formattedTime, 
+                'location'      => $locationValue, 
+                'branch_id'     => $branchId, 
+                'status'        => $bookingStatus, 
+                'is_walk_in'    => 0
+            ]);
             $booking->save();
 
             $this->sendNewBookingAlert($booking, '🌐 ប្រព័ន្ធ Online Booking (អតិថិជនកក់ខ្លួនឯង)');
 
             return response()->json(['success' => true, 'message' => 'Booking successfully created!', 'booking_id' => $booking->id]);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
+            \Log::error('Public Store Booking Error: ' . $e->getMessage());
             return response()->json(['success' => false, 'message' => 'បញ្ហាប្រព័ន្ធ៖ '.$e->getMessage()], 500);
         }
     }
-
     public function index(Request $request)
     {
         $user = auth()->user();
@@ -348,8 +395,31 @@ class ServiceBookingController extends Controller
             return back()->with('error', 'សូមអភ័យទោស! ថ្ងៃដែលអ្នកជ្រើសរើសគឺជាថ្ងៃឈប់សម្រាកបុណ្យជាតិ។')->withInput();
         }
 
+      // 🌟 ដាក់កូដនេះ នៅក្នុង Function publicStore (ឬ public_store) 🌟
+
+// ១. សម្អាតស្លាកលេខ (លុបដកឃ្លា និងសញ្ញាដក (-) ចេញទាំងអស់ ដើម្បីកុំឱ្យប្រព័ន្ធច្រឡំ)
+$cleanPlate = strtoupper(preg_replace('/[^A-Za-z0-9]/', '', $request->plate));
+
+// ២. ស្វែងរកទិន្នន័យចាស់ក្នុង Database ដែលកំពុង Pending ឬ In Progress
+$activeBooking = \App\Models\ServiceBooking::whereRaw("UPPER(REPLACE(REPLACE(plate, ' ', ''), '-', '')) = ?", [$cleanPlate])
+    ->whereNotIn('status', [
+        'completed', 'close', 'cancel', 'cancelled', 'archived', 'archive',
+        'Completed', 'Close', 'Cancel', 'Cancelled', 'Archived', 'Archive'
+    ])
+    ->first();
+
+// ៣. បើរកឃើញថាមានឡានហ្នឹងកំពុងជាប់កក់មែន បោះ Error ទៅវិញភ្លាម
+if ($activeBooking) {
+    $errorMsg = 'សុំទោស! ស្លាកលេខរថយន្តនេះ កំពុងមានការកក់នៅក្នុងប្រព័ន្ធរួចហើយ។ សូមរង់ចាំការកក់ចាស់បញ្ចប់សិន។';
+    
+    if ($request->wantsJson() || $request->ajax()) {
+        return response()->json(['success' => false, 'message' => $errorMsg], 422);
+    }
+    return back()->with('error', $errorMsg)->withInput(); 
+}
+
         try {
-            $formattedTime = Carbon::parse($request->booking_time)->format('H:i:s');
+            $formattedTime = \Carbon\Carbon::parse($request->booking_time)->format('H:i:s');
             $locationValue = $request->location;
             $branchId = is_numeric($locationValue) ? $locationValue : null;
 
@@ -367,11 +437,11 @@ class ServiceBookingController extends Controller
             $authUser = auth('users')->user() ?? auth()->user();
             $addedBy = $authUser ? ($authUser->name ?? $authUser->full_name ?? 'បុគ្គលិក MG') : 'បុគ្គលិក MG';
 
-            $booking = new ServiceBooking;
+            $booking = new \App\Models\ServiceBooking;
             $booking->fill([
                 'customer_name' => $request->customer_name,
                 'contact'       => $request->contact,
-                'plate'         => strtoupper($request->plate),
+                'plate'         => $cleanPlate, // ប្រើ $cleanPlate ដែលបាន Convert ជាអក្សរធំរួច
                 'model'         => $request->model,
                 'mileage'       => $cleanMileage,
                 'service_type'  => $request->service_type,
@@ -414,13 +484,14 @@ class ServiceBookingController extends Controller
             }
 
             return redirect()->route('services.index')->with('success', 'បន្ថែមការកក់ថ្មីជោគជ័យ!');
-        } catch (Exception $e) {
-            Log::error('Store Booking Error: '.$e->getMessage());
+        } catch (\Exception $e) {
+            \Log::error('Store Booking Error: '.$e->getMessage());
             if ($request->wantsJson() || $request->ajax()) {
                 return response()->json(['success' => false, 'message' => 'បញ្ហាប្រព័ន្ធ៖ '.$e->getMessage()], 500);
             }
             return back()->with('error', 'បញ្ហាប្រព័ន្ធ៖ '.$e->getMessage())->withInput();
         }
+    
     }public function edit($id)
     {
         // ស្វែងរកទិន្នន័យ Booking តាម ID
