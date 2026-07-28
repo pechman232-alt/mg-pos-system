@@ -19,38 +19,64 @@ class ServiceBooking extends Model
         'contact',
         'model',
         'plate',
+        'mileage',         // ✅ ត្រឹមត្រូវ! វាអនុញ្ញាតឱ្យ Save ចូល Database ហើយ
         'service_type',
         'location',
+        'branch_id',
         'booking_time',
         'booking_date',
         'status',
-        'arrival_time',    // 💡 ត្រូវតែថែមអាហ្នឹងមួយទៀត ទើបប៊ូតុង Arrived ដើរ
+        'arrival_date',
+        'arrival_time',
         'start_time',
         'end_time',
         'sa_name',
+        'remark' ,
         'technician_name',
         'est_finish_date',
         'mechanic_remark',
-        'total_seconds' 
+        'total_seconds',
+        'paused_duration',
+        'is_walk_in'  , 
+        'note'    // 🌟 ថែម Field ថ្មីនេះ ដើម្បីឱ្យវាអនុញ្ញាតការ Save ពី Controller
     ];
 
     // ៣. បំប្លែងទិន្នន័យអូតូ (Casting)
     protected $casts = [
         'booking_date' => 'date',
-    
+        'mileage'      => 'integer', // 🌟 បន្ថែមទីនេះ ដើម្បីប្រាកដថាទិន្នន័យដែលចូលទៅ DB គឺជាទម្រង់លេខ (INT) ជានិច្ច
+        'is_walk_in'   => 'integer', // 🌟 ប្រាកដថាវាជាលេខ 0 ឬ 1
     ];
+
     /**
-     * Accessor: បង្ហាញឈ្មោះទីតាំងពេញជាភាសាខ្មែរ (Update តាមសាខាថ្មី)
-     * របៀបប្រើក្នុង View: {{ $job->location_kh }}
+     * Accessor: បង្ហាញឈ្មោះទីតាំងពេញជាភាសាខ្មែរ
      */
     public function getLocationKhAttribute()
     {
         $locations = [
+            // ឈ្មោះពេញ (សម្រាប់ទិន្នន័យថ្មី)
+            'Service Sr (siem Reap)'                   => 'សាខាសៀមរាប (ខេត្តសៀមរាប)',
+            'Service Btb (battambang)'                 => 'សាខាបាត់ដំបង (ខេត្តបាត់ដំបង)',
+            'Service Hq (head Office)'                 => 'សាខាការិយាល័យកណ្តាល (រាជធានីភ្នំពេញ)',
+            'Service 50m (street 50m - Phnom Penh)'    => 'សាខាផ្លូវលេខ ៥០ម៉ែត្រ (រាជធានីភ្នំពេញ)',
+            
+            'Mg Service Sr (siem Reap)'                => 'សាខាសៀមរាប (ខេត្តសៀមរាប)',
+            'Mg Service Btb (battambang)'              => 'សាខាបាត់ដំបង (ខេត្តបាត់ដំបង)',
+            'Mg Service Hq (head Office)'              => 'សាខាការិយាល័យកណ្តាល (រាជធានីភ្នំពេញ)',
+            'Mg Service 50m (street 50m - Phnom Penh)' => 'សាខាផ្លូវលេខ ៥០ម៉ែត្រ (រាជធានីភ្នំពេញ)',
+            
+            // សាខាចាស់ (អក្សរកាត់)
             'SR'  => 'សាខាសៀមរាប (ខេត្តសៀមរាប)',
             'BTB' => 'សាខាបាត់ដំបង (ខេត្តបាត់ដំបង)',
-            'HQ'  => 'សាខាការិយាល័យកណ្តាលភ្នំពេញ (រាជធានីភ្នំពេញ)',
+            'HQ'  => 'សាខាការិយាល័យកណ្តាល (រាជធានីភ្នំពេញ)',
             '50M' => 'សាខាផ្លូវលេខ ៥០ម៉ែត្រ (រាជធានីភ្នំពេញ)',
             'MC'  => 'មជ្ឈមណ្ឌលសេវាកម្មយានដ្ឋានសេវាកម្ម',
+
+            // 🌟 ទិន្នន័យចាស់ៗដែលជាប់ជាលេខ ID ក្នុង Database
+            '10' => 'សាខាបាត់ដំបង (ខេត្តបាត់ដំបង)',         // លេខ 10 ផ្អែកតាម Database របស់បង
+            '11' => 'សាខាសៀមរាប (ខេត្តសៀមរាប)',            // (បើលេខ 11 ជាសាខាផ្សេង សូមបងជួយកែឈ្មោះត្រង់នេះ)
+            '12' => 'សាខាការិយាល័យកណ្តាល (រាជធានីភ្នំពេញ)',  // (បើលេខ 12 ជាសាខាផ្សេង សូមបងជួយកែឈ្មោះត្រង់នេះ)
+            '13' => 'សាខាផ្លូវលេខ ៥០ម៉ែត្រ (រាជធានីភ្នំពេញ)',  // (បើលេខ 13 ជាសាខាផ្សេង សូមបងជួយកែឈ្មោះត្រង់នេះ)
         ];
 
         return $locations[$this->location] ?? $this->location;
@@ -58,7 +84,6 @@ class ServiceBooking extends Model
 
     /**
      * Mutator: បំប្លែងស្លាកលេខឱ្យទៅជាអក្សរធំជានិច្ចមុននឹង Save ចូល Database
-     * ឧទាហរណ៍៖ បើវាយ "2ab-1234" វានឹងរក្សាទុកជា "2AB-1234"
      */
     public function setPlateAttribute($value)
     {
@@ -67,7 +92,6 @@ class ServiceBooking extends Model
 
     /**
      * Accessor: បង្ហាញម៉ោងឱ្យមើលទៅស្អាត (AM/PM)
-     * របៀបប្រើក្នុង View: {{ $job->formatted_time }}
      */
     public function getFormattedTimeAttribute()
     {
@@ -76,7 +100,6 @@ class ServiceBooking extends Model
 
     /**
      * Accessor: បង្ហាញថ្ងៃខែឱ្យមើលទៅស្អាត (Day-Month-Year)
-     * របៀបប្រើក្នុង View: {{ $job->formatted_date }}
      */
     public function getFormattedDateAttribute()
     {
@@ -85,7 +108,6 @@ class ServiceBooking extends Model
 
     /**
      * Accessor: គណនារយៈពេលធ្វើការសរុប (នាទី)
-     * របៀបប្រើក្នុង View: {{ $job->work_duration }} mn
      */
     public function getWorkDurationAttribute()
     {

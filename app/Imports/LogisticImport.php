@@ -7,35 +7,35 @@ use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Maatwebsite\Excel\Concerns\WithValidation;
 
-class LogisticImport implements ToModel, WithHeadingRow ,WithValidation
+class LogisticImport implements ToModel, WithHeadingRow, WithValidation
 {
-    /**
-    * @param array $row
-    *
-    * @return \Illuminate\Database\Eloquent\Model|null
-    */
     public function model(array $row)
     {
-        return new LogisticsModel([
-            'model_name' => $row['model_name_id'],
-            'exterior_color' => $row['exterior_color'],
-            'interior_color' => $row['interior_color'],
-            'model_year' => $row['model_year'],
-            'vin_number' => $row['vin_number'],
-            'engine_number' => $row['engine_number'],
-            'remark' => $row['remark'],
-        ]);
+        // 🌟 យើងប្រើ (string) ដើម្បីបង្ខំទិន្នន័យឱ្យទៅជាអក្សរទាំងអស់ ទោះបីជា Excel បញ្ជូនលេខមកក៏ដោយ
+        return LogisticsModel::updateOrCreate(
+            [
+                'vin_number' => trim((string)$row['vin_number']), 
+            ],
+            [
+                'model_name_id'  => (string)($row['model_name_id'] ?? 'N/A'), 
+                'exterior_color' => (string)($row['exterior_color'] ?? 'N/A'),
+                'interior_color' => (string)($row['interior_color'] ?? 'N/A'),
+                'model_year'     => $row['model_year'] ?? date('Y'),
+                'engine_number'  => trim((string)$row['engine_number']),
+                'remark'         => isset($row['remark']) ? (string)$row['remark'] : null,
+                'is_sale'        => 1
+            ]
+        );
     }
 
     public function rules(): array
     {
         return [
-            'model_name' => 'required',
+            'model_name_id'  => 'required', 
             'exterior_color' => 'required',
-            'interior_color' => 'required',
-            'model_year' => 'required',
-            'vin_number' => 'required|string|max:255|unique:logistics,vin_number',
-            'engine_number' => 'required|string|max:255|unique:logistics,engine_number',
+            'vin_number'     => 'required', 
+            'engine_number'  => 'required', 
+            // 🌟 ខ្ញុំបានលុប '|string' ចេញ ដើម្បីកុំឱ្យវាឆែកទាស់ជាមួយ Excel ទៀត
         ];
     }
 }

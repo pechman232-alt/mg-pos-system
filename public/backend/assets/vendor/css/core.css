@@ -4202,7 +4202,7 @@ textarea.form-control-lg {
   font-size: 0.8125em;
   font-weight: 500;
   line-height: 1;
-  color: #fff;
+  color: #ff3e1d;
   text-align: center;
   white-space: nowrap;
   vertical-align: baseline;
@@ -9749,7 +9749,7 @@ button.list-group-item-gray.active {
 
 .px-4 {
   padding-right: 1.5rem !important;
-  padding-left: 1.5rem !important;
+  padding-left: 17rem !important;
 }
 
 .px-5 {

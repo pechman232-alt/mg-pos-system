@@ -8,23 +8,33 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <style>
-    /* --- GLOBAL BRANDING --- */
+    /* ================= VARIABLES & BRANDING ================= */
     :root {
         --brand-indigo: #4f46e5;
         --brand-purple: #7c3aed;
         --brand-pink: #ec4899;
         --brand-red: #ef4444;
         --bg-body: #f8fafc;
+        --border-color: #cbd5e1; 
         --font-main: 'Plus Jakarta Sans', 'Noto Sans Khmer', sans-serif !important;
     }
 
-    body, .container-xxl {
-        font-family: var(--font-main);
-        background-color: var(--bg-body);
-        font-size: 0.82rem;
+    body { 
+        font-family: var(--font-main); 
+        background-color: var(--bg-body); 
         color: #1e293b;
         -webkit-font-smoothing: antialiased;
     }
+
+    /* 🌟 ជួសជុលកំហុស Animation ទីនេះ 🌟 */
+    @keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-card { animation: fadeInUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+    
+    .stagger-1 { animation: fadeInUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; animation-delay: 150ms; opacity: 0; }
+    .stagger-2 { animation: fadeInUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; animation-delay: 250ms; opacity: 0; }
 
     .container-xxl {
         max-width: 100% !important;
@@ -34,47 +44,49 @@
 
     /* --- PREMIUM CARD STYLING --- */
     .full-width-card {
-        border: none;
-        border-radius: 20px;
-        box-shadow: 0 15px 35px rgba(0,0,0,0.05);
+        border: 1px solid var(--border-color);
+        border-radius: 16px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.03);
         background: #fff;
         overflow: hidden;
     }
 
     .card-header-gradient {
-        background: linear-gradient(90deg, var(--brand-indigo) 0%, var(--brand-purple) 33%, var(--brand-pink) 66%, var(--brand-red) 100%) !important;
-        padding: 22px 30px;
-        border-bottom: none;
+        background: linear-gradient(135deg, var(--brand-indigo) 0%, var(--brand-purple) 100%) !important;
+        padding: 20px 25px;
+        border-bottom: 1px solid var(--border-color); 
     }
 
     .header-title {
         color: #ffffff !important;
         font-weight: 800;
-        font-size: 1.1rem;
+        font-size: 1.15rem;
         margin: 0;
-        letter-spacing: -0.2px;
+        letter-spacing: -0.3px;
+        display: flex;
+        align-items: center;
     }
 
     /* --- FORM ELEMENTS --- */
     .form-label {
         font-weight: 800;
-        font-size: 0.68rem;
+        font-size: 0.75rem;
         color: #64748b;
         text-transform: uppercase;
-        margin-bottom: 10px;
+        margin-bottom: 8px;
         display: flex;
         align-items: center;
         gap: 8px;
-        letter-spacing: 0.8px;
+        letter-spacing: 0.5px;
     }
 
     .form-control {
-        height: 46px;
+        height: 48px;
         padding: 10px 18px;
-        border-radius: 12px;
-        border: 1.5px solid #e2e8f0;
-        font-size: 0.85rem;
-        background-color: #fcfdfe;
+        border-radius: 10px;
+        border: 1px solid var(--border-color); 
+        font-size: 0.9rem;
+        background-color: #fff;
         font-weight: 600;
         transition: all 0.3s ease;
     }
@@ -82,7 +94,7 @@
     .form-control:focus {
         background-color: #ffffff;
         border-color: var(--brand-indigo);
-        box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.08);
+        box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
         outline: none;
     }
 
@@ -95,22 +107,23 @@
     }
 
     .permission-card {
-        background: #fcfdfe;
-        border: 1.5px solid #edf2f7;
-        border-radius: 16px;
+        background: #f8fafc;
+        border: 1px solid var(--border-color); 
+        border-radius: 12px;
         padding: 18px;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        animation: fadeInUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     }
 
     .permission-card:hover {
         border-color: var(--brand-indigo);
         background: #fff;
-        transform: translateY(-3px);
-        box-shadow: 0 10px 20px rgba(0,0,0,0.04);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 15px rgba(0,0,0,0.05);
     }
 
     .main-perm-wrapper {
-        border-bottom: 1.5px solid #f1f5f9;
+        border-bottom: 1px dashed var(--border-color);
         padding-bottom: 12px;
         margin-bottom: 12px;
     }
@@ -119,69 +132,72 @@
         display: flex;
         flex-direction: column;
         gap: 10px;
-        padding-left: 5px;
+        padding-left: 10px;
     }
 
     /* Custom Switch & Checkbox */
-    .form-check-input { cursor: pointer; }
+    .form-check-input { 
+        cursor: pointer; 
+        width: 20px; height: 20px; 
+        border: 1px solid var(--border-color);
+        transition: 0.2s;
+    }
+    .form-switch .form-check-input { height: 20px; width: 36px; }
+    
     .form-check-input:checked {
         background-color: var(--brand-indigo);
         border-color: var(--brand-indigo);
+        box-shadow: 0 2px 4px rgba(79, 70, 229, 0.3);
     }
 
-    .form-check-label { cursor: pointer; font-weight: 600; }
+    .form-check-label { cursor: pointer; font-weight: 700; color: #0f172a; margin-top: 2px; }
+    .sub-perm-list .form-check-label { font-weight: 600; color: #475569; font-size: 0.8rem; }
 
     /* --- BUTTONS --- */
     .btn-save {
-        background: linear-gradient(90deg, #1e293b, #0f172a);
+        background: #0f172a;
         color: white;
         border: none;
         font-weight: 800;
-        padding: 16px 30px;
-        border-radius: 14px;
+        padding: 14px 30px;
+        border-radius: 10px;
         font-size: 0.9rem;
         cursor: pointer;
-        transition: all 0.4s ease;
-        box-shadow: 0 6px 20px rgba(15, 23, 42, 0.15);
+        transition: all 0.3s ease;
         text-transform: uppercase;
         letter-spacing: 1px;
     }
-
     .btn-save:hover { 
-        transform: translateY(-3px); 
-        box-shadow: 0 12px 25px rgba(15, 23, 42, 0.25); 
-        filter: brightness(1.2);
+        transform: translateY(-2px); 
+        box-shadow: 0 8px 20px rgba(15, 23, 42, 0.2); 
+        background: #000;
     }
 
     .btn-back {
-        background: rgba(255, 255, 255, 0.12);
+        background: rgba(255, 255, 255, 0.2);
         color: #fff;
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        font-size: 0.7rem;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        font-size: 0.75rem;
         font-weight: 700;
-        padding: 9px 18px;
+        padding: 8px 18px;
         text-decoration: none;
-        border-radius: 10px;
+        border-radius: 8px;
         transition: 0.3s;
     }
-    .btn-back:hover { background: #fff; color: var(--brand-indigo); }
-
-    .animate-up {
-        opacity: 0;
-        transform: translateY(20px);
-        animation: fadeInUp 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
-    }
-    @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
+    .btn-back:hover { background: #fff; color: var(--brand-indigo); transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
 </style>
 
 <div class="container-xxl flex-grow-1 container-p-y">
-    <div class="card full-width-card animate-up">
+    <div class="card full-width-card animate-card">
+        
+        <!-- Header -->
         <div class="card-header-gradient d-flex justify-content-between align-items-center">
             <h5 class="header-title">
-                <i class="fas fa-shield-halved me-2"></i>CREATE SECURITY ROLE <span style="font-family: 'Noto Sans Khmer'; font-weight: 400; font-size: 0.75rem; opacity: 0.8; margin-left: 10px;">បង្កើតតួនាទីថ្មី</span>
+                <i class="fas fa-shield-halved me-2"></i>CREATE SECURITY ROLE 
+                <span style="font-family: 'Noto Sans Khmer'; font-weight: 400; font-size: 0.8rem; opacity: 0.85; margin-left: 10px;">បង្កើតតួនាទីថ្មី</span>
             </h5>
             <a href="{{ url('/userRoles') }}" class="btn-back">
-                <i class="fas fa-chevron-left me-1"></i> BACK TO LIST
+                <i class="fas fa-list me-1"></i> BACK TO LIST
             </a>
         </div>
 
@@ -189,60 +205,73 @@
             <form action="{{ url('/userRoles/store') }}" method="POST" id="userRoleForm">
                 @csrf
                 
-                <div class="row mb-5">
+                <!-- Role Name Input -->
+                <div class="row mb-5 stagger-1">
                     <div class="col-md-6">
-                        <label class="form-label"><i class="fas fa-id-card-clip text-primary"></i> Role Designation Name <span style="font-family: 'Noto Sans Khmer'; text-transform: none; margin-left: 5px;">(ឈ្មោះតួនាទី)</span></label>
+                        <label class="form-label"><i class="fas fa-id-card-clip text-indigo-500"></i> Role Designation Name <span style="font-family: 'Noto Sans Khmer'; text-transform: none; margin-left: 5px; color: #94a3b8;">(ឈ្មោះតួនាទី)</span></label>
                         <input type="text" name="name" class="form-control @error('name') is-invalid @enderror" 
                                placeholder="e.g. Branch Manager" value="{{ old('name') }}" required autocomplete="off">
                         @error('name') <small class="text-danger mt-1 d-block fw-bold">{{ $message }}</small> @enderror
                     </div>
                 </div>
 
-                <div class="d-flex justify-content-between align-items-center mb-4 mt-2">
-                    <h6 class="fw-800 text-dark m-0"><i class="fas fa-key me-2 text-warning"></i>ACCESS CONTROL LIST <span style="font-family: 'Noto Sans Khmer'; font-weight: 400; font-size: 0.75rem; color: #64748b; margin-left: 8px;">(កំណត់សិទ្ធិចូលប្រើប្រាស់)</span></h6>
-                    <button type="button" class="btn btn-outline-primary btn-sm rounded-pill fw-800 px-3" id="selectAllBtn" style="font-size: 0.65rem;">
+                <!-- Access Control List Header -->
+                <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom stagger-1">
+                    <h6 class="fw-bold text-dark m-0" style="font-size: 0.9rem; text-transform: uppercase;">
+                        <i class="fas fa-key me-2 text-warning"></i> ACCESS CONTROL LIST 
+                        <span style="font-family: 'Noto Sans Khmer'; font-weight: 400; font-size: 0.75rem; color: #64748b; margin-left: 8px;">(កំណត់សិទ្ធិចូលប្រើប្រាស់)</span>
+                    </h6>
+                    <button type="button" class="btn btn-light border btn-sm rounded-pill fw-bold px-3 text-indigo-600 shadow-sm" id="selectAllBtn" style="font-size: 0.7rem;">
                         <i class="fas fa-check-double me-1"></i> SELECT ALL
                     </button>
                 </div>
 
+                <!-- Permissions Grid -->
                 <div class="permission-matrix">
-                    @foreach($mainMenus as $mainMenu)
-                        <div class="permission-card">
+                    @foreach($mainMenus as $index => $mainMenu)
+                        <!-- បន្ថែម Delay Animation តាមលំដាប់ -->
+                        <div class="permission-card" style="animation-delay: {{ ($index * 50) + 200 }}ms; opacity: 0;">
+                            
+                            <!-- Main Module -->
                             <div class="main-perm-wrapper">
-                                <div class="form-check form-switch">
+                                <div class="form-check form-switch d-flex align-items-center gap-2">
                                     <input class="form-check-input main-permission" type="checkbox" 
                                            name="ch_main[]" value="{{ $mainMenu->id }}" 
                                            id="main_{{ $mainMenu->id }}" data-main-id="{{ $mainMenu->id }}">
-                                    <label class="form-check-label text-dark" for="main_{{ $mainMenu->id }}">
+                                    <label class="form-check-label" for="main_{{ $mainMenu->id }}">
                                         {{ $mainMenu->name }}
                                     </label>
                                 </div>
                             </div>
 
+                            <!-- Sub Modules -->
                             <div class="sub-perm-list">
                                 @php $subMenusForMain = $subMenus->where('sub_of', $mainMenu->id); @endphp
                                 @forelse($subMenusForMain as $subMenu)
-                                    <div class="form-check">
+                                    <div class="form-check d-flex align-items-center gap-2">
                                         <input class="form-check-input sub-permission" type="checkbox" 
                                                name="ch_sub[]" value="{{ $subMenu->id }}" 
                                                id="sub_{{ $subMenu->id }}" data-parent="{{ $mainMenu->id }}">
-                                        <label class="form-check-label small text-muted fw-500" for="sub_{{ $subMenu->id }}">
+                                        <label class="form-check-label" for="sub_{{ $subMenu->id }}">
                                             {{ $subMenu->name }}
                                         </label>
                                     </div>
                                 @empty
-                                    <small class="text-muted opacity-50 italic">No sub-modules</small>
+                                    <small class="text-muted opacity-50 fst-italic">No sub-modules</small>
                                 @endforelse
                             </div>
+
                         </div>
                     @endforeach
                 </div>
 
-                <div class="mt-5 pt-4 border-top">
-                    <button type="submit" class="btn btn-save w-100" id="btnSubmit">
+                <!-- Action Footer -->
+                <div class="mt-5 pt-4 border-top stagger-2">
+                    <button type="submit" class="btn btn-save w-100 shadow-sm" id="btnSubmit">
                         <i class="fas fa-cloud-arrow-up me-2"></i> AUTHORIZE & SAVE SECURITY ROLE
                     </button>
                 </div>
+
             </form>
         </div>
     </div>
@@ -276,8 +305,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (this.checked) {
                 mainCheckbox.checked = true;
             } else if (!anySubChecked) {
-                // Optional: Uncheck main if no subs are checked
-                // mainCheckbox.checked = false;
+                mainCheckbox.checked = false;
             }
         });
     });
@@ -289,12 +317,13 @@ document.addEventListener('DOMContentLoaded', function() {
         
         allCheckboxes.forEach(cb => cb.checked = anyUnchecked);
         
-        this.innerHTML = anyUnchecked ? 
-            '<i class="fas fa-times-circle me-1"></i> DESELECT ALL' : 
-            '<i class="fas fa-check-double me-1"></i> SELECT ALL';
-        
-        this.classList.toggle('btn-outline-danger', anyUnchecked);
-        this.classList.toggle('btn-outline-primary', !anyUnchecked);
+        if(anyUnchecked) {
+            this.innerHTML = '<i class="fas fa-times-circle me-1"></i> DESELECT ALL';
+            this.className = 'btn btn-danger btn-sm rounded-pill fw-bold px-3 shadow-sm';
+        } else {
+            this.innerHTML = '<i class="fas fa-check-double me-1"></i> SELECT ALL';
+            this.className = 'btn btn-light border btn-sm rounded-pill fw-bold px-3 text-indigo-600 shadow-sm';
+        }
     });
 
     // 4. Form Loading State with SweetAlert2
@@ -307,6 +336,7 @@ document.addEventListener('DOMContentLoaded', function() {
             didOpen: () => { Swal.showLoading(); }
         });
         document.getElementById('btnSubmit').disabled = true;
+        document.getElementById('btnSubmit').innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> PROCESSING...';
     };
 });
 </script>

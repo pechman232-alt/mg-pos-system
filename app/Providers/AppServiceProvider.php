@@ -3,7 +3,8 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
-use Illuminate\Support\Facades\View; // 1. Added this import
+use Illuminate\Support\Facades\View;
+use Illuminate\Support\Facades\URL;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -20,7 +21,12 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        // 2. This code sends empty arrays to the navbar so the @foreach doesn't crash
+        // ✅ បង្ខំឱ្យប្រើ HTTPS គ្រប់ Route ទាំងអស់ ប្រសិនបើប្រព័ន្ធមិនមែនកំពុងរត់នៅលើ Local (កុំព្យូទ័រផ្ទាល់ខ្លួន)
+        if (config('app.env') !== 'local') {
+            URL::forceScheme('https');
+        }
+
+        // ✅ បញ្ជូនទិន្នន័យលំនាំដើមទៅកាន់ Navbar (កូដចាស់របស់បង)
         View::composer('layouts.navbar', function ($view) {
             $view->with([
                 'activeMenus' => [],

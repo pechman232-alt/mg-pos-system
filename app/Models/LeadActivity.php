@@ -10,7 +10,9 @@ class LeadActivity extends Model
 {
     use HasFactory;
 
-    // កំណត់ Column ណាខ្លះដែលអនុញ្ញាតឱ្យបញ្ចូលទិន្នន័យបាន (Mass Assignment)
+    // 💡 ប្រាប់ Laravel ឱ្យស្គាល់ឈ្មោះ Table ឱ្យច្បាស់
+    protected $table = 'lead_activities';
+
     protected $fillable = [
         'lead_id', 
         'user_id', 
@@ -19,20 +21,20 @@ class LeadActivity extends Model
     ];
 
     /**
-     * 🔗 តភ្ជាប់ទៅកាន់ Table Users
-     * សកម្មភាពនីមួយៗ គឺធ្វើឡើងដោយបុគ្គលិកម្នាក់ (User)
-     */
-    public function user(): BelongsTo
-    {
-        return $this->belongsTo(User::class, 'user_id');
-    }
-
-    /**
-     * 🔗 តភ្ជាប់ត្រឡប់ទៅកាន់ Table Leads វិញ
-     * សកម្មភាពនីមួយៗ គឺជារបស់ Lead តែមួយប៉ុណ្ណោះ
+     * 🔗 ទំនាក់ទំនងត្រឡប់ទៅកាន់ Lead (Belongs To)
      */
     public function lead(): BelongsTo
     {
         return $this->belongsTo(Lead::class, 'lead_id');
+    }
+
+    /**
+     * 🔗 ទំនាក់ទំនងជាមួយ User/Staff (Belongs To)
+     * ប្រើសម្រាប់ទាញឈ្មោះអ្នកដែលបាន Update Status មកបង្ហាញ
+     */
+    public function user(): BelongsTo
+    {
+        // កំណត់ឱ្យទៅរក Table 'users' (ឬថែម 'users' បើបងប្រើ Custom Guard)
+        return $this->belongsTo(User::class, 'user_id');
     }
 }

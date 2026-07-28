@@ -1,11 +1,12 @@
 @extends('layouts.homePages')
+
 @section('content')
 
+@push('styles')
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <style>
     /* --- GLOBAL BRANDING --- */
@@ -165,6 +166,7 @@
     }
     @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
 </style>
+@endpush
 
 <div class="container-xxl flex-grow-1 container-p-y">
     <div class="row">
@@ -244,9 +246,19 @@
                                 </select>
                             </div>
 
+                            {{-- 🌟 កែសម្រួល៖ Position ប្រើ Loop ធម្មតា ជំនួសឱ្យ AJAX 🌟 --}}
                             <div class="col-md-4">
                                 <label class="form-label"><i class="fas fa-briefcase text-primary"></i> Position</label>
-                                <select id="position-select" class="form-control" name="position_id" style="width: 100%"></select>
+                                <select id="position-select" class="form-select select2-init" name="position_id" style="width: 100%" required>
+                                    <option value="" disabled selected>Select Position</option>
+                                    @if(isset($positions))
+                                        @foreach ($positions as $item)
+                                            <option value="{{ $item->id }}" {{ old('position_id') == $item->id ? 'selected' : '' }}>
+                                                {{ $item->name }}
+                                            </option>
+                                        @endforeach
+                                    @endif
+                                </select>
                             </div>
 
                             <div class="col-md-4">
@@ -300,6 +312,8 @@
     </div>
 </div>
 
+@push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
     function selectImg() {
         let input = document.getElementById("select_image");
@@ -324,31 +338,21 @@
         }
     }
 
-    // Position Select2 Ajax
-    $('#position-select').select2({
-        placeholder: "Select Position",
-        allowClear: true,
-        ajax: {
-            url: "{{ url('/users/create') }}",
-            type: "GET",
-            dataType: 'json',
-            delay: 250,
-            data: function(params) {
-                return { search: params.term };
-            },
-            processResults: function(data) {
-                return {
-                    results: $.map(data, function(item) {
-                        return { id: item.id, text: item.name }
-                    })
-                };
-            }
-        }
-    });
+    $(document).ready(function() {
+        // 🌟 កែសម្រួល៖ Initialize Select2 ជាលក្ខណៈធម្មតា លែងប្រើ AJAX
+        $('.select2-init').select2({
+            placeholder: "Select Position",
+            allowClear: true,
+            width: '100%'
+        });
 
-    document.getElementById('mainForm').onsubmit = function() {
-        document.getElementById('btnSubmit').disabled = true;
-        document.getElementById('btnSubmit').innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> INITIALIZING...';
-    };
+        // Effect ពេលចុចបញ្ជូនទិន្នន័យ
+        $('#mainForm').on('submit', function() {
+            let btn = document.getElementById('btnSubmit');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> INITIALIZING...';
+        });
+    });
 </script>
+@endpush
 @endsection

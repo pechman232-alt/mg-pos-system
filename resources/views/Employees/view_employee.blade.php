@@ -1,172 +1,284 @@
 @extends('layouts.homePages')
 @section('content')
 
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Kantumruy+Pro:wght@400;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<!-- បញ្ចូល Library សម្រាប់ Convert HTML ទៅជា PDF -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Noto+Sans+Khmer:wght@400;700&family=JetBrains+Mono:wght@700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
 <style>
     :root {
-        --indigo: #4f46e5;
-        --dark: #0f172a;
-        --border: #e2e8f0;
-        --bg-body: #f8fafc;
-        --font-main: 'Plus Jakarta Sans', sans-serif;
-        --font-kh: 'Kantumruy Pro', sans-serif;
+        --dark-text: #0f172a;
+        --label-text: #64748b;
+        --border-color: #e2e8f0;
+        --bg-label: #f8fafc;
+        --brand-red: #CE181E;
+        --brand-blue: #1d4ed8;
     }
 
-    body { background-color: var(--bg-body); color: var(--dark); font-family: var(--font-main); font-size: 0.88rem; }
+    body { background-color: #f1f5f9; font-family: 'Plus Jakarta Sans', 'Noto Sans Khmer', sans-serif !important; }
 
-    /* Card Layout */
-    .card-view { border: none; border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.03); background: #fff; overflow: hidden; margin-bottom: 2rem; }
-    .header-accent { background: var(--dark); padding: 1.5rem 2.5rem; border: none; }
+    /* 🌟 Fit Screen & Pop-up Style Document 🌟 */
+    .document-wrapper {
+        background: #fff;
+        border-radius: 16px;
+        box-shadow: 0 15px 40px rgba(0,0,0,0.08); /* ធ្វើឱ្យអណ្តែតដូច Pop-up */
+        padding: 30px 40px;
+        margin: 0 auto;
+        position: relative;
+    }
+
+    /* Page Header */
+    .page-header { margin-bottom: 25px; display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 2px solid var(--border-color); padding-bottom: 15px;}
+    .page-title { font-size: 20px; font-weight: 800; color: var(--dark-text); text-transform: uppercase; margin: 0; display: flex; align-items: center; gap: 10px; }
+    .page-subtitle { font-size: 12px; font-weight: 700; color: var(--brand-red); margin-top: 5px; }
     
-    /* Identity Header */
-    .identity-container { background: #fff; padding: 2.5rem; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 2.5rem; }
-    .avatar-view { width: 140px; height: 140px; border-radius: 24px; object-fit: cover; border: 4px solid #fff; box-shadow: 0 10px 25px rgba(0,0,0,0.08); }
-    .name-en { font-size: 2rem; font-weight: 800; letter-spacing: -0.5px; margin: 0; }
-    .name-kh { font-family: var(--font-kh); font-size: 1.3rem; color: var(--indigo); font-weight: 700; margin-top: 4px; }
+    .avatar-wrapper { width: 60px; height: 60px; border-radius: 10px; border: 2px solid var(--border-color); object-fit: cover; }
 
-    /* Data Fields */
-    .section-title { font-size: 0.75rem; font-weight: 800; color: #64748b; text-transform: uppercase; letter-spacing: 1.5px; margin: 2.5rem 0 1.2rem; display: flex; align-items: center; gap: 15px; }
-    .section-title::after { content: ""; height: 1px; flex: 1; background: var(--border); }
+    /* Section Cards */
+    .report-section { background: #fff; border: 1px solid var(--border-color); border-radius: 8px; margin-bottom: 20px; overflow: hidden; }
     
-    .data-label { font-size: 0.65rem; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 6px; }
-    .data-value { background: #fcfdfe; border: 1px solid #f1f5f9; border-radius: 10px; padding: 10px 14px; font-weight: 700; min-height: 42px; display: flex; align-items: center; justify-content: space-between; }
-    .pw-text { font-family: 'JetBrains Mono', monospace; color: #ef4444; font-size: 0.8rem; }
+    .section-header { 
+        padding: 12px 20px; 
+        font-size: 12px; 
+        font-weight: 800; 
+        color: var(--dark-text); 
+        background: #f8fafc; 
+        border-bottom: 1px solid var(--border-color); 
+        text-transform: uppercase; 
+        display: flex; align-items: center; gap: 10px; 
+    }
 
-    /* Credentials Card */
-    .sys-card { background: #fff; border: 1px solid var(--border); border-radius: 12px; padding: 15px; height: 100%; transition: 0.2s; }
-    .sys-card:hover { border-color: var(--indigo); background: #fcfdfe; }
+    /* Grid Table System */
+    .table-grid { width: 100%; border-collapse: collapse; table-layout: fixed; }
+    .table-grid td { border-bottom: 1px solid var(--border-color); border-right: 1px solid var(--border-color); vertical-align: middle; }
+    .table-grid tr:last-child td { border-bottom: none; }
+    .table-grid td:last-child { border-right: none; }
 
-    /* Print Configuration (A4 Professional) */
+    .td-label { 
+        width: 20%; 
+        padding: 12px 20px; 
+        font-size: 11px; 
+        font-weight: 700; 
+        color: var(--label-text); 
+        text-transform: uppercase; 
+        text-align: right; 
+        background: var(--bg-label); 
+    }
+    .td-value { 
+        width: 30%; 
+        padding: 12px 20px; 
+        font-size: 14px; 
+        font-weight: 700; 
+        color: var(--dark-text); 
+        background: #fff; 
+    }
+
+    .pw-font { font-family: 'JetBrains Mono', monospace; color: var(--brand-red); }
+    .text-red { color: var(--brand-red); }
+    .text-green { color: #10b981; }
+
+    /* Action Buttons Area (No Print) */
+    .action-bar {
+        background: #fff;
+        padding: 15px 25px;
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+        margin-bottom: 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border: 1px solid var(--border-color);
+    }
+
+    /* Print Configuration */
     @media print {
-        @page { size: A4; margin: 15mm; }
-        body { background: #fff; padding: 0; }
+        @page { size: A4; margin: 10mm; }
+        body { background: #fff; }
         .no-print { display: none !important; }
-        .card-view { box-shadow: none; border: none; border-radius: 0; }
-        .identity-container { padding: 1rem 0; gap: 2rem; border-bottom: 2px solid #000; }
-        .avatar-view { width: 120px; height: 120px; border: 1px solid #ddd; }
-        .data-value { border: none; padding: 5px 0; background: none; border-bottom: 1px solid #eee; border-radius: 0; min-height: auto; }
-        .sys-card { border: none; border-bottom: 1px dashed #ccc; border-radius: 0; padding: 10px 0; }
-        .header-accent { background: #eee !important; color: #000 !important; }
-        .header-accent h5 { color: #000 !important; }
-        .section-title { margin: 1.5rem 0 1rem; color: #000; }
-        .section-title::after { background: #000; }
+        .document-wrapper { box-shadow: none; padding: 0; border: none; }
+        .report-section { break-inside: avoid; }
+        .td-label { background: #f9f9f9 !important; -webkit-print-color-adjust: exact; }
     }
 </style>
 
-<div class="container-xxl mt-4">
-    <div class="card-view">
-        <div class="header-accent d-flex justify-content-between align-items-center no-print">
-            <h5 class="text-white m-0 fw-bold"><i class="fas fa-id-card-alt me-2"></i> PERSONNEL RECORD</h5>
-            <div class="d-flex gap-2">
-                <button onclick="window.print()" class="btn btn-sm btn-light rounded-pill px-4 fw-bold shadow-sm">
-                    <i class="fas fa-print me-2"></i> PRINT A4
-                </button>
-                <a href="{{ route('employees.index') }}" class="btn btn-sm btn-outline-light rounded-pill px-4 fw-bold">DIRECTORY</a>
-            </div>
+<!-- 🌟 ប្រើ container-fluid ឱ្យពេញអេក្រង់ (Fit Screen) 🌟 -->
+<div class="container-fluid ">
+    
+    <!-- Action Bar ខាងលើសម្រាប់ចុច (មិនជាប់ក្នុង PDF/Print) -->
+    <div class="action-bar no-print">
+        <div>
+            <h5 class="m-0 fw-bold text-dark"><i class="fas fa-eye me-2 text-primary"></i> Document Viewer</h5>
         </div>
-
-        <div class="card-body p-0">
-            <div class="identity-container">
-                <img src="{{ $employees->image_employee ? url('/imageEmployee/' . $employees->image_employee) : url('backend/assets/img/avatars/1.png') }}" class="avatar-view">
-                <div class="flex-grow-1">
-                    <h1 class="name-en">{{ $employees->full_name }}</h1>
-                    <div class="name-kh">{{ $employees->first_name_kh }} {{ $employees->last_name_kh }}</div>
-                    <div class="mt-4 d-flex gap-3 align-items-center">
-                        <span class="badge bg-dark rounded-pill px-3 py-2">ID: {{ $employees->user_id }}</span>
-                        <span class="fw-bold" style="color: {{ $employees->status == 1 ? '#10b981' : '#ef4444' }}; font-size: 0.75rem;">
-                            {{ $employees->status == 1 ? '● SYSTEM ACTIVE' : '● DEACTIVATED' }}
-                        </span>
-                    </div>
-                </div>
-                <div class="text-end d-none d-md-block">
-                    <div class="data-label">Join Date</div>
-                    <div class="fw-bold text-dark h5 mb-0">{{ $employees->contract ?? '---' }}</div>
-                </div>
-            </div>
-
-            <div class="px-5 pb-5">
-                <div class="section-title">Personnel Demographics</div>
-                <div class="row g-4">
-                    <div class="col-3">
-                        <div class="data-label">Gender</div>
-                        <div class="data-value">{{ $employees->gender }}</div>
-                    </div>
-                    <div class="col-3">
-                        <div class="data-label">Age / Lifecycle</div>
-                        <div class="data-value">{{ $employees->dob ? \Carbon\Carbon::parse($employees->dob)->age : 'N/A' }} Years</div>
-                    </div>
-                    <div class="col-3">
-                        <div class="data-label">Date of Birth</div>
-                        <div class="data-value">{{ $employees->dob ?? '---' }}</div>
-                    </div>
-                    <div class="col-3">
-                        <div class="data-label">Primary Contact</div>
-                        <div class="data-value text-primary">{{ $employees->phone_number ?? '---' }}</div>
-                    </div>
-                </div>
-
-                <div class="section-title">Organization & Role</div>
-                <div class="row g-4">
-                    <div class="col-4">
-                        <div class="data-label">Parent Entity</div>
-                        <div class="data-value">{{ $employees->company->company_name ?? $employees->companyName }}</div>
-                    </div>
-                    <div class="col-4">
-                        <div class="data-label">Department</div>
-                        <div class="data-value">{{ $employees->department->name ?? $employees->departmentName }}</div>
-                    </div>
-                    <div class="col-4">
-                        <div class="data-label">Position</div>
-                        <div class="data-value fw-bold text-indigo">{{ $employees->position->name ?? $employees->postionName }}</div>
-                    </div>
-                </div>
-
-                <div class="section-title">Digital Infrastructure (Credentials)</div>
-                <div class="row g-3">
-                    @php
-                        $sysList = [
-                            ['label' => 'Official Portal', 'u' => $employees->official_userid, 'p' => $employees->official_pass, 'icon' => 'fa-desktop'],
-                            ['label' => 'M365 / Email', 'u' => $employees->m_user_id, 'p' => $employees->m_pass, 'icon' => 'fa-envelope'],
-                            ['label' => 'NAS Storage', 'u' => $employees->s_user_id, 'p' => $employees->s_pass, 'icon' => 'fa-server']
-                        ];
-                    @endphp
-                    @foreach($sysList as $sys)
-                    <div class="col-md-4">
-                        <div class="sys-card shadow-sm">
-                            <div class="data-label mb-2"><i class="fas {{ $sys['icon'] }} me-1"></i> {{ $sys['label'] }}</div>
-                            <div class="data-value mb-1 fw-normal small">User: <b>{{ $sys['u'] ?? '-' }}</b></div>
-                            <div class="data-value pw-text small">Pass: <b>{{ $sys['p'] ?? '-' }}</b></div>
-                        </div>
-                    </div>
-                    @endforeach
-                </div>
-
-                <div class="section-title">Facilities & Security</div>
-                <div class="row g-4">
-                    <div class="col-3">
-                        <div class="data-label">Extension</div>
-                        <div class="data-value"># {{ $employees->extension_id ?? 'N/A' }}</div>
-                    </div>
-                    <div class="col-3">
-                        <div class="data-label">Door Access Card</div>
-                        <div class="data-value pw-text">{{ $employees->access_door ?? 'N/A' }}</div>
-                    </div>
-                    <div class="col-6">
-                        <div class="data-label">Administrative Note</div>
-                        <div class="data-value fw-normal" style="font-size: 0.75rem;">{{ $employees->note ?? 'No notes recorded.' }}</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="p-4 border-top text-center no-print">
-            <a href="{{ route('employees.edit', encrypt($employees->id)) }}" class="btn btn-indigo px-5 py-3 rounded-pill fw-bold shadow-sm">
-                <i class="fas fa-edit me-2"></i> EDIT INFORMATION
+        <div class="d-flex gap-2">
+            <a href="{{ route('employees.index') }}" class="btn btn-light fw-bold border" style="border-radius: 8px;">
+                <i class="fas fa-list me-1"></i> DIRECTORY
             </a>
+            <a href="{{ route('employees.edit', encrypt($employees->id)) }}" class="btn btn-outline-primary fw-bold" style="border-radius: 8px;">
+                <i class="fas fa-edit me-1"></i> EDIT
+            </a>
+            <!-- ប៊ូតុង Print ធម្មតា -->
+            <button onclick="window.print()" class="btn btn-dark fw-bold shadow-sm" style="border-radius: 8px;">
+                <i class="fas fa-print me-1"></i> PRINT A4
+            </button>
+            <!-- 🌟 ប៊ូតុង Save ជា PDF 🌟 -->
+            <button onclick="saveAsPDF()" class="btn fw-bold shadow-sm text-white" style="background-color: var(--brand-red); border-radius: 8px;">
+                <i class="fas fa-file-pdf me-1"></i> SAVE PDF
+            </button>
         </div>
     </div>
+
+    <!-- 🌟 Pop-up Style Wrapper 🌟 (ផ្ទៃដែលនឹងត្រូវ Save ជា PDF) -->
+    <div class="document-wrapper" id="pdf-content">
+        
+        <!-- Header របស់ឯកសារ -->
+        <div class="page-header">
+            <div>
+                <h1 class="page-title"><i class="fas fa-file-invoice text-danger"></i> PERSONNEL RECORD ARCHIVE</h1>
+                <div class="page-subtitle">GENERATED: {{ now()->format('d-M-Y, h:i A') }}</div>
+            </div>
+            <div>
+                <img src="{{ $employees->image_employee ? url('/imageEmployee/' . $employees->image_employee) : url('backend/assets/img/avatars/1.png') }}" class="avatar-wrapper">
+            </div>
+        </div>
+
+        <!-- 1. CORE INFORMATION -->
+        <div class="report-section">
+            <div class="section-header">
+                <i class="fas fa-user-circle" style="color: #6366f1;"></i> CORE INFORMATION
+            </div>
+            <table class="table-grid">
+                <tr>
+                    <td class="td-label">FULL NAME (EN)</td>
+                    <td class="td-value">{{ $employees->full_name }}</td>
+                    <td class="td-label">GENDER</td>
+                    <td class="td-value">{{ $employees->gender }}</td>
+                </tr>
+                <tr>
+                    <td class="td-label">NAME (KH)</td>
+                    <td class="td-value" style="font-family: 'Noto Sans Khmer';">{{ $employees->first_name_kh }} {{ $employees->last_name_kh }}</td>
+                    <td class="td-label">DATE OF BIRTH</td>
+                    <td class="td-value">{{ $employees->dob ? \Carbon\Carbon::parse($employees->dob)->format('d-M-Y') : '---' }}</td>
+                </tr>
+                <tr>
+                    <td class="td-label">PHONE NUMBER</td>
+                    <td class="td-value text-red"><i class="fas fa-phone-alt me-2"></i>{{ $employees->phone_number ?? '---' }}</td>
+                    <td class="td-label">AGE</td>
+                    <td class="td-value">{{ $employees->age ?? '---' }} Years</td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- 2. ORGANIZATIONAL DEPLOYMENT -->
+        <div class="report-section">
+            <div class="section-header">
+                <i class="fas fa-sitemap" style="color: #f59e0b;"></i> ORGANIZATIONAL DEPLOYMENT
+            </div>
+            <table class="table-grid">
+                <tr>
+                    <td class="td-label">EMPLOYEE ID</td>
+                    <td class="td-value fw-bolder">{{ $employees->user_id }}</td>
+                    <td class="td-label">COMPANY ENTITY</td>
+                    <td class="td-value">{{ $employees->company->company_name ?? '---' }}</td>
+                </tr>
+                <tr>
+                    <td class="td-label">DEPARTMENT</td>
+                    <td class="td-value">{{ $employees->department->name ?? '---' }}</td>
+                    <td class="td-label">BRANCH ASSIGN</td>
+                    <td class="td-value">{{ $employees->branch->branch_name ?? '---' }}</td>
+                </tr>
+                <tr>
+                    <td class="td-label">FUNCTIONAL POSITION</td>
+                    <td class="td-value text-primary">{{ $employees->position->name ?? '---' }}</td>
+                    <td class="td-label">CONTRACT DATE</td>
+                    <td class="td-value">{{ $employees->contract ? \Carbon\Carbon::parse($employees->contract)->format('d-M-Y') : '---' }}</td>
+                </tr>
+                <tr>
+                    <td class="td-label">RECORD STATUS</td>
+                    <td class="td-value {{ $employees->status == 1 ? 'text-green' : 'text-red' }}">
+                        {{ $employees->status == 1 ? 'ACTIVE NODE' : 'INACTIVE / RESIGNED' }}
+                    </td>
+                    <td class="td-label">DOMAIN GROUP</td>
+                    <td class="td-value">{{ $employees->group_domain ?? '---' }}</td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- 3. SYSTEM ACCESS CONTROL -->
+        <div class="report-section">
+            <div class="section-header">
+                <i class="fas fa-shield-alt" style="color: #ef4444;"></i> SYSTEM ACCESS CONTROL
+            </div>
+            <table class="table-grid">
+                <tr>
+                    <td class="td-label">OFFICIAL SYSTEM USER</td>
+                    <td class="td-value">{{ $employees->official_userid ?: '---' }}</td>
+                    <td class="td-label">OFFICIAL PASSWORD</td>
+                    <td class="td-value pw-font">{{ $employees->official_pass ?: 'N/A' }}</td>
+                </tr>
+                <tr>
+                    <td class="td-label">M365 ACCOUNT</td>
+                    <td class="td-value">{{ $employees->m_user_id ?: '---' }}</td>
+                    <td class="td-label">M365 PASSWORD</td>
+                    <td class="td-value pw-font">{{ $employees->m_pass ?: 'N/A' }}</td>
+                </tr>
+                <tr>
+                    <td class="td-label">NAS USERNAME</td>
+                    <td class="td-value">{{ $employees->s_user_id ?: '---' }}</td>
+                    <td class="td-label">NAS PASSWORD</td>
+                    <td class="td-value pw-font">{{ $employees->s_pass ?: 'N/A' }}</td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- 4. FACILITIES & REMARKS -->
+        <div class="report-section mb-0">
+            <div class="section-header">
+                <i class="fas fa-id-badge" style="color: #10b981;"></i> FACILITIES & REMARKS
+            </div>
+            <table class="table-grid">
+                <tr>
+                    <td class="td-label">INTERNAL EXTENSION</td>
+                    <td class="td-value">{{ $employees->extension_id ?: '---' }}</td>
+                    <td class="td-label">DOOR ACCESS CARD</td>
+                    <td class="td-value">{{ $employees->access_door ?: '---' }}</td>
+                </tr>
+                <tr>
+                    <td class="td-label">VOIP REGISTER PASS</td>
+                    <td class="td-value">{{ $employees->register_pass ?: '---' }}</td>
+                    <td class="td-label">HR SYSTEM ID</td>
+                    <td class="td-value">{{ $employees->hr_user_id ?: '---' }}</td>
+                </tr>
+                <tr>
+                    <td class="td-label">ADMINISTRATIVE REMARKS</td>
+                    <td class="td-value" colspan="3" style="font-weight: 500; width: 80%;">
+                        {{ $employees->note ?: 'No additional remarks recorded.' }}
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+    </div>
 </div>
+
+<script>
+    // មុខងារសម្រាប់ទាញយកជា PDF
+    function saveAsPDF() {
+        const element = document.getElementById('pdf-content'); // យកតែផ្ទាំងឯកសារមក Print
+        
+        // កំណត់ទម្រង់ PDF
+        const opt = {
+            margin:       [10, 10, 10, 10], // គម្លាតលើ ក្រោម ឆ្វេង ស្តាំ
+            filename:     'Personnel_Record_{{ $employees->user_id }}.pdf',
+            image:        { type: 'jpeg', quality: 0.98 },
+            html2canvas:  { scale: 2, useCORS: true }, // scale: 2 ធ្វើឱ្យរូបភាពនិងអក្សរច្បាស់
+            jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+        };
+
+        // ដំណើរការ Download
+        html2pdf().set(opt).from(element).save();
+    }
+</script>
 
 @endsection

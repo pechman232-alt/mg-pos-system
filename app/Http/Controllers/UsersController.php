@@ -20,6 +20,7 @@ class UsersController extends Controller
         }
         return response()->file($storagePath);
     }
+
     public function usersIndex(){
         $users = UsersModel::selectRaw(
             'users.full_name,
@@ -46,21 +47,23 @@ class UsersController extends Controller
         return view('Users.user_index',['users'=>$users]);
     }
 
+    // ====================================================================
+    // 🌟 កែសម្រួល៖ ទាញ Position ផ្ទាល់ៗ មិនបាច់ប្រើ AJAX 🌟
+    // ====================================================================
     public function formUsers(Request $request){
-        $branchs = BranchModel::get();
-        $departs = DepartmentModel::get();
+        $branchs   = BranchModel::get();
+        $departs   = DepartmentModel::get();
+        $userRole  = UserRolesModel::get();
+        
+        // ទាញយក Position ដែល Active (status = 1) បោះទៅឱ្យ Form តែម្តង
+        $positions = PositionModel::where('status', '=', '1')->get();
 
-        if ($request->ajax()) {
-            $search = $request->input('search');
-            $positions = PositionModel::where('status', '=', '1')
-                ->where('name', 'LIKE', "%{$search}%")
-                ->select('id', 'name')
-                ->get();
-            return response()->json($positions);
-        }
-
-        $userRole = UserRolesModel::get();
-        return view('Users.add_user',['branchs'=>$branchs, 'departs'=>$departs, 'userRole'=>$userRole]);
+        return view('Users.add_user',[
+            'branchs'   => $branchs, 
+            'departs'   => $departs, 
+            'userRole'  => $userRole,
+            'positions' => $positions // 🌟 បោះ Position ទៅឱ្យ View
+        ]);
     }
 
     public function storeUsers(UsersRequest $request)
@@ -84,28 +87,28 @@ class UsersController extends Controller
         }
     }
 
+    // ====================================================================
+    // 🌟 កែសម្រួល៖ ទាញ Position ផ្ទាល់ៗ សម្រាប់ផ្ទាំង Edit 🌟
+    // ====================================================================
     public function editUsers(Request $request, $id){
         try {
             $ID = decrypt($id);
             $users = UsersModel::find($ID);
-            if ($request->ajax()) {
-                $search = $request->input('search');
-                $positions = PositionModel::where('status', '=', '1')
-                    ->where('name', 'LIKE', "%{$search}%")
-                    ->select('id', 'name')
-                    ->get();
-                if ($users && $users->position_id) {
-                    $selectedPosition = PositionModel::find($users->position_id);
-                    if ($selectedPosition) {
-                        $positions->prepend($selectedPosition);
-                    }
-                }
-                return response()->json($positions);
-            }
-            $userRole = UserRolesModel::all();
-            $branchs = BranchModel::all();
-            $departs = DepartmentModel::all();
-            return view('Users.edit_user',['users'=>$users,'branchs'=>$branchs,'departs'=>$departs,'userRole'=>$userRole]);
+            
+            $userRole  = UserRolesModel::all();
+            $branchs   = BranchModel::all();
+            $departs   = DepartmentModel::all();
+            
+            // ទាញយក Position ទាំងអស់បោះទៅឱ្យ Form Edit
+            $positions = PositionModel::where('status', '=', '1')->get();
+
+            return view('Users.edit_user',[
+                'users'     => $users,
+                'branchs'   => $branchs,
+                'departs'   => $departs,
+                'userRole'  => $userRole,
+                'positions' => $positions // 🌟 បោះ Position ទៅឱ្យ View
+            ]);
         } catch (\Throwable $th){
             return redirect()->back()->with('error', $th->getMessage());
         }
@@ -153,5 +156,4 @@ class UsersController extends Controller
             return redirect()->back()->with('error', $th->getMessage());
         }
     }
-    
 }

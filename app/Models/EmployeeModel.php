@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Carbon\Carbon; // 🌟 ត្រូវតែមានសម្រាប់គណនាថ្ងៃខែ
 
 class EmployeeModel extends Model
 {
@@ -19,17 +20,69 @@ class EmployeeModel extends Model
         'phone_number', 'access_door', 'status', 'image_employee'
     ];
 
-    // បន្ថែម Casts ដើម្បីឱ្យថ្ងៃខែដើរបានស្រួល (Optional)
     protected $casts = [
         'dob' => 'date',
         'activate' => 'date',
         'deactivate' => 'date',
         'contract' => 'date',
+        'status' => 'integer',
     ];
 
-    // --- Relationships (រក្សានៅដដែល) ---
-    public function company() { return $this->belongsTo(CompanyModel::class, 'company_id', 'id'); }
-    public function department() { return $this->belongsTo(DepartmentModel::class, 'department_id', 'id'); }
-    public function position() { return $this->belongsTo(PositionModel::class, 'position_id', 'id'); }
-    public function branch() { return $this->belongsTo(BranchModel::class, 'branch_id', 'id'); }
+    // --- 🌟 មុខងារគណនាអាយុស្វ័យប្រវត្តិ (Age Accessor) ---
+    // ប្រើក្នុង Blade: $employee->age
+    public function getAgeAttribute()
+    {
+        if (!$this->dob) {
+            return 'N/A';
+        }
+
+        try {
+            $dob = Carbon::parse($this->dob);
+            
+            // ការពារករណីឆ្នាំខុសខ្លាំង (ដូចជា 9188)
+            if ($dob->year > Carbon::now()->year || $dob->year < 1900) {
+                return 'Invalid Year';
+            }
+
+            return $dob->age; // គណនាអាយុតាមថ្ងៃខែឆ្នាំបច្ចុប្បន្ន
+        } catch (\Exception $e) {
+            return 'Error';
+        }
+    }
+
+    // --- មុខងារជំនួយ (Local Scopes) ---
+    public function scopeActive($query)
+    {
+        return $query->where('status', 1);
+    }
+
+    // --- ការបង្ហាញរូបថតស្វ័យប្រវត្តិ (Accessor) ---
+    public function getProfilePhotoUrlAttribute()
+    {
+        if ($this->image_employee && file_exists(public_path('uploads/employees/' . $this->image_employee))) {
+            return asset('uploads/employees/' . $this->image_employee);
+        }
+        
+        if (strtolower($this->gender) == 'female') {
+            return asset('assets/img/avatars/default-female.png'); 
+        }
+        return asset('assets/img/avatars/default-male.png');
+    }
+
+    // --- ទំនាក់ទំនងតារាង (Relationships) ---
+    public function company() { 
+        return $this->belongsTo(CompanyModel::class, 'company_id', 'id'); 
+    }
+    
+    public function department() { 
+        return $this->belongsTo(DepartmentModel::class, 'department_id', 'id'); 
+    }
+    
+    public function position() { 
+        return $this->belongsTo(PositionModel::class, 'position_id', 'id'); 
+    }
+    
+    public function branch() { 
+        return $this->belongsTo(BranchModel::class, 'branch_id', 'id'); 
+    }
 }

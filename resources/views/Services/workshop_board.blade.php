@@ -1,239 +1,420 @@
 @extends('layouts.homePages')
 
 @section('content')
-<link href="https://fonts.googleapis.com/css2?family=Kantumruy+Pro:wght@400;600;700&family=Moul&display=swap" rel="stylesheet">
+
+@php
+    $authUser = auth('users')->user() ?? auth()->user();
+    $roleId = (int)($authUser->role_id ?? 0);
+    // លេខ 1, 6, 11 នេះគឺតំណាងអោយ Admin, Super Admin, Group Manager 
+    $isManager = in_array($roleId, [1, 6, 11]);
+@endphp
+
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Noto+Sans+Khmer:wght@300;400;500;600&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
 <style>
-    @font-face { 
-        font-family: 'Century Gothic'; 
-        src: local('Century Gothic'), local('AppleGothic'), local('Futura'), sans-serif; 
-    }
-
-    :root { 
-        --mg-red: #e31e24; --mg-blue: #002663; --mg-green: #7ed348; 
-        --mg-orange: #f97316; --hold-gray: #64748b; --bg-main: #f4f7fa; 
-        --font-primary: "Century Gothic", sans-serif; 
-    }
-
-    /* Layout Reset */
-    #sidebar-wrapper, .main-sidebar, .main-header, .navbar, footer, .main-footer { display: none !important; }
-    .content-wrapper, .main-content { margin-left: 0 !important; padding: 0 !important; width: 100% !important; background: var(--bg-main) !important; }
-    
-    body { 
-        font-family: var(--font-primary), "Kantumruy Pro", sans-serif !important; 
-        background-color: var(--bg-main); margin: 0; -webkit-font-smoothing: antialiased;
-    }
-
-    .dashboard-wrapper { padding: 20px; }
-
-    /* Summary Header */
-    .summary-header {
-        display: flex; justify-content: space-between; align-items: center;
-        background: white; padding: 12px 25px; border-radius: 20px;
-        box-shadow: 0 5px 15px rgba(0,0,0,0.03); margin-bottom: 20px;
-    }
-
-    .live-clock { font-family: var(--font-primary); font-size: 1.8rem; font-weight: 900; color: var(--mg-blue); }
-
-    /* Jobs Grid */
-    .jobs-grid {
-        display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-        gap: 20px;
-    }
-
-    /* Card UI */
-    .job-card {
-        background: white; border-radius: 30px; padding: 20px;
-        box-shadow: 0 10px 25px rgba(0,0,0,0.05); border-top: 8px solid var(--mg-red);
-        display: flex; flex-direction: column; min-height: 480px;
-        transition: 0.3s; position: relative;
-    }
-    
-    .status-highlight-in-progress { border-top-color: var(--mg-blue) !important; }
-    .status-highlight-arrived { border-top-color: var(--mg-orange) !important; }
-    .status-highlight-hold { border-top-color: var(--hold-gray) !important; opacity: 0.95; }
-
-    /* License Plate */
-    .license-plate {
-        width: 100px; height: 75px; background: white; border: 2px solid var(--mg-blue);
-        border-radius: 12px; display: flex; flex-direction: column;
-        align-items: center; justify-content: center;
-    }
-    .plate-top { font-family: 'Moul'; font-size: 0.5rem; color: var(--mg-blue); }
-    .plate-num { font-family: var(--font-primary); font-size: 1.3rem; font-weight: 900; color: var(--mg-blue); line-height: 1; }
-    .plate-bot { font-family: var(--font-primary); font-size: 0.4rem; font-weight: 900; color: var(--mg-red); letter-spacing: 1px; }
-
-    .cust-name { font-size: 1.4rem; font-weight: 900; margin: 10px 0 2px 0; color: #1e293b; }
-    
-    .status-info-box {
-        background: #f8fafc; padding: 8px 12px; border-radius: 12px;
-        margin: 10px 0; border-left: 4px solid var(--mg-blue); font-size: 0.8rem;
-    }
-
-    .contact-row {
-        background: #f1f5f9; padding: 10px 15px; border-radius: 15px;
-        display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;
-    }
-
-    /* IMPORTANT: Timer Styling */
-    .timer-display {
-        font-family: var(--font-primary); font-size: 3.5rem; font-weight: 900; 
-        color: var(--mg-red); line-height: 1; margin-bottom: 5px; letter-spacing: -1px;
-    }
-
-    .btn-action {
-        border: none; border-radius: 18px; padding: 15px; font-size: 1rem;
-        font-weight: 900; display: flex; align-items: center; justify-content: center; gap: 8px;
-        transition: 0.2s; cursor: pointer;
-    }
-    .btn-finish { background: var(--mg-green); color: white; flex-grow: 1; }
-    .btn-hold { background: var(--hold-gray); color: white; width: 60px; }
-    .btn-main { background: var(--mg-blue); color: white; width: 100%; }
+    :root { --mg-blue: #002663; --mg-red: #e31e24; }
+    body, main, .main-content { font-family: 'Plus Jakarta Sans', 'Noto Sans Khmer', sans-serif !important; background-color: #f4f7f9 !important; }
+    #sidebar-wrapper, .main-sidebar, .main-header, .navbar, footer { display: none !important; }
+    .content-wrapper { margin-left: 0 !important; padding: 0 !important; width: 100% !important; background: transparent !important; }
+    .dashboard-header { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-bottom: 1px solid #e2e8f0; position: sticky; top: 0; z-index: 40; box-shadow: 0 4px 20px rgba(0,0,0,0.03); }
+    .pro-job-card { background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0; display: flex; flex-direction: column; height: 100%; min-height: 480px; overflow: hidden; transition: all 0.3s ease; position: relative; box-shadow: 0 4px 10px rgba(0,0,0,0.02); }
+    .pro-job-card:hover { transform: translateY(-4px); box-shadow: 0 20px 40px -5px rgba(0,0,0,0.08); border-color: #cbd5e1; }
+    .kh-plate { border: 2px solid var(--mg-blue); border-radius: 8px; background: linear-gradient(to bottom, #ffffff 0%, #f8fafc 100%); display: inline-flex; flex-direction: column; align-items: center; justify-content: center; padding: 4px 16px; box-shadow: inset 0 0 0 1px rgba(0,0,0,0.1); }
+    .led-screen { background: #0f172a; border-radius: 10px; padding: 10px; border: 2px solid #1e293b; box-shadow: inset 0 2px 10px rgba(0,0,0,0.5); }
+    .digital-timer { font-family: 'JetBrains Mono', monospace; font-size: 2.5rem; font-weight: 700; color: #ef4444; letter-spacing: 2px; line-height: 1; text-align: center; text-shadow: 0 0 10px rgba(239, 68, 68, 0.4); }
+    .timer-frozen { color: #64748b !important; text-shadow: none !important; }
 </style>
 
-<div class="dashboard-wrapper">
-    <div class="summary-header">
-        <div class="d-flex gap-2">
-            <div class="badge bg-light text-dark px-3 py-2 rounded-pill border">🚗 Total: {{ $jobs->count() }}</div>
-            <div class="badge bg-light text-danger px-3 py-2 rounded-pill border">🛠️ Doing: {{ $jobs->where('status', 'In Progress')->count() }}</div>
-        </div>
-        <div class="live-clock" id="liveClock">00:00:00</div>
-        <select id="branchFilter" class="form-select border-0 shadow-sm rounded-pill fw-bold" style="width: 200px; font-size: 0.8rem;">
-            <option value="all">📍 All Branches</option>
-            @foreach(['សាខាការិយាល័យកណ្តាល', 'សាខាផ្លូវលេខ ៦០ម៉ែត្រ', 'សាខាសៀមរាប', 'សាខាបាត់ដំបង'] as $loc)
-                <option value="{{ $loc }}">{{ $loc }}</option>
-            @endforeach
-        </select>
-    </div>
-
-    <div class="jobs-grid" id="jobsGrid">
-        @php $now = \Carbon\Carbon::now(); @endphp
-        @forelse($jobs as $job)
-        @php 
-            $onlyDate = date('Y-m-d', strtotime($job->booking_date));
-            // បង្កើត ISO String សម្រាប់ឱ្យ JavaScript យកទៅគណនា (Fix Timer Not Live)
-            $timerStart = ($job->status == 'In Progress' && $job->start_time) ? \Carbon\Carbon::parse($onlyDate . ' ' . $job->start_time)->toIso8601String() : '';
-        @endphp
-
-        <div class="job-item" data-branch="{{ $job->location }}">
-            <div class="job-card status-highlight-{{ strtolower(str_replace(' ', '-', $job->status)) }}">
-                <div class="d-flex justify-content-between align-items-start">
-                    <div class="license-plate shadow-sm">
-                        <div class="plate-top">ភ្នំពេញ</div>
-                        <div class="plate-num">{{ $job->plate }}</div>
-                        <div class="plate-bot">CAMBODIA</div>
-                    </div>
-                    <div class="text-end">
-                        <span class="badge bg-light text-muted border" style="font-size: 0.6rem;">{{ $job->location }}</span>
-                        <div style="font-family: var(--font-primary); font-weight: 900; color: #6366f1; font-size: 1.5rem;">{{ date('h:i A', strtotime($job->booking_time)) }}</div>
-                    </div>
-                </div>
-
-                <h3 class="cust-name text-truncate">{{ $job->customer_name }}</h3>
-                <div class="mb-1">
-                    <span class="badge bg-light text-dark border py-1" style="font-size: 0.7rem;">{{ $job->model }}</span> 
-                    <span class="badge bg-danger py-1" style="font-size: 0.65rem;">{{ $job->service_type }}</span>
-                </div>
-                
-                <div class="status-info-box">
-                    @if($job->status == 'In Progress') <b>កំពុងធ្វើ</b> (ជាង៖ {{ $job->technician_name }})
-                    @elseif($job->status == 'Arrived') <b>មកដល់ហើយ</b> (រង់ចាំ Start)
-                    @elseif($job->status == 'Hold') <b>ផ្អាកបណ្ដោះអាសន្ន</b>
-                    @else <b>រង់ចាំអតិថិជន</b> @endif
-                </div>
-
-                <div class="contact-row">
-                    <span class="fw-bold text-dark">{{ $job->contact }}</span>
-                    <div class="d-flex gap-2">
-                        @php $tgP = str_starts_with(preg_replace('/[^0-9]/', '', $job->contact), '0') ? '855'.substr(preg_replace('/[^0-9]/', '', $job->contact), 1) : preg_replace('/[^0-9]/', '', $job->contact); @endphp
-                        <a href="https://t.me/+{{ $tgP }}" target="_blank" class="text-primary"><i class="fab fa-telegram-plane"></i></a>
-                        <a href="tel:{{ $job->contact }}" class="text-success"><i class="fas fa-phone-alt"></i></a>
-                    </div>
-                </div>
-
-                <div class="mt-auto">
-                    @if($job->status == 'In Progress')
-                        <div class="text-center mb-3">
-                            <div class="timer-display" data-start="{{ $timerStart }}">00:00:00</div>
-                        </div>
-                        <div class="d-flex gap-2">
-                            <button class="btn-action btn-hold" onclick="confirmHold('{{ $job->id }}', '{{ $job->plate }}')"><i class="fas fa-pause"></i></button>
-                            <button class="btn-action btn-finish" onclick="confirmFinish('{{ $job->id }}')">Finish</button>
-                        </div>
-                    @elseif($job->status == 'Hold')
-                        <button class="btn-action btn-main" onclick="confirmResume('{{ $job->id }}', '{{ $job->plate }}')"><i class="fas fa-play"></i> Resume</button>
-                    @elseif($job->status == 'Arrived')
-                        <button class="btn-action btn-main" onclick="confirmStart('{{ $job->id }}', '{{ $job->plate }}')">Start Job</button>
-                    @else
-                        <button class="btn-action btn-main" style="background: var(--mg-orange);" onclick="confirmArrive('{{ $job->id }}', '{{ $job->plate }}')">Arrive</button>
-                    @endif
-                </div>
+<div class="w-full flex flex-col min-h-screen">
+    <div class="dashboard-header px-6 py-4 flex flex-wrap justify-between items-center gap-4">
+        <div>
+            <h1 class="text-2xl font-bold tracking-tight m-0" style="color: var(--mg-blue);">
+                <i class="fas fa-tv me-2 text-red-600"></i> Workshop Live Board
+            </h1>
+            <div class="flex items-center gap-2 mt-1">
+                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.8)]"></span>
+                <span id="liveClock" class="text-sm font-medium text-slate-500 font-['JetBrains_Mono'] uppercase tracking-widest">00:00:00 PM</span>
             </div>
         </div>
-        @empty
-        <div class="col-12 text-center py-5"><h2>No Data</h2></div>
-        @endforelse
+
+        <div class="flex flex-wrap items-center gap-3">
+            <div class="flex items-center bg-white border border-slate-200 rounded-xl p-1 shadow-sm">
+                <div class="px-4 py-1.5 text-xs font-medium text-slate-500 border-r border-slate-100">
+                    Total: <span class="text-slate-800 text-sm font-bold ms-1" id="totalCount">{{ count($jobs) }}</span>
+                </div>
+                <div class="px-4 py-1.5 text-xs font-medium" style="color: var(--mg-blue);">
+                    Active: <span class="text-lg font-bold ms-1">{{ collect($jobs)->where('status', 'In Progress')->count() }}</span>
+                </div>
+            </div>
+        
+            <form action="{{ url()->current() }}" method="GET" id="filterForm" class="flex flex-wrap items-center gap-2 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 shadow-sm">
+                <i class="fas fa-search text-slate-400 text-sm"></i>
+                <input type="text" id="plateSearch" class="bg-transparent text-sm font-medium text-slate-700 outline-none w-32 placeholder:text-slate-400" placeholder="Search plate..." onkeyup="applyFilters()">
+                <div class="w-[1px] h-4 bg-slate-300 mx-1"></div>
+        
+                <div class="flex items-center gap-2">
+                    <i class="far fa-calendar-alt text-blue-600 text-xs"></i>
+                    <input type="date" name="date" value="{{ $selectedDate ?? date('Y-m-d') }}" class="bg-transparent text-sm font-bold text-slate-700 outline-none cursor-pointer border-none p-0 focus:ring-0" onchange="this.form.submit()" title="ជ្រើសរើសកាលបរិច្ឆេទ">
+                </div>
+                <div class="w-[1px] h-4 bg-slate-300 mx-1 hidden sm:block"></div>
+
+                @if($isManager)
+                    <div class="flex items-center gap-2">
+                        <i class="fas fa-map-marker-alt text-red-500 text-xs"></i>
+                        <select name="branch" class="bg-transparent text-sm font-bold text-slate-700 outline-none cursor-pointer border-none p-0 focus:ring-0" onchange="this.form.submit()">
+                            <option value="all">All Branches</option>
+                            @foreach($branches as $branch)
+                                <option value="{{ $branch->id }}" {{ request('branch') == $branch->id ? 'selected' : '' }}>
+                                    {{ str_ireplace(['MG ', 'Mg ', ' Service', ' Showroom'], '', $branch->branch_name) }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+                @else
+                    <span class="text-sm font-bold text-slate-600">
+                        <i class="fas fa-map-marker-alt text-red-500 me-1"></i> 
+                        {{ str_ireplace(['MG ', 'Mg '], '', \App\Models\BranchModel::where('id', $authUser->branch_id)->value('branch_name') ?? 'My Branch') }}
+                    </span>
+                @endif
+        
+                <div class="w-[1px] h-4 bg-slate-300 mx-1 hidden sm:block"></div>
+                
+                <div class="flex items-center gap-2">
+                    <i class="fas fa-id-badge text-indigo-500 text-xs"></i>
+                    <select name="employee" class="bg-transparent text-sm font-bold text-[#002663] outline-none cursor-pointer border-none p-0 focus:ring-0" onchange="this.form.submit()">
+                        <option value="all">All Staffs</option>
+                        @if(isset($branchEmployees) && count($branchEmployees) > 0)
+                            @foreach($branchEmployees as $emp)
+                                <option value="{{ $emp }}" {{ request('employee') == $emp ? 'selected' : '' }}>{{ $emp }}</option>
+                            @endforeach
+                        @endif
+                    </select>
+                </div>
+                <button type="submit" class="hidden">Filter</button>
+            </form>
+        </div>
+    </div> 
+    
+    <div class="p-6 flex-grow w-full">
+        <div id="busyTechsData" class="hidden">{!! json_encode($busyTechnicians ?? []) !!}</div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 w-full" id="jobsGrid">
+            @forelse($jobs as $job)
+            @php 
+                $onlyDate = date('Y-m-d', strtotime($job->booking_date));
+                $elapsedSeconds = 0;
+                if ($job->status == 'In Progress' && $job->start_time) {
+                    try {
+                        $startObj = \Carbon\Carbon::parse($onlyDate . ' ' . $job->start_time, 'Asia/Phnom_Penh');
+                        $nowObj = \Carbon\Carbon::now('Asia/Phnom_Penh');
+                        $diff = abs($nowObj->getTimestamp() - $startObj->getTimestamp());
+                        $elapsedSeconds = $diff % 43200;
+                        if ($elapsedSeconds > 21600) { $elapsedSeconds = 43200 - $elapsedSeconds; }
+                    } catch (\Exception $e) { $elapsedSeconds = 0; }
+                }
+                
+                $displayLocation = $job->location;
+                $jobBranchId = $job->branch_id ?? $job->location;
+                if (is_numeric($displayLocation) && isset($branches)) {
+                    $matchedBranch = collect($branches)->firstWhere('id', $displayLocation);
+                    if ($matchedBranch) $displayLocation = str_ireplace(['MG ', 'Mg ', ' Service', ' Showroom'], '', $matchedBranch->branch_name);
+                }
+                
+                $sColor = match(strtolower($job->status)) { 'in progress' => '#3b82f6', 'arrived' => '#f59e0b', 'hold' => '#94a3b8', 'completed' => '#10b981', default => '#cbd5e1' };
+                $sTextClass = match(strtolower($job->status)) { 'in progress' => 'text-blue-600 bg-blue-50 border-blue-200', 'arrived' => 'text-amber-600 bg-amber-50 border-amber-200', 'hold' => 'text-slate-600 bg-slate-50 border-slate-200', 'completed' => 'text-emerald-600 bg-emerald-50 border-emerald-200', default => 'text-slate-500 bg-slate-50 border-slate-200' };
+            @endphp
+            
+            <div class="job-item w-full animate__animated animate__fadeInUp" style="animation-duration: 0.5s;" data-branch-id="{{ strtolower($jobBranchId) }}" data-plate="{{ $job->plate }}" data-date="{{ $onlyDate }}">
+                <div class="pro-job-card">
+                    <div class="w-full h-2" style="background-color: {{ $sColor }}"></div>
+                    <div class="p-5 flex-grow flex flex-col w-full text-left">
+                        <div class="flex justify-between items-start mb-5 w-full">
+                            <div class="kh-plate shadow-sm">
+                                <span class="text-[8px] font-semibold text-slate-400 uppercase font-khmer leading-none mb-1 tracking-widest">ភ្នំពេញ</span>
+                                <span class="text-lg font-bold leading-none tracking-wide" style="color: var(--mg-blue);">{{ $job->plate }}</span>
+                            </div>
+                            <div class="text-right">
+                                <div class="inline-block border px-3 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider mb-2 shadow-sm {{ $sTextClass }}">{{ $job->status }}</div>
+                                <div class="text-[10px] font-medium text-slate-500 flex items-center justify-end gap-1.5 mb-1"><i class="far fa-clock text-slate-400"></i> កក់ម៉ោង: {{ date('h:i A', strtotime($job->booking_time)) }}</div>
+                            </div>
+                        </div>
+
+                        <div class="mb-4 w-full">
+                            <h3 class="text-lg font-bold text-slate-800 m-0 truncate">{{ $job->customer_name }}</h3>
+                            <div class="flex flex-wrap items-center gap-2 mt-2">
+                                <span class="text-xs font-medium text-slate-500"><i class="fas fa-phone-alt text-slate-400 me-1"></i> {{ $job->contact }}</span>
+                                <span class="text-[10px] font-semibold text-slate-600 bg-slate-100 px-2 py-1 rounded-md border border-slate-200"><i class="fas fa-map-marker-alt text-red-500 me-1"></i> {{ ucwords($displayLocation) }}</span>
+                                
+                                @if(isset($job->is_walk_in) && $job->is_walk_in == 1)
+                                    <span class="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded-md border border-emerald-200" title="អ្នកបញ្ចូល / Added By">
+                                        <i class="fas fa-user-edit me-1"></i> {{ $job->added_by ?? 'Staff' }}
+                                    </span>
+                                @endif
+                            </div>
+                        </div>
+
+                        <div class="flex flex-wrap items-center gap-2 mb-5 w-full">
+                            <span class="px-3 py-1.5 bg-white border border-slate-200 rounded-md text-xs font-medium text-slate-700 shadow-sm"><i class="fas fa-car text-slate-400 me-1.5"></i> {{ $job->model }}</span>
+                            <span class="px-3 py-1.5 bg-red-50 border border-red-100 rounded-md text-xs font-medium text-red-600 shadow-sm"><i class="fas fa-wrench text-red-400 me-1.5"></i> {{ $job->service_type }}</span>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-3 w-full mt-auto mb-3">
+                            <div class="bg-slate-50 rounded-xl p-3 border border-slate-100 text-left"><div class="text-[9px] font-medium text-slate-400 uppercase mb-1.5">Service Advisor</div><div class="text-xs font-semibold text-slate-700 truncate"><i class="fas fa-user-tie text-blue-400 me-1.5"></i> {{ $job->sa_name ?? 'Pending' }}</div></div>
+                            <div class="bg-slate-50 rounded-xl p-3 border border-slate-100 text-left"><div class="text-[9px] font-medium text-slate-400 uppercase mb-1.5">Technician</div><div class="text-xs font-semibold text-emerald-600 truncate"><i class="fas fa-user-cog text-emerald-400 me-1.5"></i> {{ $job->technician_name ?? 'Pending' }}</div></div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white border-t border-slate-100 p-5 text-center w-full mt-auto">
+                        @if($job->status == 'In Progress')
+                            <div class="mb-4 led-screen"><span class="text-[9px] font-medium text-slate-400 uppercase tracking-widest block mb-1">Repair Duration</span><div class="digital-timer" data-seconds="{{ $elapsedSeconds }}">00:00:00</div></div>
+                            <div class="flex justify-center items-center gap-3">
+                                <button type="button" class="bg-white border-2 border-slate-200 hover:border-slate-300 hover:bg-slate-50 text-slate-500 px-5 py-2.5 rounded-lg font-medium transition-all" onclick="confirmAction('hold', '{{ $job->id }}', '{{ $job->plate }}')"><i class="fas fa-pause"></i></button>
+                                <button type="button" class="flex-grow bg-emerald-500 hover:bg-emerald-600 text-white px-5 py-2.5 rounded-lg font-medium transition-all shadow-md hover:shadow-lg" onclick="confirmAction('finish', '{{ $job->id }}', '{{ $job->plate }}')"><i class="fas fa-check-circle me-1.5"></i> Finish Job</button>
+                            </div>
+                        @elseif($job->status == 'Hold')
+                            <div class="mb-4 led-screen"><span class="text-[9px] font-medium text-slate-400 uppercase tracking-widest block mb-1">Paused Duration</span><div class="digital-timer timer-frozen">{{ $job->paused_duration ?? '00:00:00' }}</div></div>
+                            <button type="button" class="w-full bg-[#002663] hover:bg-blue-800 text-white px-5 py-3 rounded-lg font-medium transition-all shadow-md hover:shadow-lg" onclick="confirmAction('resume', '{{ $job->id }}', '{{ $job->plate }}')"><i class="fas fa-play me-1.5"></i> Resume Work</button>
+                        @elseif($job->status == 'Arrived')
+                            {{-- 🌟 ប៊ូតុង Start Job: បញ្ជូនឈ្មោះ SA ដែលចាប់បានពីពេលចុច Arrived ទៅអោយ JavaScript 🌟 --}}
+                            <button type="button" class="w-full bg-[#002663] hover:bg-blue-800 text-white px-5 py-3.5 rounded-lg font-medium transition-all shadow-md hover:shadow-lg mt-2" onclick="startJob('{{ $job->id }}', '{{ $job->plate }}', '{{ $jobBranchId }}', '{{ addslashes($job->sa_name ?? '') }}', '{{ addslashes($job->technician_name ?? '') }}')">
+                                <i class="fas fa-rocket me-1.5"></i> ចាប់ផ្ដើមការងារ (Start)
+                            </button>
+                        @else
+                            <button type="button" class="w-full bg-amber-500 hover:bg-amber-600 text-white px-5 py-3.5 rounded-lg font-medium transition-all shadow-md hover:shadow-lg mt-2" onclick="markAsArrived('{{ $job->id }}', '{{ $job->plate }}')"><i class="fas fa-map-marker-alt me-1.5"></i> អតិថិជនមកដល់ (Arrived)</button>
+                        @endif
+                    </div>
+                </div>
+            </div>
+            @empty
+                <div class="col-span-full flex flex-col items-center justify-center py-24 w-full">
+                    <div class="inline-flex items-center justify-center w-24 h-24 rounded-full bg-slate-200 mb-5 shadow-inner"><i class="fas fa-box-open fa-3x text-slate-400"></i></div>
+                    <h4 class="text-slate-600 font-bold text-xl">មិនមានការងារនៅឡើយទេ</h4>
+                </div>
+            @endforelse
+        </div>
     </div>
 </div>
-
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
     $.ajaxSetup({ headers: { 'X-CSRF-TOKEN': "{{ csrf_token() }}" } });
+    
+    const dbErrorMsg = {!! json_encode($dbErrorMsg ?? '') !!};
+    const fallbackStaffs = {!! json_encode(array_values($allStaffsFlat ?? [])) !!};
+    const saByBranch = {!! json_encode($saByBranch ?? (object)[]) !!};
+    const techByBranch = {!! json_encode($techByBranch ?? (object)[]) !!};
+    
+    const isManager = {{ $isManager ? 'true' : 'false' }};
+    
+    let busyTechs = {!! json_encode($busyTechnicians ?? []) !!};
 
-    // Function គណនាម៉ោងរត់ Live
     function updateRepairTimers() {
-        document.querySelectorAll('.timer-display').forEach(t => {
-            let startStr = t.dataset.start;
-            if(!startStr) return;
-            
-            let startTime = new Date(startStr);
-            let now = new Date();
-            let diffMs = now - startTime;
-            
-            if (diffMs < 0) diffMs = 0;
-            
-            let diffSec = Math.floor(diffMs / 1000);
-            let h = Math.floor(diffSec / 3600).toString().padStart(2, '0');
-            let m = Math.floor((diffSec % 3600) / 60).toString().padStart(2, '0');
-            let s = (diffSec % 60).toString().padStart(2, '0');
-            
-            t.innerText = h + ":" + m + ":" + s;
+        document.querySelectorAll('.digital-timer').forEach(t => {
+            if(t.classList.contains('timer-frozen')) return;
+            let sTotal = parseInt(t.dataset.seconds);
+            if (isNaN(sTotal)) return;
+            sTotal = Math.abs(sTotal); 
+            let h = Math.floor(sTotal / 3600).toString().padStart(2, '0');
+            let m = Math.floor((sTotal % 3600) / 60).toString().padStart(2, '0');
+            let s = (sTotal % 60).toString().padStart(2, '0');
+            t.innerText = h + ":" + m + ":" + s; t.dataset.seconds = sTotal + 1;
         });
     }
 
-    // Update ម៉ោងរៀងរាល់ ១ វិនាទី
-    setInterval(updateRepairTimers, 1000);
+    $(document).ready(function() {
+        updateRepairTimers(); setInterval(updateRepairTimers, 1000);
+        setInterval(() => { $('#liveClock').text(new Date().toLocaleTimeString('en-US', {hour12: true})); }, 1000);
+        applyFilters(); 
+    });
 
-    // Live Clock ខាងលើ
-    setInterval(() => { 
-        let clock = document.getElementById('liveClock');
-        if(clock) clock.innerText = new Date().toLocaleTimeString('en-US', { hour12: true, hour: '2-digit', minute: '2-digit', second: '2-digit' }); 
-    }, 1000);
+    function applyFilters() {
+        let searchValue = $('#plateSearch').val().toUpperCase(); 
+        let branchSelect = $('select[name="branch"]');
+        let branchValue = branchSelect.length ? branchSelect.val().toString().toLowerCase() : 'all'; 
 
-    // Refresh Dashboard រាល់ ៤០ វិនាទី
-    function refresh() { 
-        $.get(window.location.href, function(data) { 
-            $('#jobsGrid').html($(data).find('#jobsGrid').html()); 
-            updateRepairTimers(); 
-        }); 
+        $('.job-item').each(function() {
+            let rowPlate = $(this).data('plate').toString().toUpperCase(); 
+            let rowBranchId = String($(this).data('branch-id')).toLowerCase(); 
+            let matchSearch = rowPlate.includes(searchValue); 
+            let matchBranch = (branchValue === 'all' || branchValue === '' || branchValue === undefined || rowBranchId === branchValue || rowBranchId.includes(branchValue) || branchValue.includes(rowBranchId));
+            $(this).toggle(matchSearch && matchBranch);
+        });
     }
-    setInterval(refresh, 40000);
 
-    // Actions
-    function confirmArrive(id, plate) { $.post("{{ url('workshop/arrive') }}/"+id).done(refresh); }
-    function confirmStart(id, plate) {
-        Swal.fire({ 
-            title: 'Assign Staff', 
-            html: `<select id="sa_name" class="form-select mb-2">@foreach(['Chap Pov', 'Nang Kimyeang', 'Poeurn Hengleap'] as $sa) <option value="{{ $sa }}">{{ $sa }}</option> @endforeach</select>
-                   <select id="tech_name" class="form-select">@foreach(['Keam Piseth', 'Lorn Vanthorn', 'Heang Tongchhay'] as $t) <option value="{{ $t }}">{{ $t }}</option> @endforeach</select>`,
-            confirmButtonText: 'Start'
-        }).then((res) => { if (res.isConfirmed) $.post("{{ url('workshop/start') }}/"+id, {sa_name: $('#sa_name').val(), technician_name: $('#tech_name').val()}).done(refresh); });
+    function refreshDashboard() {
+        $.get(window.location.href, function(data) {
+            let newGrid = $(data).find('#jobsGrid').html(); 
+            let newCount = $(data).find('#totalCount').text();
+            $('#jobsGrid').html(newGrid); 
+            $('#totalCount').text(newCount);
+            
+            let newBusyData = $(data).find('#busyTechsData').text();
+            if (newBusyData) { busyTechs = JSON.parse(newBusyData); }
+            updateRepairTimers(); applyFilters(); 
+        });
     }
-    function confirmHold(id, plate) { $.post("{{ url('workshop/hold') }}/"+id).done(refresh); }
-    function confirmResume(id, plate) { $.post("{{ url('workshop/resume') }}/"+id).done(refresh); }
-    function confirmFinish(id) { $.post("{{ url('workshop/finish') }}/"+id).done(refresh); }
+
+    function confirmAction(type, id, plate) {
+        let configs = { hold: { t: 'ផ្អាកការងារសិន?', i: 'warning', b: 'យល់ព្រមផ្អាក', c: '#64748b' }, resume: { t: 'បន្តការងារនេះ?', i: 'info', b: 'បន្តការងារ', c: '#002663' }, finish: { t: 'ការងាររួចរាល់ហើយ?', i: 'success', b: 'បញ្ជាក់រួចរាល់', c: '#10b981' } };
+        Swal.fire({
+            title: configs[type].t, text: "ស្លាកលេខ: " + plate, icon: configs[type].i, showCancelButton: true, confirmButtonColor: configs[type].c, cancelButtonColor: '#cbd5e1', confirmButtonText: configs[type].b, cancelButtonText: 'បោះបង់', customClass: { popup: 'rounded-2xl' }
+        }).then(res => {
+            if(res.isConfirmed) {
+                Swal.fire({ title: 'កំពុងដំណើរការ...', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
+                $.ajax({ url: "{{ url('workshop') }}/" + type + "/" + id, type: 'POST', success: function(response) { Swal.close(); refreshDashboard(); }, error: function() { Swal.close(); refreshDashboard(); } });
+            }
+        });
+    }
+
+    // 🌟 មុខងារ Start Job 🌟
+    function startJob(id, plate, jobBranchId, currentSA, currentTech) {
+        if (dbErrorMsg) {
+            Swal.fire({ icon: 'error', title: 'បញ្ហា Database!', text: dbErrorMsg });
+            return;
+        }
+
+        jobBranchId = String(jobBranchId || '').trim().toLowerCase();
+        
+        if (isNaN(jobBranchId)) {
+            if (jobBranchId.includes('hq') || jobBranchId.includes('head')) jobBranchId = '13';
+            else if (jobBranchId.includes('50m') || jobBranchId.includes('50')) jobBranchId = '11';
+            else if (jobBranchId.includes('sr') || jobBranchId.includes('siem')) jobBranchId = '12';
+            else if (jobBranchId.includes('btb') || jobBranchId.includes('battambang')) jobBranchId = '10';
+            else jobBranchId = '13'; 
+        }
+
+        let availableSAs = [];
+        let availableTechs = [];
+
+        if (isManager) {
+            Object.values(saByBranch).forEach(arr => availableSAs.push(...arr));
+            Object.values(techByBranch).forEach(arr => availableTechs.push(...arr));
+        } else {
+            availableSAs = saByBranch[jobBranchId] || [];
+            availableTechs = techByBranch[jobBranchId] || [];
+        }
+
+        availableSAs = [...new Set(availableSAs)].filter(Boolean).sort((a, b) => String(a).localeCompare(String(b)));
+        availableTechs = [...new Set(availableTechs)].filter(Boolean).sort((a, b) => String(a).localeCompare(String(b)));
+
+        // 🌟 កំណត់ Lock ប្រអប់ SA 🌟
+        // បើមានឈ្មោះ SA រួចហើយ (ចាប់បានពីការចុច Arrive) យើងនឹងដាក់ disable=true
+        let isSALocked = currentSA ? true : false;
+        let saLockAttr = isSALocked ? 'disabled' : '';
+        let saLockStyles = isSALocked ? 'background-color: #f1f5f9; cursor: not-allowed; color: #002663; font-weight: 700;' : '';
+
+        // រៀបចំប្រអប់ SA
+        let saOpts = '';
+        if (isSALocked) {
+            // បើ Locked អោយបង្ហាញតែឈ្មោះគាត់ និងមិនបាច់មានពាក្យ សូមជ្រើសរើស
+            saOpts = `<option value="${currentSA}" selected>${currentSA} (ជម្រើសស្វ័យប្រវត្តិ)</option>`;
+        } else {
+            saOpts = `<option value="" disabled selected>-- សូមជ្រើសរើស SA --</option>`;
+            if(availableSAs.length > 0) {
+                availableSAs.forEach(emp => {
+                    saOpts += `<option value="${emp}">${emp}</option>`;
+                });
+            } else {
+                saOpts += `<option value="" disabled>-- គ្មាន SA ទេ --</option>`;
+            }
+        }
+
+        // រៀបចំប្រអប់ ជាងជួសជុល (Technician)
+        let techOpts = `<option value="" disabled ${!currentTech ? 'selected' : ''}>-- សូមជ្រើសរើសជាងជួសជុល --</option>`;
+        if(availableTechs.length > 0) {
+            availableTechs.forEach(emp => {
+                let isBusy = (typeof busyTechs !== 'undefined' && busyTechs.includes(emp));
+                let busyMark = isBusy ? ' 🔴 (ជាប់រវល់)' : ' 🟢 (ទំនេរ)';
+                let isSelected = (emp === currentTech) ? 'selected' : ''; 
+                techOpts += `<option value="${emp}" data-busy="${isBusy}" ${isSelected}>${emp}${busyMark}</option>`;
+            });
+        } else {
+            techOpts += `<option value="" disabled>-- គ្មានមេជាងទេ --</option>`;
+        }
+
+        Swal.fire({
+            title: 'ចាប់ផ្ដើមការងារ: ' + plate,
+            html: `
+                <div class="text-left mb-1 mt-3"><label class="text-xs font-medium text-slate-500 uppercase">Service Advisor</label></div>
+                <select id="sa_name" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-3 mb-3 text-sm outline-none font-medium text-slate-700 focus:border-blue-500 transition-colors" ${saLockAttr} style="${saLockStyles}">${saOpts}</select>
+                
+                <div class="text-left mb-1 mt-2"><label class="text-xs font-medium text-slate-500 uppercase">Technician</label></div>
+                <select id="technician_name" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-3 text-sm outline-none font-medium text-slate-700 focus:border-blue-500 transition-colors">${techOpts}</select>
+            `,
+            showCancelButton: true, confirmButtonColor: '#002663', cancelButtonColor: '#94a3b8', confirmButtonText: 'ចាប់ផ្ដើម', cancelButtonText: 'បោះបង់', customClass: { popup: 'rounded-2xl' },
+            preConfirm: () => {
+                // ទោះវា disable ក៏ដោយ យើងនៅតែអាចចាប់យក Value របស់វាបាន
+                const saName = document.getElementById('sa_name').value;
+                const techSelect = document.getElementById('technician_name');
+                const techName = techSelect.value;
+                
+                if (!saName || !techName) { 
+                    Swal.showValidationMessage('សូមជ្រើសរើសមេជាងជួសជុលសិន!'); 
+                    return false; 
+                }
+                const isTechBusy = techSelect.options[techSelect.selectedIndex].getAttribute('data-busy') === 'true';
+                return { sa_name: saName, technician_name: techName, is_busy: isTechBusy };
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                let data = result.value;
+                const runStartJobAjax = () => {
+                    Swal.fire({ title: 'កំពុងចាប់ផ្ដើម...', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
+                    $.ajax({
+                        url: `{{ url('workshop/start') }}/${id}`, 
+                        type: 'POST', 
+                        data: { sa_name: data.sa_name, technician_name: data.technician_name },
+                        success: function() { Swal.close(); refreshDashboard(); }, 
+                        error: function(xhr) { 
+                            let errMsg = xhr.responseJSON ? xhr.responseJSON.message : 'មានបញ្ហាក្នុងការរក្សាទុក!';
+                            Swal.fire('Error', errMsg, 'error'); 
+                            refreshDashboard(); 
+                        }
+                    });
+                };
+                if (data.is_busy) {
+                    Swal.fire({
+                        title: 'ជាងកំពុងជាប់រវល់!', text: `តើចង់ដាក់ការងារនេះអោយគាត់មែនទេ?`, icon: 'warning', showCancelButton: true, confirmButtonColor: '#e31e24', confirmButtonText: 'បាទ/ចាស បន្ត', customClass: { popup: 'rounded-2xl' }
+                    }).then((r) => { if (r.isConfirmed) runStartJobAjax(); });
+                } else { runStartJobAjax(); }
+            }
+        });
+    }
+
+    // 🌟 មុខងារ Arrived (Update ថ្មីសម្រាប់ Workshop Board) 🌟
+    function markAsArrived(id, plate) {
+        Swal.fire({
+            title: 'បញ្ជាក់ការមកដល់', 
+            text: `តើអតិថិជនពិតជាបានមកដល់ហើយមែនទេ? (${plate}) (ប្រព័ន្ធនឹងចាប់យកឈ្មោះអ្នកជា SA អូតូ)`, 
+            icon: 'question', 
+            showCancelButton: true, 
+            confirmButtonColor: '#f59e0b', 
+            cancelButtonColor: '#cbd5e1', 
+            confirmButtonText: 'មកដល់ហើយ', 
+            cancelButtonText: 'បោះបង់', 
+            customClass: { popup: 'rounded-2xl' }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                Swal.fire({ title: 'កំពុងដំណើរការ...', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
+                $.ajax({ 
+                    url: `{{ url('workshop/arrive') }}/${id}`, 
+                    type: 'POST', 
+                    data: { _token: '{{ csrf_token() }}' },
+                    success: function() { 
+                        Swal.close(); 
+                        refreshDashboard(); 
+                    }, 
+                    error: function(xhr) { 
+                        let errMsg = xhr.responseJSON ? xhr.responseJSON.message : 'មានបញ្ហាក្នុងការភ្ជាប់ទៅកាន់ប្រព័ន្ធ!';
+                        Swal.fire('បរាជ័យ', errMsg, 'error'); 
+                        refreshDashboard(); 
+                    } 
+                });
+            }
+        });
+    }
 </script>
 @endsection

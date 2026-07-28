@@ -1,317 +1,461 @@
 @extends('layouts.homePages')
 
 @section('content')
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Kantumruy+Pro:wght@400;700&family=JetBrains+Mono:wght@700&display=swap" rel="stylesheet">
+@php
+    $user = auth('users')->user();
+    
+    // 🌟 រៀបចំទិន្នន័យ Offers ចាស់ៗដែលធ្លាប់ Save
+    $existingOffers = is_array($contract->offers) ? $contract->offers : (json_decode($contract->offers, true) ?: []);
+    if (empty($existingOffers)) { $existingOffers = []; }
+    
+    $isAdmin = in_array($user->role_id, [1, 2, 6]);
+    $isManager = in_array($user->role_id, [3, 4, 5, 7, 8]);
+    $canEditStaff = $isAdmin || $isManager;
+
+    $carModels = ['Forland Cargo Truck', 'Maxus D60', 'Maxus G50', 'Maxus T60', 'Maxus T90', 'Maxus Truck S50-D19', 'Maxus V80', 'MG 4 EV Luxury', 'MG 4 EV STD', 'MG 7 1.5 4 cly', 'MG 7 2.0 4 cly', 'MG Cyberster', 'MG G50', 'MG GT Deluxe', 'MG HS', 'MG Marvel R', 'MG RX5', 'MG RX5 LUX Sport', 'MG RX8', 'MG RX9', 'MG ZS', 'Mifi 7', 'Mifi 9'];
+    $offersList = ['1 Year Full Service/3times', 'Auto Tailgate', 'Floor Mats', 'Long Plate Number', 'Normal Plate Number', 'Rear Spoiler', 'Side Step', 'UV Film On Windows', 'Vouchers', 'Warranty 3 Years or 100,000 KM', 'Warranty 5 Years or 100,000 KM', 'Warranty 5 Years or 150,000 KM'];
+@endphp
+
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Kantumruy+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <style>
-    :root { 
-        --brand-indigo: #4f46e5;
-        --brand-purple: #7c3aed;
-        --brand-pink: #ec4899;
-        --brand-red: #ef4444;
-        --tf-gradient-4: linear-gradient(90deg, var(--brand-indigo) 0%, var(--brand-purple) 33%, var(--brand-pink) 66%, var(--brand-red) 100%);
-        --slate-200: #e2e8f0;
-        --slate-400: #94a3b8;
-        --slate-600: #475569;
-        --slate-800: #1e293b;
+    /* 🎨 Premium Compact Theme (Fit Screen) */
+    :root {
+        --primary: #3b82f6; 
+        --primary-hover: #2563eb;
+        --secondary: #f8fafc;
+        --accent: #10b981; 
+        --danger: #ef4444; 
+        --warning: #f59e0b;
+        --text-dark: #1e293b;
+        --text-gray: #64748b;
+        --border-color: #e2e8f0;
+        --bg-body: #f1f5f9; 
+        --card-bg: #ffffff;
+        --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
+        --shadow-md: 0 10px 25px -5px rgba(0,0,0,0.05);
+        --radius-lg: 16px;
+        --radius-md: 8px;
     }
 
-    body { font-family: 'Plus Jakarta Sans', 'Kantumruy Pro', sans-serif !important; background-color: #f4f7fa; color: var(--slate-800); }
-    .container-full { width: 100% !important; max-width: 100% !important; padding: 1.5rem 2.5rem !important; }
+    body { font-family: 'Plus Jakarta Sans', 'Kantumruy Pro', sans-serif !important; background-color: var(--bg-body); color: var(--text-dark); }
+    .container-premium { max-width: 1280px; margin: 0 auto; padding: 2rem 1.5rem; }
 
-    .brand-gradient { 
-        background: var(--tf-gradient-4); border-radius: 24px; padding: 2.5rem 3rem; color: white;
-        box-shadow: 0 10px 25px -5px rgba(206, 24, 30, 0.3);
+    /* 🌟 Header Section */
+    .header-wrapper { display: flex; align-items: center; margin-bottom: 2rem; }
+    .btn-back-modern {
+        display: flex; align-items: center; justify-content: center;
+        width: 45px; height: 45px; background: white; border: 1px solid var(--border-color);
+        border-radius: 12px; color: var(--text-dark); font-size: 1.2rem;
+        box-shadow: var(--shadow-sm); transition: 0.3s; margin-right: 1.5rem; text-decoration: none !important;
     }
+    .btn-back-modern:hover { background: var(--primary); color: white; border-color: var(--primary); transform: translateX(-3px); }
+    .page-title { font-size: 22px; font-weight: 800; margin: 0; color: var(--text-dark); letter-spacing: -0.5px; }
+    .page-subtitle { font-size: 12px; font-weight: 600; color: var(--warning); margin: 0; text-transform: uppercase; letter-spacing: 1px; }
+
+    /* 🌟 Card Design */
+    .modern-card { background: var(--card-bg); border-radius: var(--radius-lg); border: 1px solid rgba(226,232,240,0.8); padding: 2rem; margin-bottom: 1.5rem; box-shadow: var(--shadow-md); }
+    .card-header-title { font-size: 16px; font-weight: 800; color: var(--text-dark); display: flex; align-items: center; gap: 12px; margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 2px solid var(--bg-body); }
+    .icon-box { width: 36px; height: 36px; border-radius: 10px; background: #fffbeb; color: var(--warning); display: flex; align-items: center; justify-content: center; font-size: 16px; }
+
+    /* 🌟 Form Inputs */
+    .form-group { margin-bottom: 1.2rem; }
+    .form-label { font-weight: 700; font-size: 11px; color: var(--text-gray); margin-bottom: 6px; display: block; text-transform: uppercase; letter-spacing: 0.5px; }
+    .form-control-modern { width: 100%; height: 45px; border-radius: var(--radius-md); border: 1.5px solid var(--border-color); background-color: var(--secondary); padding: 0 1rem; font-size: 14px; font-weight: 600; color: var(--text-dark); transition: 0.3s; }
+    .form-control-modern:focus { border-color: var(--warning); background-color: #fff; box-shadow: 0 0 0 4px rgba(245, 158, 11, 0.1); outline: none; }
+    textarea.form-control-modern { padding: 1rem; height: auto !important; }
+
+    /* Select2 Override */
+    .select2-container--default .select2-selection--single { height: 45px !important; border-radius: var(--radius-md) !important; border: 1.5px solid var(--border-color) !important; background-color: var(--secondary) !important; display: flex !important; align-items: center !important; padding-left: 6px !important; font-weight: 600; font-size: 14px; }
+    .select2-container--default .select2-selection--single .select2-selection__arrow { height: 43px !important; }
+    .select2-container--default.select2-container--focus .select2-selection--single { border-color: var(--warning) !important; background-color: #fff !important; box-shadow: 0 0 0 4px rgba(245, 158, 11, 0.1) !important; }
+
+    /* 🌟 Upload Zone (Fixed Image Stretch Issue) */
+    .upload-zone { 
+        border: 2px dashed #cbd5e1; border-radius: 12px; padding: 1.5rem 1rem; 
+        text-align: center; background: #f8fafc; cursor: pointer; transition: 0.3s; margin-bottom: 1.5rem;
+        overflow: hidden; /* 🌟 ការពារកុំឱ្យរូបភាពលៀនចេញក្រៅ */
+        display: flex; flex-direction: column; align-items: center; justify-content: center;
+        min-height: 160px;
+    }
+    .upload-zone:hover { border-color: var(--warning); background: #fffbeb; }
+    .upload-icon { font-size: 32px; color: #94a3b8; margin-bottom: 10px; transition: 0.3s; }
+    .upload-zone:hover .upload-icon { color: var(--warning); transform: translateY(-3px); }
     
-    .section-container { background: #ffffff; padding: 2.25rem; border-radius: 24px; border: 1px solid var(--slate-200); margin-bottom: 1.5rem; }
-    .section-title { font-size: 0.75rem; font-weight: 800; color: var(--brand-red); text-transform: uppercase; letter-spacing: 0.12em; display: flex; align-items: center; margin-bottom: 2rem; }
-    .section-title::after { content: ""; flex: 1; height: 1px; background: #f1f5f9; margin-left: 1.25rem; }
+    #id-preview { 
+        max-width: 100% !important; 
+        max-height: 180px !important; /* 🌟 Lock កម្ពស់រូបភាពកុំឱ្យធំពេក */
+        width: auto;
+        object-fit: contain; 
+        border-radius: 8px; 
+    }
 
-    .input-style { width: 100%; border-radius: 12px; border: 1.5px solid var(--slate-200); padding: 0.75rem 1rem; font-size: 0.9rem; font-weight: 600; transition: 0.2s; background: #fff; }
-    .input-style:focus { border-color: var(--brand-red); outline: none; box-shadow: 0 0 0 4px rgba(206, 24, 30, 0.08); }
-    
-    label { display: block; margin-bottom: 8px; font-weight: 800; color: var(--slate-600); font-size: 10px; text-transform: uppercase; }
-    
-    .btn-brand { background: var(--brand-red); color: white; border: none; font-weight: 900; padding: 1rem 2.5rem; border-radius: 16px; transition: 0.3s; }
-    .btn-brand:hover { background: #b91c1c; transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(185, 28, 28, 0.4); }
+    /* 🌟 Checkboxes */
+    .offer-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 10px; margin-bottom: 1rem; }
+    .offer-item { background: var(--secondary); border: 1px solid var(--border-color); border-radius: 8px; padding: 10px 12px; display: flex; align-items: center; gap: 8px; cursor: pointer; transition: 0.2s; }
+    .offer-item:hover { border-color: var(--warning); background: #fffbeb; }
+    .offer-item input[type="checkbox"] { width: 16px; height: 16px; cursor: pointer; accent-color: var(--warning); }
+    .offer-item label { margin: 0; font-weight: 600; color: var(--text-dark); cursor: pointer; font-size: 12px; width: 100%; }
 
-    .btn-circle { width: 42px; height: 42px; border-radius: 12px; display: flex; align-items: center; justify-content: center; border: none; transition: 0.2s; }
-    .btn-plus { background: #ecfdf5; color: #059669; }
-    .btn-minus { background: #fff5f5; color: var(--brand-red); }
+    /* 🌟 Financial Summary */
+    .finance-summary { background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); border-radius: 12px; padding: 1.8rem; text-align: center; color: white; margin-bottom: 1.5rem; position: relative; overflow: hidden; box-shadow: 0 10px 15px -3px rgba(15, 23, 42, 0.3); }
+    .amount-label { font-size: 11px; font-weight: 700; color: #94a3b8; letter-spacing: 2px; margin-bottom: 5px; }
+    .amount-display { font-size: 38px; font-weight: 900; margin: 0; letter-spacing: -1px; }
 
-    .finance-highlight { border: 2px solid var(--brand-red) !important; background: #fffdfd; }
+    /* 🌟 Buttons & Actions */
+    .btn-submit { background: var(--warning); color: white; border: none; padding: 14px; border-radius: var(--radius-md); font-weight: 800; font-size: 15px; width: 100%; transition: 0.3s ease; display: flex; justify-content: center; align-items: center; gap: 8px; }
+    .btn-submit:hover { background: #d97706; transform: translateY(-2px); box-shadow: 0 8px 20px rgba(245, 158, 11, 0.3); }
 
-    /* Identity Upload Styling */
-    #drop-area { transition: 0.3s ease; border: 2px dashed var(--slate-200); cursor: pointer; background: #fafbfc; position: relative; }
-    #drop-area:hover { border-color: var(--brand-red); background-color: #fff5f5; }
+    .offer-row { display: flex; gap: 10px; margin-bottom: 10px; }
+    .btn-action { width: 45px; height: 45px; border-radius: var(--radius-md); border: none; color: white; display: flex; align-items: center; justify-content: center; font-size: 14px; transition: 0.2s; flex-shrink: 0; }
+    .btn-add { background: var(--warning); } .btn-add:hover { background: #d97706; }
+    .btn-remove { background: var(--danger); } .btn-remove:hover { background: #b91c1c; }
+
+    .sticky-finance { position: sticky; top: 1.5rem; z-index: 10; }
 </style>
 
-<div class="container-full">
-    <div class="brand-gradient mb-5 d-flex justify-content-between align-items-center">
+<div class="container-premium text-start">
+    
+    <div class="header-wrapper">
+        <a href="{{ route('contracts.index') }}" class="btn-back-modern" title="Back">
+            <i class="fas fa-arrow-left"></i>
+        </a>
         <div>
-            <h1 class="font-black mb-1 display-6 text-white">កែប្រែកិច្ចសន្យា (Edit Sales Contract)</h1>
-            <p class="opacity-75 font-bold mb-0 text-white uppercase small">Official Registry Update: {{ $contract->contract_number }}</p>
-        </div>
-        <div class="d-flex gap-2">
-            <a href="{{ route('contracts.show', $contract->id) }}" class="btn btn-outline-light rounded-2xl px-4 py-2 font-black border-2">VIEW CURRENT</a>
-            <a href="{{ route('contracts.index') }}" class="btn btn-light rounded-2xl px-4 py-2 font-black shadow-sm">DISCARD CHANGES</a>
+            <h1 class="page-title">កែប្រែទិន្នន័យកិច្ចសន្យា</h1>
+            <p class="page-subtitle"><i class="fas fa-edit me-1"></i> Edit Registry Record</p>
         </div>
     </div>
 
-    <form action="{{ route('contracts.update', $contract->id) }}" method="POST" enctype="multipart/form-data">
+    @if ($errors->any())
+        <div class="alert alert-danger rounded-3 border-0 shadow-sm p-3 mb-4">
+            <ul class="mb-0 fw-bold small">@foreach ($errors->all() as $error) <li>{{ $error }}</li> @endforeach</ul>
+        </div>
+    @endif
+
+    <form action="{{ route('contracts.update', $contract->id) }}" method="POST" enctype="multipart/form-data" id="editForm">
         @csrf
         @method('PUT')
         
-        <div class="row g-4 text-start">
-            
-            <div class="col-12">
-                <div class="section-container">
-                    <h3 class="section-title">01. Showroom Logistics / ព័ត៌មានកិច្ចសន្យា</h3>
-                    <div class="row g-4">
-                        <div class="col-md-3">
-                            <label>Showroom Branch</label>
-                            <select name="branch_name" class="input-style" required>
-                                <option value="Phnom Penh Showroom" @selected($contract->branch_name == 'Phnom Penh Showroom')>Phnom Penh Showroom</option>
-                                <option value="Battambang Showroom" @selected($contract->branch_name == 'Battambang Showroom')>Battambang Showroom</option>
-                                <option value="Siem Reap Showroom" @selected($contract->branch_name == 'Siem Reap Showroom')>Siem Reap Showroom</option>
-                            </select>
+        <div class="row g-4">
+            <div class="col-xl-8 col-lg-7">
+                
+                <div class="modern-card">
+                    <h3 class="card-header-title">
+                        <div class="icon-box"><i class="fas fa-user-edit"></i></div>
+                        ព័ត៌មានអតិថិជន (Customer Profile)
+                    </h3>
+                    
+                    <div class="upload-zone" id="upload-zone">
+                        <div id="upload-text" style="{{ $contract->customer_id_card ? 'display: none;' : 'display: block;' }}">
+                            <i class="fas fa-camera upload-icon"></i>
+                            <h6 class="fw-800 text-dark mb-1" style="font-size: 14px;">ផ្លាស់ប្តូរឯកសារយោង (បើមាន)</h6>
+                            <p class="small text-muted mb-0">ចុចទីនេះបើចង់ Upload អត្តសញ្ញាណប័ណ្ណថ្មីជំនួស</p>
                         </div>
-                        <div class="col-md-3">
-                            <label>Contract Number / លេខឯកសារ</label>
-                            <input type="text" name="contract_number" value="{{ $contract->contract_number }}" class="input-style font-mono text-danger" required>
-                        </div>
-                        <div class="col-md-2">
-                            <label>Status / ស្ថានភាព</label>
-                            <select name="status" class="input-style border-danger text-danger font-bold">
-                                <option value="Booking" @selected($contract->status == 'Booking')>BOOKING / កក់ទុក</option>
-                                <option value="Payoff" @selected($contract->status == 'Payoff')>PAYOFF / ទូទាត់ផ្តាច់</option>
-                            </select>
-                        </div>
-                        <div class="col-md-2">
-                            <label>Order Date / កាលបរិច្ឆេទ</label>
-                            <input type="date" name="order_date" value="{{ $contract->order_date->format('Y-m-d') }}" class="input-style" required>
-                        </div>
-                        <div class="col-md-2">
-                            <label>Sales Person / ផ្នែកលក់</label>
-                            <select name="sale_person" class="input-style" required>
-                                @foreach(['Pum Sorya', 'Sanh Rady', 'Sem SereyYanuth', 'Thul Ratha', 'Poeng Lyly', 'Oum Kim', 'Bun Narith', 'Khat Ra', 'Say Toeun', 'Sib KimCheu', 'Liam Sophuon', 'Phoem Phearakyuth'] as $staff)
-                                    <option value="{{ $staff }}" @selected($contract->sale_person == $staff)>{{ $staff }}</option>
-                                @endforeach
-                            </select>
-                        </div>
+
+                        <input type="file" name="customer_id_card" id="id_image_input" class="d-none" accept="image/*">
+                        
+                        @if($contract->customer_id_card)
+                            <img id="id-preview" src="{{ asset('storage/' . $contract->customer_id_card) }}" style="display: block;">
+                        @else
+                            <img id="id-preview" style="display: none;">
+                        @endif
                     </div>
-                </div>
-            </div>
 
-            <div class="col-md-7">
-                <div class="section-container">
-                    <h3 class="section-title">02. Customer Identity / អតិថិជន</h3>
-                    <div class="row g-4">
-                        <div class="col-md-6">
-                            <label>Customer Name / ឈ្មោះអតិថិជន</label>
-                            <input type="text" name="customer_name" value="{{ $contract->customer_name }}" class="input-style" required>
-                        </div>
-                        <div class="col-md-6">
-                            <label>Phone / លេខទំនាក់ទំនង</label>
-                            <input type="text" name="phone_number" value="{{ $contract->phone_number }}" class="input-style" required>
-                        </div>
-                        <div class="col-md-6">
-                            <label>Location / ខេត្ត/ក្រុង</label>
-                            <select name="location_province" class="input-style" required>
-                                @foreach(['Phnom Penh', 'Banteay Meanchey', 'Battambang', 'Kampong Cham', 'Kampong Chhnang', 'Kampong Speu', 'Kampong Thom', 'Kampot', 'Kandal', 'Kep', 'Koh Kong', 'Kratié', 'Mondulkiri', 'Oddar Meanchey', 'Pailin', 'Preah Sihanouk', 'Preah Vihear', 'Prey Veng', 'Pursat', 'Ratanakiri', 'Siem Reap', 'Stung Treng', 'Svay Rieng', 'Takéo', 'Tboung Khmum'] as $province)
-                                    <option value="{{ $province }}" @selected($contract->location_province == $province)>{{ $province }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="col-md-6">
-                            <label>Source / ប្រភព</label>
-                            <select name="source" class="input-style">
-                                <option value="Direct" @selected($contract->source == 'Direct')>Direct Walk-in</option>
-                                <option value="Facebook" @selected($contract->source == 'Facebook')>Facebook</option>
-                                <option value="Referral" @selected($contract->source == 'Referral')>Referral</option>
-                            </select>
-                        </div>
-                        <div class="col-12">
-                            <label>Address / អាសយដ្ឋាន</label>
-                            <textarea name="address" rows="1" class="input-style" required>{{ $contract->address }}</textarea>
-                        </div>
-
-                        <div class="col-12 mt-2">
-                            <label>Identity Document / ឯកសារអត្តសញ្ញាណ (Click to Replace)</label>
-                            <div class="rounded-2xl p-4 text-center" id="drop-area">
-                                <input type="file" name="customer_id_card" id="customer_id_card" class="d-none" accept="image/*" onchange="previewImage(event)">
-                                
-                                {{-- Placeholder shows ONLY if there is no existing image --}}
-                                <div id="upload-placeholder" class="{{ $contract->customer_id_card ? 'd-none' : '' }} py-4">
-                                    <i class="fas fa-id-card fa-3x mb-2 text-slate-400"></i>
-                                    <p class="mb-0 font-bold text-slate-500 small">NO IMAGE ATTACHED. CLICK TO UPLOAD.</p>
-                                </div>
-
-                                {{-- Image Preview Container --}}
-                                <div id="image-preview-container" class="{{ !$contract->customer_id_card ? 'd-none' : '' }}">
-                                    <img id="output-image" 
-                                         src="{{ $contract->customer_id_card ? asset('storage/' . $contract->customer_id_card) : '#' }}" 
-                                         class="img-fluid rounded-xl shadow-sm border mb-3" 
-                                         style="max-height: 250px; object-fit: contain;">
-                                    <div>
-                                        <span class="badge bg-danger px-3 py-2 rounded-pill font-bold" style="cursor: pointer;" onclick="document.getElementById('customer_id_card').click();">
-                                            <i class="fas fa-sync-alt me-1"></i> REPLACE IMAGE
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-5">
-                <div class="section-container">
-                    <h3 class="section-title">03. Vehicle Specs & Offers / ព័ត៌មានយានយន្ត</h3>
                     <div class="row g-3">
-                        <div class="col-12">
-                            <label>Model / ម៉ូឌែល</label>
-                            <input type="text" name="model" value="{{ $contract->model }}" class="input-style font-bold" required>
+                        <div class="col-md-6 form-group">
+                            <label class="form-label">Name (English) <span class="text-danger">*</span></label>
+                            <input type="text" name="customer_name" value="{{ $contract->customer_name }}" class="form-control-modern" required>
                         </div>
-                        <div class="col-md-6">
-                            <label>Color / ពណ៌</label>
-                            <input type="text" name="color" value="{{ $contract->color }}" class="input-style" required>
+                        <div class="col-md-6 form-group">
+                            <label class="form-label">ឈ្មោះ (Khmer)</label>
+                            <input type="text" name="customer_name_kh" value="{{ $contract->customer_name_kh ?? '' }}" class="form-control-modern">
                         </div>
-                        <div class="col-md-6">
-                            <label>Quantity</label>
-                            <input type="number" name="qty" value="{{ $contract->qty ?? 1 }}" class="input-style text-center font-black" required>
+                        <div class="col-md-6 form-group">
+                            <label class="form-label">Phone Number <span class="text-danger">*</span></label>
+                            <input type="text" name="phone_number" value="{{ $contract->phone_number }}" class="form-control-modern" required>
+                        </div>
+                        <div class="col-md-6 form-group">
+                            <label class="form-label">National ID / Passport</label>
+                            <input type="text" name="id_card_number" value="{{ $contract->id_card_number }}" class="form-control-modern">
+                        </div>
+                        <div class="col-12 form-group">
+                            <label class="form-label">Member Card Assignment</label>
+                            <select name="membership_number" class="form-control-modern select2-js">
+                                <option value="{{ $contract->membership_number }}">{{ $contract->membership_number }} (Current)</option>
+                                @foreach($availableCards ?? [] as $card) <option value="{{ $card->member_card }}">{{ $card->member_card }}</option> @endforeach
+                            </select>
+                        </div>
+                        <div class="col-12 form-group mb-0">
+                            <label class="form-label">Address / អាសយដ្ឋាន</label>
+                            <textarea name="address" rows="2" class="form-control-modern">{{ $contract->address }}</textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modern-card">
+                    <h3 class="card-header-title">
+                        <div class="icon-box"><i class="fas fa-car-side"></i></div>
+                        ប្រតិបត្តិការរថយន្ត (Vehicle Specs)
+                    </h3>
+                    <div class="row g-3">
+                        <div class="col-md-6 form-group">
+                            <label class="form-label">Branch / សាខា</label>
+                            <select name="branch_name" class="form-control-modern select2-js" @disabled(!$isAdmin)>
+                                @foreach($allBranches ?? [] as $b) <option value="{{ $b }}" @selected($contract->branch_name == $b)>{{ $b }}</option> @endforeach
+                            </select>
+                            @if(!$isAdmin) <input type="hidden" name="branch_name" value="{{ $contract->branch_name }}"> @endif
+                        </div>
+                        <div class="col-md-6 form-group">
+                            <label class="form-label">Salesperson</label>
+                            <select name="sale_person" class="form-control-modern select2-js" @disabled(!$canEditStaff)>
+                                @foreach($staff ?? [] as $s) <option value="{{ $s }}" @selected($contract->sale_person == $s)>{{ $s }}</option> @endforeach
+                            </select>
+                            @if(!$canEditStaff) <input type="hidden" name="sale_person" value="{{ $contract->sale_person }}"> @endif
                         </div>
                         
-                        <div class="col-md-6">
-                            <label>VIN Number / លេខតួ</label>
-                            <input type="text" name="vin_number" value="{{ $contract->vin_number }}" class="input-style font-mono" placeholder="LSJXXXXXXXXX">
-                        </div>
-                        <div class="col-md-6">
-                            <label>Engine Number / លេខម៉ាស៊ីន</label>
-                            <input type="text" name="engine_number" value="{{ $contract->engine_number }}" class="input-style font-mono" placeholder="ENGXXXXXXXX">
-                        </div>
+                        <div class="col-12"><hr style="border-color: var(--border-color); margin: 0.5rem 0 1rem;"></div>
 
-                        <div class="col-12">
-                            <label>Offers / ការផ្តល់ជូន (Click + to add)</label>
-                            <div id="offers-container">
-                                @php 
-                                    $existingOffers = !empty($contract->offers) ? explode(', ', $contract->offers) : ['']; 
+                        <div class="col-md-4 form-group">
+                            <label class="form-label text-primary">Contract ID <span class="text-danger">*</span></label>
+                            <input type="text" name="contract_number" value="{{ $contract->contract_number }}" class="form-control-modern text-primary" required>
+                        </div>
+                        <div class="col-md-4 form-group">
+                            <label class="form-label text-primary">Date <span class="text-danger">*</span></label>
+                            <input type="date" name="order_date" value="{{ \Carbon\Carbon::parse($contract->order_date)->format('Y-m-d') }}" class="form-control-modern" required>
+                        </div>
+                        <div class="col-md-4 form-group">
+                            <label class="form-label">Source / ប្រភព</label>
+                            <select name="source_id" class="form-control-modern select2-js">
+                                <option value="">-- រើសប្រភព --</option>
+                                <option value="Facebook" @selected($contract->source_id == 'Facebook')>Facebook</option>
+                                <option value="TikTok" @selected($contract->source_id == 'TikTok')>TikTok</option>
+                                <option value="Direct Walk-in" @selected($contract->source_id == 'Direct Walk-in')>Direct Walk-in</option>
+                                <option value="Referral" @selected($contract->source_id == 'Referral')>Referral</option>
+                            </select>
+                        </div>
+                        
+                        <div class="col-md-8 form-group">
+                            <label class="form-label">Vehicle Model <span class="text-danger">*</span></label>
+                            <select name="model" class="form-control-modern select2-js" required>
+                                <option value="" disabled>-- ជ្រើសរើសម៉ូដែល --</option>
+                                @foreach($carModels as $model)
+                                    <option value="{{ $model }}" @selected($contract->model == $model)>{{ $model }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="col-md-4 form-group">
+                            <label class="form-label">Qty / ចំនួន</label>
+                            <input type="number" id="qty" name="qty" class="form-control-modern text-center fw-bold calc-val" value="{{ $contract->qty ?? 1 }}" min="1" required>
+                        </div>
+                        
+                        <div class="col-md-4 form-group">
+                            <label class="form-label">Color / ពណ៌</label>
+                            <input type="text" name="color" value="{{ $contract->color ?? '' }}" class="form-control-modern" placeholder="ក្រៅ / ក្នុង">
+                        </div>
+                        <div class="col-md-4 form-group">
+                            <label class="form-label">VIN Number</label>
+                            <input type="text" name="vin_number" value="{{ $contract->vin_number }}" class="form-control-modern font-monospace">
+                        </div>
+                        <div class="col-md-4 form-group">
+                            <label class="form-label">Engine No.</label>
+                            <input type="text" name="engine_number" value="{{ $contract->engine_number ?? '' }}" class="form-control-modern font-monospace">
+                        </div>
+                        
+                        <div class="col-12 form-group mb-0 mt-3">
+                            <label class="form-label">Campaign Offers / កាដូថែមជូន</label>
+                            <div class="offer-grid">
+                                @foreach($offersList as $index => $offer)
+                                    <label class="offer-item" for="offer_{{ $index }}">
+                                        <input type="checkbox" id="offer_{{ $index }}" name="offers[]" value="{{ $offer }}" 
+                                            @checked(in_array($offer, $existingOffers))>
+                                        <span>{{ $offer }}</span>
+                                    </label>
+                                @endforeach
+                            </div>
+
+                            <label class="form-label mt-3">ថែមអ្វីផ្សេងទៀត (Other Accessories)</label>
+                            <div id="offers-list">
+                                @php
+                                    // រកមើល Offer ដែលភ្ញៀវវាយបញ្ចូលដោយដៃ
+                                    $customOffers = array_diff($existingOffers, $offersList);
                                 @endphp
 
-                                @foreach($existingOffers as $offerItem)
-                                <div class="d-flex gap-2 mb-2 offer-item">
-                                    <input type="text" name="offers[]" value="{{ $offerItem }}" class="input-style" placeholder="Extra offer...">
-                                    @if($loop->first)
-                                        <button type="button" class="btn-circle btn-plus" onclick="addOfferField()"><i class="fas fa-plus"></i></button>
-                                    @else
-                                        <button type="button" class="btn-circle btn-minus" onclick="removeOfferField(this)"><i class="fas fa-minus"></i></button>
-                                    @endif
-                                </div>
-                                @endforeach
+                                @forelse($customOffers as $index => $customOffer)
+                                    <div class="offer-row">
+                                        <input type="text" name="offers[]" value="{{ $customOffer }}" class="form-control-modern" placeholder="វាយឈ្មោះកាដូផ្សេងៗ...">
+                                        <button type="button" class="btn-action btn-remove shadow-sm" onclick="$(this).parent().remove()"><i class="fas fa-minus"></i></button>
+                                    </div>
+                                @empty
+                                    <div class="offer-row">
+                                        <input type="text" name="offers[]" class="form-control-modern" placeholder="វាយឈ្មោះកាដូផ្សេងៗ...">
+                                        <button type="button" class="btn-action btn-add shadow-sm" onclick="addOfferField()"><i class="fas fa-plus"></i></button>
+                                    </div>
+                                @endforelse
+                                
+                                @if(count($customOffers) > 0)
+                                    <div class="offer-row" id="add-btn-wrapper">
+                                        <input type="text" name="offers[]" class="form-control-modern" placeholder="បន្ថែមថ្មីទៀត...">
+                                        <button type="button" class="btn-action btn-add shadow-sm" onclick="addOfferField()"><i class="fas fa-plus"></i></button>
+                                    </div>
+                                @endif
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div class="col-12">
-                <div class="section-container finance-highlight">
-                    <h3 class="section-title">04. Financial Settlement / ហិរញ្ញវត្ថុ</h3>
-                    <div class="row g-4 align-items-center">
-                        <div class="col-md-3">
-                            <label>Sub Total ($) / ទឹកប្រាក់សរុប</label>
-                            <input type="number" step="0.01" id="sub_total" name="sub_total" value="{{ $contract->sub_total }}" class="input-style font-black h5 calc-input" required>
+            <div class="col-xl-4 col-lg-5">
+                <div class="modern-card sticky-finance">
+                    <h3 class="card-header-title">
+                        <div class="icon-box"><i class="fas fa-wallet"></i></div>
+                        ហិរញ្ញវត្ថុ (Settlement)
+                    </h3>
+                    
+                    <div class="finance-summary">
+                        <p class="amount-label">BALANCE DUE</p>
+                        @php 
+                            $initBal = ($contract->qty ?? 1) * ($contract->unit_price ?? $contract->sub_total) - ($contract->discount ?? 0) - ($contract->deposit ?? 0);
+                            $initBal = $initBal < 0 ? 0 : $initBal;
+                        @endphp
+                        <p class="amount-display">$ <span id="span_total">{{ number_format($initBal, 2) }}</span></p>
+                        <input type="hidden" id="balance" name="balance" value="{{ $initBal }}">
+                    </div>
+
+                    <div class="row g-3">
+                        <div class="col-6 form-group">
+                            <label class="form-label">Unit Price ($) <span class="text-danger">*</span></label>
+                            <input type="number" step="0.01" id="unit_price" name="unit_price" value="{{ $contract->unit_price ?? $contract->sub_total }}" class="form-control-modern calc-val" required>
                         </div>
-                        <div class="col-md-2">
-                            <label>Discount ($) / បញ្ចុះតម្លៃ</label>
-                            <input type="number" step="0.01" id="discount" name="discount" value="{{ $contract->discount }}" class="input-style text-danger calc-input">
+                        <div class="col-6 form-group">
+                            <label class="form-label text-muted">Sub Total / សរុប</label>
+                            <input type="text" id="sub_total_display" class="form-control-modern text-muted bg-light border-0" value="{{ number_format(($contract->qty ?? 1) * ($contract->unit_price ?? $contract->sub_total), 2) }}" readonly>
+                            <input type="hidden" id="sub_total" name="sub_total" value="{{ ($contract->qty ?? 1) * ($contract->unit_price ?? $contract->sub_total) }}">
                         </div>
-                        <div class="col-md-2">
-                            <label>Deposit ($) / ប្រាក់កក់</label>
-                            <input type="number" step="0.01" id="deposit" name="deposit" value="{{ $contract->deposit }}" class="input-style text-primary calc-input">
+
+                        <div class="col-6 form-group">
+                            <label class="form-label text-danger">Discount ($)</label>
+                            <input type="number" step="0.01" id="discount" name="discount" value="{{ $contract->discount ?? 0 }}" class="form-control-modern calc-val text-danger">
                         </div>
-                        <div class="col-md-3">
-                            <label class="text-danger font-black">Balance Due / សមតុល្យ ($)</label>
-                            <input type="number" id="grand_total" value="{{ $contract->grand_total }}" class="input-style border-danger text-danger font-black" readonly>
+                        <div class="col-6 form-group">
+                            <label class="form-label text-success">Deposit Paid ($)</label>
+                            <input type="number" step="0.01" id="deposit" name="deposit" value="{{ $contract->deposit ?? 0 }}" class="form-control-modern calc-val text-success">
                         </div>
-                        <div class="col-md-2">
-                            <label>Payment Type</label>
-                            <select name="payment_type" class="input-style font-bold">
+                        
+                        <div class="col-12 form-group">
+                            <label class="form-label">Payment Type</label>
+                            <select name="payment_type" id="payment_type" class="form-control-modern select2-js" required>
                                 <option value="Cash" @selected($contract->payment_type == 'Cash')>Cash (សាច់ប្រាក់)</option>
-                                <option value="Leasing" @selected($contract->payment_type == 'Leasing')>Leasing (បង់រំលស់)</option>
-                                <option value="ABA" @selected($contract->payment_type == 'ABA')>ABA Transfer</option>
+                                <option value="Bank Transfer" @selected($contract->payment_type == 'Bank Transfer' || $contract->payment_type == 'Bank Loan')>Bank Transfer / Loan</option>
+                                <option value="Installment" @selected($contract->payment_type == 'Installment')>Installment (រំលស់)</option>
                             </select>
+                        </div>
+
+                        @php 
+                            $isBank = in_array($contract->payment_type, ['Bank Transfer', 'Bank Loan']);
+                        @endphp
+                        <div class="col-12 form-group" id="bank_name_wrapper" style="display: {{ $isBank ? 'block' : 'none' }};">
+                            <label class="form-label text-primary">Bank Name</label>
+                            <input type="text" name="bank_name" value="{{ $contract->bank_name ?? '' }}" class="form-control-modern border-primary" placeholder="e.g. ABA, Campu Bank...">
+                        </div>
+
+                        <div class="col-12 form-group">
+                            <label class="form-label">Status</label>
+                            <select name="status" class="form-control-modern text-primary fw-bold">
+                                <option value="Booking" @selected($contract->status == 'Booking')>BOOKING / កក់ទុក</option>
+                                <option value="Payoff" @selected($contract->status == 'Payoff')>PAYOFF / ទូទាត់ផ្ដាច់</option>
+                            </select>
+                        </div>
+                        
+                        <div class="col-12 mt-3">
+                            <button type="submit" class="btn-submit">
+                                <i class="fas fa-save"></i> រក្សាទុកការកែប្រែ
+                            </button>
                         </div>
                     </div>
                 </div>
             </div>
-
-            <div class="col-12 text-end mb-5">
-                <button type="submit" class="btn btn-brand shadow-lg px-5 py-3">
-                    <i class="fas fa-sync-alt mr-2"></i> UPDATE REGISTRY RECORD
-                </button>
-            </div>
+            
         </div>
     </form>
 </div>
 
 <script>
-    // 1. Trigger File Input when clicking the drop area
-    document.getElementById('drop-area').addEventListener('click', function(e) {
-        if (e.target.tagName !== 'SPAN' && e.target.tagName !== 'I') {
-            document.getElementById('customer_id_card').click();
+$(document).ready(function() {
+    $('.select2-js').select2({ width: '100%' });
+
+    $('#payment_type').on('change', function() {
+        if ($(this).val() === 'Bank Transfer') {
+            $('#bank_name_wrapper').slideDown();
+        } else {
+            $('#bank_name_wrapper').slideUp();
+            $('input[name="bank_name"]').val('');
         }
     });
 
-    // 2. Real-time Image Preview logic
-    function previewImage(event) {
-        const reader = new FileReader();
-        const output = document.getElementById('output-image');
-        const placeholder = document.getElementById('upload-placeholder');
-        const previewContainer = document.getElementById('image-preview-container');
+    $('#upload-zone').on('click', function(e) {
+        if (e.target.id !== 'id_image_input') $('#id_image_input').click();
+    });
+    $('#id_image_input').on('click', function(e) { e.stopPropagation(); });
 
-        reader.onload = function() {
-            output.src = reader.result;
-            placeholder.classList.add('d-none');
-            previewContainer.classList.remove('d-none');
+    // 🌟 បង្ហាញរូបភាពថ្មី និងលាក់អក្សរពេលរើសរួច
+    $('#id_image_input').change(function() {
+        if (this.files && this.files[0]) {
+            let reader = new FileReader();
+            reader.onload = (e) => { 
+                $('#id-preview').attr('src', e.target.result).show(); 
+                $('#upload-text').hide();
+            }
+            reader.readAsDataURL(this.files[0]);
         }
+    });
+
+    $('.calc-val').on('input', function() {
+        let qty = parseFloat($('#qty').val()) || 1;
+        let unitPrice = parseFloat($('#unit_price').val()) || 0;
+        let dis = parseFloat($('#discount').val()) || 0;
+        let dep = parseFloat($('#deposit').val()) || 0;
         
-        if(event.target.files[0]) {
-            reader.readAsDataURL(event.target.files[0]);
-        }
-    }
+        let subTotal = qty * unitPrice;
+        $('#sub_total_display').val(subTotal.toFixed(2));
+        $('#sub_total').val(subTotal);
 
-    // 3. Dynamic Offer Fields logic
-    function addOfferField() {
-        const container = document.getElementById('offers-container');
-        const div = document.createElement('div');
-        div.className = 'd-flex gap-2 mb-2 offer-item';
-        div.innerHTML = `
-            <input type="text" name="offers[]" class="input-style" placeholder="Extra offer...">
-            <button type="button" class="btn-circle btn-minus" onclick="removeOfferField(this)"><i class="fas fa-minus"></i></button>
-        `;
-        container.appendChild(div);
-    }
+        let balance = subTotal - dis - dep;
+        balance = balance < 0 ? 0 : balance;
 
-    function removeOfferField(btn) {
-        btn.closest('.offer-item').remove();
-    }
-
-    // 4. Financial Calculation logic
-    const calculateTotal = () => {
-        const sub = parseFloat(document.getElementById('sub_total').value) || 0;
-        const dis = parseFloat(document.getElementById('discount').value) || 0;
-        const dep = parseFloat(document.getElementById('deposit').value) || 0;
-        document.getElementById('grand_total').value = (sub - dis - dep).toFixed(2);
-    };
-
-    // Calculate on Load to show correct balance immediately
-    document.addEventListener('DOMContentLoaded', calculateTotal);
-
-    document.querySelectorAll('.calc-input').forEach(input => {
-        input.addEventListener('input', calculateTotal);
+        $('#span_total').text(balance.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}));
+        $('#balance').val(balance);
     });
+});
+
+function addOfferField() {
+    $(`
+        <div class="offer-row">
+            <input type="text" name="offers[]" class="form-control-modern" placeholder="វាយឈ្មោះកាដូផ្សេងៗ...">
+            <button type="button" class="btn-action btn-remove shadow-sm" onclick="$(this).parent().remove()"><i class="fas fa-minus"></i></button>
+        </div>
+    `).insertBefore('#add-btn-wrapper');
+    
+    if($('#add-btn-wrapper').length === 0) {
+        $('#offers-list').append(`
+            <div class="offer-row">
+                <input type="text" name="offers[]" class="form-control-modern" placeholder="វាយឈ្មោះកាដូផ្សេងៗ...">
+                <button type="button" class="btn-action btn-remove shadow-sm" onclick="$(this).parent().remove()"><i class="fas fa-minus"></i></button>
+            </div>
+        `);
+    }
+}
+
+$('#editForm').on('submit', function() {
+    Swal.fire({ 
+        title: 'កំពុងអាប់ដេតទិន្នន័យ...', 
+        text: 'សូមរង់ចាំបន្តិច',
+        allowOutsideClick: false, 
+        didOpen: () => { Swal.showLoading(); } 
+    });
+});
 </script>
 @endsection

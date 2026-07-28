@@ -18,9 +18,23 @@
     display: flex; flex-direction: column; align-items: center; padding: 25px 0;
     background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px);
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    position: relative; /* 👈 ថែមសម្រាប់ Mobile Close Button */
 }
 
 .logo-center img { width: 110px; }
+
+/* 📱 Mobile Close Button Styling */
+.mobile-close-btn {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #ffffff !important;
+    background: rgba(255,255,255,0.2);
+    border-radius: 8px;
+    padding: 5px;
+    display: flex; align-items: center; justify-content: center;
+}
 
 .menu-inner .menu-item { margin: 4px 15px; border-radius: 10px; }
 
@@ -53,6 +67,10 @@
 <aside id="layout-menu" class="layout-menu menu-vertical menu bg-menu-theme">
     <div class="logo-center">
         <img src="{{ asset('assets/images/logo.png') }}" alt="Logo">
+        
+        <a href="javascript:void(0);" class="layout-menu-toggle menu-link text-large d-block d-xl-none mobile-close-btn">
+            <i class="bx bx-chevron-left bx-sm align-middle"></i>
+        </a>
     </div>
 
     <ul class="menu-inner py-2">
@@ -98,7 +116,7 @@
 </aside>
 
 <audio id="sound-default" preload="auto">
-    <source src="https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3" type="audio/mpeg">
+    {{-- <source src="https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3" type="audio/mpeg"> --}}
 </audio>
 <audio id="sound-logout" preload="auto">
     <source src="https://assets.mixkit.co/active_storage/sfx/2574/2574-preview.mp3" type="audio/mpeg">
@@ -106,15 +124,20 @@
 
 <script>
     /**
-     * Reusable Sound Function
+     * Reusable Sound Function - Updated for Safe Execution
      * Usage: playClickSound('default') or playClickSound('logout')
      */
     function playClickSound(type = 'default') {
-        const audio = document.getElementById('sound-' + type);
-        if (audio) {
-            audio.pause();
-            audio.currentTime = 0;
-            audio.play().catch(e => {});
+        try {
+            const audio = document.getElementById('sound-' + type);
+            // 🌟 ឆែកមើលថាមាន tag <source> ខាងក្នុងដែរឬអត់ មុននឹងបញ្ជាឲ្យលេងសំឡេង
+            if (audio && audio.innerHTML.includes('<source')) {
+                audio.pause();
+                audio.currentTime = 0;
+                audio.play().catch(e => console.log("Sound play prevented by browser"));
+            }
+        } catch(err) {
+            console.log("Audio functionality skipped to prevent UI freeze.");
         }
     }
 
@@ -124,11 +147,23 @@
         document.querySelectorAll('.app-click-trigger').forEach(link => {
             link.addEventListener('click', function(e) {
                 const href = this.getAttribute('href');
-                playClickSound('default');
+                
+                // លេងសំឡេង ហើយបញ្ឈប់ត្រឹមនេះ បើវាជា Menu Toggle (Drop down)
+                if(this.classList.contains('menu-toggle') || href === '#') {
+                    playClickSound('default');
+                    return; 
+                }
 
-                if (href && href !== '#' && !href.startsWith('javascript')) {
-                    e.preventDefault();
-                    setTimeout(() => { window.location.href = href; }, 150);
+                // បើវាមាន URL ត្រឹមត្រូវ ត្រូវតែប្តូរទំព័រ
+                if (href && href !== '' && !href.startsWith('javascript')) {
+                    e.preventDefault(); 
+                    
+                    playClickSound('default');
+                    
+                    // រង់ចាំ 150ms ឲ្យកូដផ្សេងៗរត់ចប់សិន ទើបប្តូរទំព័រ (ធានាមិនគាំង)
+                    setTimeout(() => { 
+                        window.location.href = href; 
+                    }, 150);
                 }
             });
         });
@@ -137,21 +172,15 @@
         document.querySelectorAll('.logout-trigger').forEach(link => {
             link.addEventListener('click', function(e) {
                 const href = this.getAttribute('href');
-                playClickSound('logout'); // Unique sound for logout
-
-                e.preventDefault();
-                setTimeout(() => { window.location.href = href; }, 400); // Slightly longer delay for logout sound
+                if(href) {
+                    e.preventDefault();
+                    playClickSound('logout');
+                    setTimeout(() => { window.location.href = href; }, 300);
+                }
             });
         });
 
-        // 3. Browser Audio Unlocker
-        const unlock = () => {
-            playClickSound('default');
-            document.removeEventListener('click', unlock);
-        };
-        document.addEventListener('click', unlock);
-
-        // Sidebar Auto-Expansion
+        // 3. Sidebar Auto-Expansion
         const activeSub = document.querySelector('.menu-sub .menu-item.active');
         if (activeSub) {
             const parent = activeSub.closest('.menu-item');

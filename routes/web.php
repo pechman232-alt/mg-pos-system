@@ -10,306 +10,418 @@ use App\Http\Controllers\LoginController;
 use App\Http\Controllers\LogisticController;
 use App\Http\Controllers\MemberCardController;
 use App\Http\Controllers\SaleReportController;
+use App\Http\Controllers\ServiceBookingController;
 use App\Http\Controllers\SettingController;
 use App\Http\Controllers\UserRoleController;
 use App\Http\Controllers\UsersController;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\ServiceBookingController;
+use App\Http\Controllers\POS\CheckoutController;
+use App\Http\Controllers\POS\VendorController;
+use App\Http\Controllers\POS\ExpenseAnalyticsController;
+use App\Models\User;
+use Carbon\Carbon;
 
-// Route Login
-Route::get('login', [LoginController::class, 'loginPage']);
+
+use App\Http\Controllers\POS\ReceiveHeaderController;
+
+// 1. Check Auth Route
+Route::get('/check-auth-session', function () {
+    return response()->json(['active' => Auth::guard('users')->check()]);
+});
+
+/*
+|--------------------------------------------------------------------------
+| Public Routes
+|--------------------------------------------------------------------------
+*/
+Route::get('/', fn() => redirect('/bWctYm9va2luZy1zZXJ2aWNl'));
+Route::get('login', fn() => abort(404)); // បិទ login ចាស់
+Route::get('login', [LoginController::class, 'loginPage'])->name('login');
 Route::post('login', [LoginController::class, 'fnLogin']);
 
+Route::prefix('bWctYm9va2luZy1zZXJ2aWNl')->group(function () {
+    Route::get('/', [ServiceBookingController::class, 'publicCreate'])->name('services.public_create');
+    Route::post('/store', [ServiceBookingController::class, 'publicStore'])->name('services.public_store');
+    Route::get('/success/{id}', [ServiceBookingController::class, 'showTicket'])->name('services.show_ticket');
+    Route::get('/ticket/{id}', [ServiceBookingController::class, 'showPublicTicket'])->name('services.public_ticket');
+});
+
+Route::get('/api/check-available-slots', [ServiceBookingController::class, 'checkSlots'])->name('slots.check');
+Route::get('/vip/{card_number}', [MemberCardController::class, 'scanDigitalCard'])->name('vip.scan')->where('card_number', '.*');
+
+// Image Routes
 Route::get('/imageCar/{path}', [CarModelController::class, 'imageCar']);
 Route::get('/imageUser/{path}', [UsersController::class, 'imageUser']);
 Route::get('/imageEmployee/{path}', [EmployeeController::class, 'imageEmployee']);
+/*
+|--------------------------------------------------------------------------
+| Authenticated Routes
+|--------------------------------------------------------------------------
+*/
+Route::middleware(['user_is_login', 'auth:users'])->group(function () {
 
-Route::middleware(['user_is_login'])->group(function () {
-    // Route HomePage
-    Route::get('', [HomeController::class, 'homePage']);
-    // Route Logout
-    Route::get('logout', [LoginController::class, 'fnLogout']);
+    Route::get('', [HomeController::class, 'homePage'])->name('home');
+    Route::get('logout', [LoginController::class, 'fnLogout'])->name('logout');
 
-    // Route Users
-    Route::get('/users', [UsersController::class, 'usersIndex']);
-    Route::get('/users/create', [UsersController::class, 'formUsers']);
-    Route::post('/users/store', [UsersController::class, 'storeUsers']);
-    Route::get('/users/edit/{id}', [UsersController::class, 'editUsers']);
-    Route::post('/users/update/{id}', [UsersController::class, 'updateUsers']);
-    Route::get('/users/destroy/{id}', [UsersController::class, 'destroyUsers']);
+    Route::get('/dashboard', [LeadController::class, 'dashboard'])->name('dashboard');
+    Route::get('/daily-tasks', [LeadController::class, 'dailyTasks'])->name('daily-tasks');
 
-    // Route UserRoles
-    Route::get('/userRoles', [UserRoleController::class, 'userRoleIndex']);
-    Route::get('/userRoles/create', [UserRoleController::class, 'formUserRole']);
-    Route::post('/userRoles/store', [UserRoleController::class, 'storeUserRole']);
-    Route::get('/userRoles/edit/{id}', [UserRoleController::class, 'fnEditUserRole']);
-    Route::post('/userRoles/update/{id}', [UserRoleController::class, 'fnUpdateUserRole']);
-    // ក្នុង routes/web.php
-    Route::delete('/userRoles/delete/{id}', [UserRoleController::class, 'fnDeleteUserRole']);
-
-    // Route Logistics
-    Route::get('/logistics', [LogisticController::class, 'logisticIndex'])->name('search.logistics');
-    Route::get('/logistics/create', [LogisticController::class, 'createLogistics']);
-    Route::post('/logistics/store', [LogisticController::class, 'storeLogistics']);
-    Route::get('/logistics/edit/{id}', [LogisticController::class, 'editLogistics']);
-    Route::post('/logistics/update/{id}', [LogisticController::class, 'updateLogistics']);
-    Route::get('/logistics/destroy/{id}', [LogisticController::class, 'destroyLogistics']);
-    Route::post('/logistics/import', [LogisticController::class, 'importLogistic']);
-    Route::get('/logistics/export', [LogisticController::class, 'exportLogistic']);
-    Route::get('/download-template-logistic', function () {
-        $filePath = public_path('templates/logistic_excel_template.xlsx');
-
-        return Response::download($filePath, 'logistic_excel_template.xlsx');
+    // --- Services ---
+    Route::prefix('services')->controller(ServiceBookingController::class)->group(function () {
+        Route::get('/', 'index')->name('services.index');
+        Route::get('/create', 'create')->name('services.create');
+        Route::post('/store', 'store')->name('services.store');
+        Route::get('/edit/{id}', 'edit')->name('services.edit'); // កុំប្រើ Route::resource បើមាន Route ដៃ
+        Route::post('/update/{id}', 'update')->name('services.update');
+        Route::delete('/delete/{id}', 'delete')->name('services.delete');
+        Route::post('/note/{id}', 'updateNote');
+        Route::post('/cancel/{id}', 'cancelBooking')->name('services.cancel');
+        Route::post('/archive/{id}', 'archive')->name('services.archive');
+        Route::get('/notifications', 'getNotifications')->name('services.notifications');
     });
 
+    // --- Workshop ---
+    Route::get('/workshop-board', [ServiceBookingController::class, 'workshopIndex'])->name('workshop.index');
+    Route::prefix('workshop')->name('workshop.')->controller(ServiceBookingController::class)->group(function () {
+        Route::post('/arrive/{id}', 'arriveJob')->name('arrive');
+        Route::post('/start/{id}', 'startJob')->name('start');
+        Route::post('/finish/{id}', 'finishJob')->name('finish');
+        Route::post('/hold/{id}', 'holdJob')->name('hold');
+        Route::post('/resume/{id}', 'resumeJob')->name('resume');
+    });
 
+   // --- Leads ---
+Route::controller(LeadController::class)->prefix('leads')->name('leads.')->group(function () {
+    // Basic CRUD
+    Route::get('/', 'index')->name('index');
+    Route::get('/create', 'create')->name('create');
+    Route::post('/store', 'store')->name('store');
+    Route::get('/view/{id}', 'show')->name('show');
+    Route::get('/{id}/edit', 'edit')->name('edit');
+    Route::put('/{id}/update', 'update')->name('update');
+    
+    // Management
+    Route::get('/archive/{id}', 'archive')->name('archive');
+    Route::get('/restore/{id}', 'restore')->name('restore');
+    Route::get('/export', 'exportLeads')->name('export');
+    Route::post('/check-duplicate', 'checkDuplicate')->name('checkDuplicate');
+    
+    // AJAX & Utilities
+    Route::post('/quick-update', 'quickUpdate')->name('quickUpdate');
+    Route::post('/transfer', 'transfer')->name('transfer');
+    Route::post('/reschedule', 'reschedule')->name('reschedule');
+    Route::post('/update-manager-comment', 'updateManagerComment')->name('updateManagerComment');
+    
+    // Payoff Alert
+    Route::post('/send-payoff-alert', 'sendPayoffAlert')->name('payoff_alert');
+});
+
+// Route សម្រាប់ Notifications (អោយត្រូវតាមដែលបងហៅ)
+Route::get('/leads/notifications', [HomeController::class, 'getLeadNotifications'])->name('leads.notifications');
+
+    // --- Users & Roles ---
+    Route::controller(UsersController::class)->prefix('users')->group(function () {
+        Route::get('/', 'usersIndex')->name('users.index');
+        Route::get('/create', 'formUsers');
+        Route::post('/store', 'storeUsers');
+        Route::get('/edit/{id}', 'editUsers');
+        Route::post('/update/{id}', 'updateUsers');
+        Route::get('/destroy/{id}', 'destroyUsers');
+    });
+
+    Route::controller(UserRoleController::class)->prefix('userRoles')->group(function () {
+        Route::get('/', 'userRoleIndex')->name('userRoles.index');
+        Route::get('/create', 'formUserRole');
+        Route::post('/store', 'storeUserRole');
+        Route::get('/edit/{id}', 'fnEditUserRole');
+        Route::post('/update/{id}', 'fnUpdateUserRole');
+        Route::delete('/delete/{id}', 'fnDeleteUserRole');
+    });
+
+    // --- Logistics ---
+    Route::controller(LogisticController::class)->prefix('logistics')->group(function () {
+        Route::get('/', 'logisticIndex')->name('search.logistics');
+        Route::get('/create', 'createLogistics');
+        Route::post('/store', 'storeLogistics');
+        Route::get('/edit/{id}', 'editLogistics');
+        Route::post('/update/{id}', 'updateLogistics');
+        Route::get('/destroy/{id}', 'destroyLogistics');
+        Route::post('/import', 'importLogistic');
+        Route::get('/export', 'exportLogistic');
+    });
+
+    // --- Employees ---
     Route::controller(EmployeeController::class)->prefix('employees')->name('employees.')->group(function () {
         Route::get('/', 'employeeIndex')->name('index');
         Route::get('/create', 'createEmployee')->name('create');
         Route::post('/store', 'storeEmployee')->name('store');
+        Route::get('/generate-id', 'generateEmployeeId')->name('generate_id');
+
+        // 🌟 នេះគឺជា Route ថ្មីសម្រាប់ទាញយក File Excel Template 🌟
+        Route::get('/download-template', 'downloadTemplate')->name('download_template');
+
         Route::get('/edit/{id}', 'editEmployee')->name('edit');
         Route::post('/update/{id}', 'updateEmployee')->name('update');
         Route::delete('/destroy/{id}', 'destroyEmployee')->name('destroy');
+
+        // (ខ្ញុំឃើញបងប្រើឈ្មោះ details ដូច្នេះក្នុង index.blade.php ប៊ូតុង View ត្រូវប្រើ route('employees.details', $encryptedId) ណាទើបត្រូវ)
         Route::get('/details/{id}', 'viewEmployee')->name('details');
-    
-        // បន្ថែម ២ បន្ទាត់នេះ ដើម្បីឱ្យ Import/Export ដើរក្នុង Blade
+
+        // 🌟 Route ថ្មីសម្រាប់មុខងារ Resign (ឈប់ពីការងារ) 🌟
+        Route::patch('/resign/{id}', 'resignEmployee')->name('resign');
+
         Route::post('/import', 'importEmployee')->name('import');
-        
-        Route::get('/export', 'exportEmployee')->name('export'); 
+        Route::get('/export', 'exportEmployee')->name('export');
     });
 
-    // Route SaleReport
-    Route::get('/sale-reports', [SaleReportController::class, 'saleReportIndex'])->name('search.sale-reports');
-    Route::get('/sale-reports/create', [SaleReportController::class, 'createSaleReport']);
-    Route::post('/sale-reports/store', [SaleReportController::class, 'storeSaleReport']);
-    Route::get('/sale-reports/view/{id}', [SaleReportController::class, 'viewSaleReport']);
-    Route::get('/sale-reports/edit/{id}', [SaleReportController::class, 'editSaleReport']);
-    Route::post('/sale-reports/update/{id}', [SaleReportController::class, 'updateSaleReport']);
-    Route::get('/sale-reports/destroy/{id}', [SaleReportController::class, 'destroySaleReport']);
-    Route::get('/sale-reports/export', [SaleReportController::class, 'exportSaleReport']);
+   // --- Sale Reports ---
+Route::controller(SaleReportController::class)->prefix('sale-reports')->group(function () {
 
-    // todo ----------------------- Route Setting -----------------------------------
-    // Route Departments
-    Route::get('/departments', [SettingController::class, 'departIndex']);
-    Route::get('/departments/create', [SettingController::class, 'formDepart']);
-    Route::post('/departments/store', [SettingController::class, 'createDepart']);
-    Route::get('/departments/edit/{id}', [SettingController::class, 'editDepart']);
-    Route::post('/departments/update/{id}', [SettingController::class, 'updateDepart']);
-    Route::get('/departments/destroy/{id}', [SettingController::class, 'destroyDepart']);
+    // 🌟 មុខងារ Dashboard (ថ្មី) 🌟
+    Route::get('/dashboard', 'dashboard')->name('sale-reports.dashboard');
 
-    // Route Positions
-    Route::get('/positions', [SettingController::class, 'positionIndex']);
-    Route::get('/positions/create', [SettingController::class, 'formPosition']);
-    Route::post('/positions/store', [SettingController::class, 'createPosition']);
-    Route::get('/positions/edit/{id}', [SettingController::class, 'editPosition']);
-    Route::post('/positions/update/{id}', [SettingController::class, 'updatePosition']);
-    Route::get('/positions/destroy/{id}', [SettingController::class, 'destroyPosition']);
+    Route::get('/', 'saleReportIndex')->name('search.sale-reports');
+    Route::get('/create', 'createSaleReport');
+    Route::post('/store', 'storeSaleReport');
+    Route::get('/view/{id}', 'viewSaleReport');
+    Route::get('/edit/{id}', 'editSaleReport');
+    Route::post('/update/{id}', 'updateSaleReport');
+    Route::get('/destroy/{id}', 'destroySaleReport');
+    Route::get('/export', 'exportSaleReport');
 
-    // Route Branch
-    Route::get('/branchs', [SettingController::class, 'branchIndex']);
-    Route::get('/branch/create', [SettingController::class, 'formBranch']);
-    Route::post('/branchs/store', [SettingController::class, 'createBranch']);
-    Route::get('/branch/edit/{id}', [SettingController::class, 'editBranch']);
-    Route::post('/branch/update/{id}', [SettingController::class, 'updateBranch']);
-    Route::get('/branch/destroy/{id}', [SettingController::class, 'destroyBranch']);
-    // កែពី get មក delete
-    Route::delete('/branch/destroy/{id}', [SettingController::class, 'destroyBranch']);
+    // 🌟 មុខងារ Quick Feedback & Remark (AJAX) 🌟
+    Route::post('/quick-feedback', 'quickUpdateFeedback')->name('sale-reports.quick-feedback');
+    Route::post('/quick-remark', 'quickUpdateRemark')->name('sale-reports.quick-remark');
 
-    // Route Province
-    Route::get('/provinces', [SettingController::class, 'provinceIndex']);
-    Route::get('/provinces/create', [SettingController::class, 'createProvince']);
-    Route::post('/provinces/store', [SettingController::class, 'storeProvince']);
-    Route::get('/provinces/edit/{id}', [SettingController::class, 'editProvince']);
-    Route::post('/provinces/update/{id}', [SettingController::class, 'updateProvince']);
-    Route::get('/provinces/destroy/{id}', [SettingController::class, 'destroyProvince']);
+    // 🌟 Route សម្រាប់មុខងារ Import និង Template 🌟
+    Route::get('/download-template', 'downloadTemplate');
+    Route::post('/import', 'importSaleReport');
 
-    // Route Company
-    Route::get('/companys', [SettingController::class, 'companyIndex']);
-    Route::get('/companys/create', [SettingController::class, 'createCompany']);
-    Route::post('/companys/store', [SettingController::class, 'storeCompany']);
-    Route::get('/companys/edit/{id}', [SettingController::class, 'editCompany']);
-    Route::post('/companys/update/{id}', [SettingController::class, 'updateCompany']);
-    Route::get('/companys/destroy/{id}', [SettingController::class, 'destroyCompany']);
-
-    // Route Waranty
-    Route::get('/warantys', [SettingController::class, 'warantyIndex']);
-    Route::get('/warantys/create', [SettingController::class, 'createWaranty']);
-    Route::post('/warantys/store', [SettingController::class, 'storeWaranty']);
-    Route::get('/warantys/edit/{id}', [SettingController::class, 'editWaranty']);
-    Route::post('/warantys/update/{id}', [SettingController::class, 'updateWaranty']);
-    Route::get('/warantys/destroy/{id}', [SettingController::class, 'destroyWaranty']);
-
-    // Route Engine Oil
-    Route::get('/engineOils', [SettingController::class, 'engineOilIndex']);
-    Route::get('/engineOils/create', [SettingController::class, 'createEngineOil']);
-    Route::post('/engineOils/store', [SettingController::class, 'storeEngineOil']);
-    Route::get('/engineOils/edit/{id}', [SettingController::class, 'editEngineOil']);
-    Route::post('/engineOils/update/{id}', [SettingController::class, 'updateEngineOil']);
-    Route::get('/engineOils/destroy/{id}', [SettingController::class, 'destroyEngineOil']);
-
-    // todo ----------------------- End Route Setting -----------------------------------
-
-    // Route Car Model
-    Route::get('/car-models', [CarModelController::class, 'carModelIndex']);
-    Route::get('/car-models/create', [CarModelController::class, 'createCarModel']);
-    Route::post('/car-models/store', [CarModelController::class, 'storeCarModel']);
-    Route::get('/car-models/edit/{id}', [CarModelController::class, 'editCarModel']);
-    Route::post('/car-models/update/{id}', [CarModelController::class, 'updateCarModel']);
-    Route::get('/car-models/destroy/{id}', [CarModelController::class, 'destroyCarModel']);
-
-    // Route Car Image
-    Route::get('/car-images', [CarModelController::class, 'carImageIndex']);
-    Route::get('/car-images/create', [CarModelController::class, 'createCarImage']);
-    Route::post('/car-images/store', [CarModelController::class, 'storeCarImage']);
-    Route::get('/car-images/edit/{id}', [CarModelController::class, 'editCarImage']);
-    Route::post('/car-images/update/{id}', [CarModelController::class, 'updateCarImage']);
-    Route::get('/car-images/destroy/{id}', [CarModelController::class, 'destroyCarImage']);
-
-    // Route Colors
-    Route::get('/colors', [CarModelController::class, 'colorsIndex']);
-    Route::get('/colors/create', [CarModelController::class, 'createColor']);
-    Route::post('/colors/store', [CarModelController::class, 'storeColor']);
-
-    Route::middleware(['auth:users'])->group(function () {
-
-        // 1. Static & Analytics Routes (ដាក់ខាងលើ)
-        Route::get('/leads', [LeadController::class, 'index'])->name('leads.index');
-        Route::get('/leads/create', [LeadController::class, 'create'])->name('leads.create');
-     
-
-        Route::get('/leads/export', [App\Http\Controllers\LeadController::class, 'exportLeads'])->name('leads.export');
-    
-        // 2. AJAX Validation & Quick Actions (ដាក់មុន {id})
-        Route::post('/leads/check-duplicate', [LeadController::class, 'checkDuplicate'])->name('leads.checkDuplicate');
-        Route::post('/leads/check-phone', [LeadController::class, 'checkDuplicatePhone'])->name('leads.checkDuplicatePhone');
-        Route::post('/leads/quick-update', [LeadController::class, 'quickUpdate'])->name('leads.quickUpdate');
+}); // បិទ Group Sale Reports ត្រឹមនេះ
 
 
-        // Test Daily Report (បងអាចចុច Link នេះដើម្បីតេស្តផ្ញើសារសរុបទៅ Telegram ភ្លាមៗ)
-        Route::get('/leads/daily-report-test', [LeadController::class, 'sendDailySummary']);
-    
-        // 3. Main Action Routes
-        Route::post('/leads/store', [LeadController::class, 'store'])->name('leads.store');
-        
-        // 4. Wildcard Routes (ត្រូវដាក់នៅខាងក្រោមគេបង្អស់ ដើម្បីការពារការច្រឡំ ID)
-        Route::get('/leads/{id}', [LeadController::class, 'show'])->name('leads.show');
-        Route::get('/leads/{id}/edit', [LeadController::class, 'edit'])->name('leads.edit');
-        Route::put('/leads/{id}/update', [LeadController::class, 'update'])->name('leads.update');
-        Route::delete('/leads/{id}/delete', [LeadController::class, 'destroy'])->name('leads.destroy');
-    
+    // --- Sale Contracts ---
+    Route::controller(ContractController::class)->prefix('contracts')->name('contracts.')->group(function () {
+
+        // 🌟 ទំព័រដើម និង ការបង្កើតកិច្ចសន្យា
+        Route::get('/', 'index')->name('index');
+        Route::get('/create', 'create')->name('create');
+        Route::post('/store', 'store')->name('store');
+
+        // 🌟 ទាញយកទិន្នន័យ Excel (ត្រូវដាក់នៅខាងលើ Route ដែលមាន {id})
+        Route::get('/export', 'export')->name('export');
+
+        // 🌟 API & Ajax សម្រាប់ JavaScript
+        Route::get('/search-member-cards', 'searchMemberCards')->name('searchMemberCards');
+        Route::post('/scan-id', 'scanIdCard')->name('scanId'); // កែពាក្យ contracts.scanId ចេញ
+        Route::post('/check-duplicate', 'checkDuplicate')->name('checkDuplicate');
+        Route::post('/update-status', 'updateStatus')->name('updateStatus');
+
+        // 🌟 ការមើល កែប្រែ លុប និងទាញយក PDF
+        Route::get('/view/{contract}', 'show')->name('show');
+        Route::get('/edit/{id}', 'edit')->name('edit'); // ប្តូរទៅ {id} ឱ្យត្រូវជាមួយ Controller
+        Route::put('/update/{id}', 'update')->name('update'); // ប្តូរទៅ {id} ឱ្យត្រូវជាមួយ Controller
+        Route::delete('/destroy/{contract}', 'destroy')->name('destroy');
+        Route::get('/{id}/download-pdf', 'downloadPdf')->name('download_pdf');
+
+    });
+    // --- Issue Tracking ---
+    Route::controller(IssueController::class)->prefix('issues')->name('issues.')->group(function () {
+        Route::get('/', 'index')->name('index');
+        Route::get('/create', 'create')->name('add');
+        Route::post('/store', 'store')->name('store');
+        Route::get('/view/{id}', 'show')->name('view');
+        Route::get('/edit/{id}', 'edit')->name('edit');
+        Route::put('/update/{id}', 'update')->name('update');
+        Route::put('/resolve/{id}', 'resolve')->name('resolve');
+        Route::delete('/destroy/{id}', 'destroy')->name('destroy');
+        Route::get('/export', 'exportExcel')->name('export');
     });
 
-    // Route Sale Contract
-    Route::get('/contracts', [ContractController::class, 'index'])->name('contracts.index');
-    Route::get('/contracts/create', [ContractController::class, 'create'])->name('contracts.create');
-    Route::post('/contracts/store', [ContractController::class, 'store'])->name('contracts.store');
-    Route::get('/contracts/view/{contract}', [ContractController::class, 'show'])->name('contracts.show');
-    Route::get('/contracts/edit/{contract}', [ContractController::class, 'edit'])->name('contracts.edit');
-    Route::put('/contracts/update/{contract}', [ContractController::class, 'update'])->name('contracts.update');
-    Route::delete('/contracts/destroy/{contract}', [ContractController::class, 'destroy'])->name('contracts.destroy');
+    // --- Workshop & Service Management (Admin & Staff) ---
+    Route::get('/performance-overview', [ServiceBookingController::class, 'performanceOverview'])->name('services.performance');
+    Route::post('/services/note/{id}', [ServiceBookingController::class, 'updateNote']);
 
-    Route::get('contracts/export', [App\Http\Controllers\ContractController::class, 'export'])->name('contracts.export');
-    Route::resource('contracts', App\Http\Controllers\ContractController::class);
-    Route::post('/leads/check-duplicate', [LeadController::class, 'checkDuplicate'])->name('leads.checkDuplicate');
-    Route::post('/contracts/update-status', [ContractController::class, 'updateStatus'])->name('contracts.updateStatus');
+    // បន្ថែមនៅក្រោម Route របស់ Services ផ្សេងទៀត
+    Route::post('/services/cancel/{id}', [App\Http\Controllers\ServiceBookingController::class, 'cancelBooking'])->name('services.cancel');
+    Route::post('/services/archive/{id}', [App\Http\Controllers\ServiceBookingController::class, 'archive'])->name('services.archive');
+    // កែពី LeadController មកជា HomeController (ឬកែទៅតាមទីតាំងជាក់ស្តែងដែល Function នោះស្ថិតនៅ)
+Route::get('/notifications', [App\Http\Controllers\HomeController::class, 'getLeadNotifications'])->name('leads.notifications');
 
-    Route::get('/issues', [IssueController::class, 'index'])->name('issues.index');
-    Route::get('/issues/create', [IssueController::class, 'create'])->name('issues.add');
-    Route::post('/issues/store', [IssueController::class, 'store'])->name('issues.store');
-    Route::get('/issues/view/{id}', [IssueController::class, 'show'])->name('issues.view');
+    Route::prefix('services')->controller(ServiceBookingController::class)->group(function () {
+        Route::get('/', 'index')->name('services.index');
+        Route::get('/add', 'create')->name('services.add');
+        Route::post('/store', 'store')->name('services.store');
+        Route::get('/edit/{id}', 'edit')->name('services.edit');
+        Route::post('/update/{id}', 'update')->name('services.update');
 
+        // ✅ កែពី 'destroy' មក 'delete' ព្រោះក្នុង Controller មុខងាររបស់បងឈ្មោះ delete()
+        Route::delete('/delete/{id}', 'delete')->name('services.delete');
 
+    });
 
-// ---------------------------------------------------------
-// ១. ផ្នែកសម្រាប់សាធារណជន (PUBLIC - បង្ហាញភ្ញៀវ)
-// ---------------------------------------------------------
-Route::middleware('throttle:60,1')->group(function () {
-    // បង្ហាញ Form កក់ Online
-    Route::get('/book-service', [ServiceBookingController::class, 'publicCreate'])->name('services.public_create');
-    // រក្សាទុកទិន្នន័យភ្ញៀវកក់
-    Route::post('/book-service', [ServiceBookingController::class, 'publicStore'])->name('services.public_store');
-    // AJAX ឆែកម៉ោងទំនេរ
-    Route::get('/api/check-available-slots', [ServiceBookingController::class, 'checkSlots'])->name('slots.check');
-});
-
-// ---------------------------------------------------------
-// ២. ផ្នែកសម្រាប់ ADMIN & WORKSHOP (ឥឡូវចូលមើលបានគ្រប់គ្នា)
-// ---------------------------------------------------------
-// ចំណាំ៖ ខ្ញុំបានដក middleware 'auth' ចេញ ដើម្បីកុំឱ្យលោត Error "Route login not defined"
-
-Route::prefix('services')->group(function () {
-    Route::get('/', [ServiceBookingController::class, 'index'])->name('services.index');
-    Route::get('/add', [ServiceBookingController::class, 'create'])->name('services.add');
-    Route::post('/store', [ServiceBookingController::class, 'store'])->name('services.store');
-    Route::get('/edit/{id}', [ServiceBookingController::class, 'edit'])->name('services.edit');
-    Route::post('/update/{id}', [ServiceBookingController::class, 'update'])->name('services.update');
-    Route::delete('/delete/{id}', [ServiceBookingController::class, 'destroy'])->name('services.delete');
-    
-    // ឆែកការកក់ថ្មី (Real-time Alert)
+    // Route សម្រាប់ Check ទិន្នន័យកក់ថ្មី (ទុកដាច់ដោយឡែកដើម្បីកុំឱ្យច្រឡំ name prefix)
     Route::get('/check-new-bookings', [ServiceBookingController::class, 'checkNewBookings'])->name('bookings.checkNew');
-});
 
-// ផ្នែកសម្រាប់ Workshop Board
-Route::get('/workshop-board', [ServiceBookingController::class, 'workshopIndex'])->name('workshop.index');
+    Route::get('/workshop-board', [ServiceBookingController::class, 'workshopIndex'])->name('workshop.index');
+    Route::controller(ServiceBookingController::class)->prefix('workshop')->name('workshop.')->group(function () {
+        Route::post('/arrive/{id}', 'arriveJob')->name('arrive');
+        Route::post('/start/{id}', 'startJob')->name('start');
+        Route::post('/finish/{id}', 'finishJob')->name('finish');
+        Route::post('/hold/{id}', 'holdJob')->name('hold');
+        Route::post('/resume/{id}', 'resumeJob')->name('resume');
+    });
 
-Route::prefix('workshop')->group(function () {
-    Route::post('/arrive/{id}', [ServiceBookingController::class, 'arriveJob'])->name('workshop.arrive');
-    Route::post('/start/{id}', [ServiceBookingController::class, 'startJob'])->name('workshop.start');
-    Route::post('/finish/{id}', [ServiceBookingController::class, 'finishJob'])->name('workshop.finish');
-    Route::post('/hold/{id}', [ServiceBookingController::class, 'holdJob'])->name('workshop.hold');
-    Route::post('/resume/{id}', [ServiceBookingController::class, 'resumeJob'])->name('workshop.resume');
-});
+    // --- Settings (Departments, Positions, Branches, etc.) ---
+    Route::controller(SettingController::class)->group(function () {
+        // Departments
+        Route::get('/departments', 'departIndex');
+        Route::get('/departments/create', 'formDepart');
+        Route::post('/departments/store', 'createDepart');
+        Route::get('/departments/edit/{id}', 'editDepart');
+        Route::post('/departments/update/{id}', 'updateDepart');
+        Route::get('/departments/destroy/{id}', 'destroyDepart');
+
+        // Positions
+        Route::get('/positions', 'positionIndex');
+        Route::get('/positions/create', 'formPosition');
+        Route::post('/positions/store', 'createPosition');
+        Route::get('/positions/edit/{id}', 'editPosition');
+        Route::post('/positions/update/{id}', 'updatePosition');
+        Route::get('/positions/destroy/{id}', 'destroyPosition');
+
+        // Branches
+        Route::get('/branchs', 'branchIndex')->name('branches.index');
+        Route::get('/branch/create', 'formBranch');
+        Route::post('/branchs/store', 'createBranch');
+        Route::get('/branch/edit/{id}', 'editBranch');
+        Route::post('/branch/update/{id}', 'updateBranch');
+        Route::delete('/branch/destroy/{id}', 'destroyBranch')->name('branches.destroy');
+
+        // Provinces
+        Route::get('/provinces', 'provinceIndex');
+        Route::get('/provinces/create', 'createProvince');
+        Route::post('/provinces/store', 'storeProvince');
+        Route::get('/provinces/edit/{id}', 'editProvince');
+        Route::post('/provinces/update/{id}', 'updateProvince');
+        Route::get('/provinces/destroy/{id}', 'destroyProvince');
+
+        // Other Settings...
+        Route::get('/companys', 'companyIndex');
+        Route::post('/companys/store', 'storeCompany');
+        Route::get('/warantys', 'warantyIndex');
+        Route::get('/engineOils', 'engineOilIndex');
+    });
+
+    // --- Car Masters (Models, Images, Colors) ---
+    Route::controller(CarModelController::class)->group(function () {
+
+        // 1. Car Models
+        Route::get('/car-models', 'carModelIndex');
+        Route::get('/car-models/create', 'createCarModel'); // ទំព័រ Form បង្កើតម៉ូដែល
+        Route::post('/car-models/store', 'storeCarModel'); // កន្លែងទទួលទិន្នន័យ Model
+
+        // 2. Car Images (🌟 បងត្រូវថែម ២ ជួរខាងក្រោមនេះ)
+        Route::get('/car-images', 'carImageIndex');
+        Route::get('/car-images/create', 'createCarImage'); // 👈 ជួរនេះសម្រាប់បង្ហាញ Form Upload រូបភាព
+        Route::post('/car-images/store', 'storeCarImage');   // 👈 ជួរនេះសម្រាប់ទទួលរូបភាពទៅ Save
+
+        // 3. Colors
+        Route::get('/colors', 'colorsIndex');
+        Route::get('/colors/create', 'createColor');
+        Route::post('/colors/store', 'storeColor');
+    });
+
+    // --- Member Cards ---
+    Route::controller(MemberCardController::class)->prefix('member-cards')->group(function () {
+        Route::get('/', 'memberCardIndex')->name('search.member-cards');
+        Route::get('/create', 'createMemberCard');
+        Route::post('/store', 'storeMemberCard');
+        Route::get('/edit/{id}', 'editMemberCard');
+        Route::post('/update/{id}', 'updateMemberCard');
+        Route::get('/destroy/{id}', 'destroyMemberCard');
+        Route::get('/export', 'exportMemberCard');
+        Route::post('/import', 'importMemberCard');
+        // Route សម្រាប់អតិថិជន Scan (អត់ដាក់ Middleware Auth ទេ)
 
 
+        // 🌟 បន្ថែម Route ថ្មីសម្រាប់ Download Excel Template 🌟
+        Route::get('/download-template', 'downloadTemplate');
+    });
 
-    // 🚩 បន្ថែម Route ពីរនេះដើម្បីដោះស្រាយ Error របស់បង
-    Route::get('/issues/edit/{id}', [IssueController::class, 'edit'])->name('issues.edit');
-    Route::put('/issues/update/{id}', [IssueController::class, 'update'])->name('issues.update');
-    // 🚩 ថែម Route សម្រាប់ Resolve និង Delete ដើម្បីកុំឱ្យបុក Error
-    Route::put('/issues/resolve/{id}', [IssueController::class, 'resolve'])->name('issues.resolve');
-    Route::delete('/issues/destroy/{id}', [IssueController::class, 'destroy'])->name('issues.destroy');
-    Route::get('/issues/export', [IssueController::class, 'exportExcel'])->name('issues.export');
-
+    // --- Notifications Helper ---
     Route::get('/notifications/mark-all-read', function () {
-        // 🛡️ ឆែក Guard 'users' ឱ្យច្បាស់លាស់
         if (auth('users')->check()) {
-            // ✅ ប្រើ unreadNotifications() ជាមួយវង់ក្រចក គឺប្រសើរជាង
             auth('users')->user()->unreadNotifications()->update(['read_at' => now()]);
-            
-            // ឬប្រើ Method របស់ Laravel ផ្ទាល់៖
-            // auth('users')->user()->unreadNotifications->markAsRead();
         }
-        
-        return response()->json([
-            'success' => true,
-            'message' => 'All notifications marked as read'
-        ]);
+
+        return response()->json(['success' => true]);
     })->name('notifications.markAllRead');
+
     Route::get('/notifications/count', function () {
-        $count = 0;
-        if (auth('users')->check()) {
-            $count = auth('users')->user()->unreadNotifications()->count();
-        }
-        return response()->json(['count' => $count]);
+        return response()->json(['count' => auth('users')->check() ? auth('users')->user()->unreadNotifications()->count() : 0]);
     });
 
-    
+    // --- Templates Download ---
+    Route::get('/download-template-logistic', fn () => Response::download(public_path('templates/logistic_excel_template.xlsx')));
+    Route::get('/download-template-member-card', fn () => Response::download(public_path('templates/member_card_template.xlsx')));
+    Route::prefix('pos')->group(function () {
+
+        // ==========================================
+        // 1. Checkout (Sale Invoice)
+        // ==========================================
+        Route::get('/checkout', [App\Http\Controllers\POS\CheckoutController::class, 'index'])->name('checkout.index');
+        Route::post('/checkout/process', [App\Http\Controllers\POS\CheckoutController::class, 'process'])->name('checkout.process');
+        Route::post('/checkout/check-car-invoice', [App\Http\Controllers\POS\CheckoutController::class, 'checkCarInvoice'])->name('checkout.check-car-invoice');
+
+        // ✅ Route សម្រាប់ទាញយកលេខ PI អូតូ (កែតម្រូវលែងឱ្យជាន់ពាក្យ /pos)
+        Route::get('/checkout/get-latest-pi/{product_id}', [App\Http\Controllers\POS\CheckoutController::class, 'getLatestPI']); 
+
+        // ✅ ប្រវត្តិលក់ និង បោះពុម្ព (Dynamic Print)
+        Route::get('/sales/history', [App\Http\Controllers\POS\CheckoutController::class, 'history'])->name('sales.history');
+        Route::get('/sales/print/{encryptedId}', [App\Http\Controllers\POS\CheckoutController::class, 'printDocument'])->name('print.sales');
 
 
-    
-    //Route MemberCard
-    Route::get('/member-cards', [MemberCardController::class, 'memberCardIndex'])->name('search.member-cards');
-    Route::get('/member-cards/create', [MemberCardController::class, 'createMemberCard']);
-    Route::post('/member-cards/store', [MemberCardController::class, 'storeMemberCard']);
-    Route::get('/member-cards/edit/{id}', [MemberCardController::class, 'editMemberCard']);
-    Route::post('/member-cards/update/{id}', [MemberCardController::class, 'updateMemberCard']);
-    Route::get('/member-cards/destroy/{id}', [MemberCardController::class, 'destroyMemberCard']);
-    Route::get('/member-cards/export', [MemberCardController::class, 'exportMemberCard']);
-    Route::post('/member-cards/import', [MemberCardController::class, 'importMemberCard']);
-    Route::get('/download-template-member-card', function () {
-        $filePath = public_path('templates/member_card_template.xlsx');
+        // ==========================================
+        // 2. Receive Headers & Items (ទិញចូល)
+        // ==========================================
+        Route::resource('receive-headers', App\Http\Controllers\POS\ReceiveHeaderController::class);
+        Route::get('/receive-headers/{id}/print', [App\Http\Controllers\POS\ReceiveHeaderController::class, 'print'])->name('receive-headers.print');
 
-        return Response::download($filePath, 'member_card_template.xlsx');
+        Route::get('/receive-items', [App\Http\Controllers\POS\ReceiveItemController::class, 'index'])->name('receive-items.index');
+        Route::post('/receive-items/store', [App\Http\Controllers\POS\ReceiveItemController::class, 'store'])->name('receive-items.store');
+        Route::delete('/receive-items/{id}', [App\Http\Controllers\POS\ReceiveItemController::class, 'destroy'])->name('receive-items.destroy');
+       
+        // downloadTemplate
+        Route::get('/vendors/template', [VendorController::class, 'downloadTemplate'])->name('vendors.template');
+        Route::post('/vendors/import', [VendorController::class, 'importExcel'])->name('vendors.import');
+
+
+        // ==========================================
+        // 3. Reports (របាយការណ៍)
+        // ==========================================
+        Route::get('/reports', [App\Http\Controllers\POS\ReportController::class, 'dailySalesReport'])->name('reports.daily-sales');
+        Route::get('/reports/export', [App\Http\Controllers\POS\ReportController::class, 'exportExcel'])->name('reports.daily-sales-export');
+
+        Route::get('/reports/inventory', [App\Http\Controllers\POS\ReportController::class, 'inventoryBalance'])->name('reports.inventory');
+        Route::get('/reports/inventory/export', [App\Http\Controllers\POS\ReportController::class, 'exportInventory'])->name('reports.inventory-export');
+
+        Route::get('/reports/stock-in', [App\Http\Controllers\POS\ReportController::class, 'stockInReport'])->name('reports.stock-in');
+
+     
+        // ==========================================
+        // 4. Master Data (ទិន្នន័យគោល)
+        // ==========================================
+        Route::resource('vendors', App\Http\Controllers\POS\VendorController::class);
+        Route::resource('products', App\Http\Controllers\POS\ProductController::class);
+
     });
+    Route::get('/pos/reports/expense/dashboard', [ExpenseAnalyticsController::class, 'index'])->name('expense.dashboard');
+// Route សម្រាប់ Clear Cache លើ Live Server
+Route::get('/clear-cache', function() {
+    \Illuminate\Support\Facades\Artisan::call('optimize:clear');
+    return "Cache is cleared successfully! កូដថ្មីត្រូវបាន Update ១០០% 🎉";
+});
+    
 });

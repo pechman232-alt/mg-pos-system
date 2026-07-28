@@ -43,16 +43,20 @@ let menu, animate;
     };
 
     elem.onmouseleave = function () {
-      // Clear any timers set to timeout
-      document.querySelector('.layout-menu-toggle').classList.remove('d-block');
+      // FIX: Added optional chaining (?.) to prevent 'classList' of null error
+      // This ensures the script doesn't break if .layout-menu-toggle isn't on the page
+      document.querySelector('.layout-menu-toggle')?.classList.remove('d-block');
       clearTimeout(timeout);
     };
   };
-  if (document.getElementById('layout-menu')) {
-    delay(document.getElementById('layout-menu'), function () {
+
+  let layoutMenu = document.getElementById('layout-menu');
+  if (layoutMenu) {
+    delay(layoutMenu, function () {
       // not for small screen
       if (!Helpers.isSmallScreen()) {
-        document.querySelector('.layout-menu-toggle').classList.add('d-block');
+        // FIX: Added optional chaining (?.) to prevent 'classList' of null error
+        document.querySelector('.layout-menu-toggle')?.classList.add('d-block');
       }
     });
   }
@@ -62,7 +66,7 @@ let menu, animate;
     menuInnerShadow = document.getElementsByClassName('menu-inner-shadow')[0];
   if (menuInnerContainer.length > 0 && menuInnerShadow) {
     menuInnerContainer[0].addEventListener('ps-scroll-y', function () {
-      if (this.querySelector('.ps__thumb-y').offsetTop) {
+      if (this.querySelector('.ps__thumb-y')?.offsetTop) {
         menuInnerShadow.style.display = 'block';
       } else {
         menuInnerShadow.style.display = 'none';
@@ -82,9 +86,9 @@ let menu, animate;
   // Accordion active class
   const accordionActiveFunction = function (e) {
     if (e.type == 'show.bs.collapse' || e.type == 'show.bs.collapse') {
-      e.target.closest('.accordion-item').classList.add('active');
+      e.target.closest('.accordion-item')?.classList.add('active');
     } else {
-      e.target.closest('.accordion-item').classList.remove('active');
+      e.target.closest('.accordion-item')?.classList.remove('active');
     }
   };
 
@@ -110,8 +114,6 @@ let menu, animate;
   if (window.Helpers.isSmallScreen()) {
     return;
   }
-
-  // If current layout is vertical and current window screen is > small
 
   // Auto update menu collapsed/expanded based on the themeConfig
   window.Helpers.setCollapsed(true, false);

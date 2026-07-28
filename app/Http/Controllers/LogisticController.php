@@ -23,30 +23,41 @@ class LogisticController extends Controller
         $dateTo = $request->input('date_to');
         $isSale = $request->input('isSale');
 
+        // 🌟 1. ទាញយកចំនួនឡានសរុប សម្រាប់បង្ហាញលើ Dashboard ខាងលើ 🌟
+        $countLogistic = LogisticsModel::count(); 
+        $countSold = LogisticsModel::where('is_sale', '0')->count();
+        $countInStock = LogisticsModel::where('is_sale', '1')->count();
+
+        // 2. ទាញយកថ្ងៃ Invoice ចុងក្រោយគេពី sale_reports
         $latestInvoices = DB::table('sale_reports')
-        ->select('logistics_id', DB::raw('MAX(invoice_date) as invoice_date'))
-        ->groupBy('logistics_id');
+            ->select('logistics_id', DB::raw('MAX(invoice_date) as invoice_date'))
+            ->groupBy('logistics_id');
 
+        // 3. ទាញទិន្នន័យ Logistics
         $logistics = LogisticsModel::query()
-        ->leftJoinSub($latestInvoices, 'sr', function ($join) {
-            $join->on('sr.logistics_id', '=', 'logistics.id');
-        })
-        ->leftJoin('car_models', 'car_models.id', '=', 'logistics.model_name_id')
-        ->select('logistics.*', 'car_models.model_name', 'sr.invoice_date')
-        ->orderByDesc('sr.invoice_date');
+            ->leftJoinSub($latestInvoices, 'sr', function ($join) {
+                $join->on('sr.logistics_id', '=', 'logistics.id');
+            })
+            // ❌ លុបការ Join ជាមួយ car_models ចោល ព្រោះ model_name_id ជាអក្សរស្រាប់ហើយ
+            ->select('logistics.*', 'sr.invoice_date')
+            ->orderByDesc('logistics.id');
 
+        // Filter តាម Status (Available / Sold)
         if ($isSale !== null && $isSale !== '') {
             $logistics->where('logistics.is_sale', $isSale);
         }
         
+        // Filter តាមការ Search (VIN, Engine, Model)
         if (!empty($keyword)) {
             $logistics->where(function ($query) use ($keyword) {
-                $query->where('car_models.model_name', 'like', '%' . $keyword . '%')
-                ->orWhere('logistics.vin_number', 'like', '%' . $keyword . '%')
-                ->orWhere('logistics.engine_number', 'like', '%' . $keyword . '%');
+                // 🌟 Search ចាប់យកឈ្មោះឡានពី model_name_id ផ្ទាល់តែម្តង
+                $query->where('logistics.model_name_id', 'like', '%' . $keyword . '%')
+                      ->orWhere('logistics.vin_number', 'like', '%' . $keyword . '%')
+                      ->orWhere('logistics.engine_number', 'like', '%' . $keyword . '%');
             });
         }
 
+        // Filter តាមថ្ងៃខែ Invoice
         if (!empty($dateFrom) && !empty($dateTo)) {
             $logistics->whereBetween('sr.invoice_date', [$dateFrom, $dateTo]);
         } elseif (!empty($dateFrom)) {
@@ -55,31 +66,18 @@ class LogisticController extends Controller
             $logistics->whereDate('sr.invoice_date', '<=', $dateTo);
         }
 
-        // $logistics = LogisticsModel::query()->orderBy('sale_reports.invoice_date', 'desc')
-        // ->leftJoin('sale_reports', 'sale_reports.logistics_id', '=', 'logistics.id')
-        // ->leftJoin('car_models', 'car_models.id', '=', 'logistics.model_name_id')
-        // ->select('logistics.*', 'car_models.model_name', 'sale_reports.invoice_date');
-
-
-        // if (!empty($dateFrom) && !empty($dateTo)) {
-        //     $logistics->whereBetween('sale_reports.invoice_date', [$dateFrom, $dateTo]);
-        // } elseif (!empty($dateFrom)) {
-        //     $logistics->whereDate('sale_reports.invoice_date', '>=', $dateFrom);
-        // } elseif (!empty($dateTo)) {
-        //     $logistics->whereDate('sale_reports.invoice_date', '<=', $dateTo);
-        // }
+        // 4. ចែកទំព័រ Pagination
+        $logistics = $logistics->paginate(50);
         
-        
-
-        $logistics = $logistics->paginate(10);
-        $countLogistic = $logistics->total();
-        return view('Logistics.logistic_index',[
-            'logistics'=> $logistics,
-            'countLogistic'=> $countLogistic,
-            'date_from'=> $dateFrom,
-            'date_to'=> $dateTo,
-            'isSale'=> $isSale
-        ]);
+        return view('Logistics.logistic_index', compact(
+            'logistics',
+            'countLogistic',
+            'countSold',
+            'countInStock',
+            'dateFrom',
+            'dateTo',
+            'isSale'
+        ));
     }
 
     public function createLogistics(){
@@ -116,7 +114,7 @@ class LogisticController extends Controller
             $ID = decrypt($id);
             $logistics = LogisticsModel::where('id' , $ID)->firstorfail();
             $logistics->update($request->all());
-            return redirect('logistics')->with('info', 'The Logistic is Updated successfully.');
+            return redirect('logistics')->with('success', 'The Logistic is Updated successfully.');
         } catch (\Throwable $th){
             return redirect()->back()->with('error', $th->getMessage());
         }
@@ -126,7 +124,7 @@ class LogisticController extends Controller
         try {
             $ID = decrypt($id);
             $logistics = LogisticsModel::where('id' , $ID)->firstorfail()->delete();
-            return redirect('logistics')->with('warning', 'The Logistic is Deleted successfully.');
+            return redirect('logistics')->with('success', 'The Logistic is Deleted successfully.');
         } catch (\Throwable $th){
             return redirect()->back()->with('error', $th->getMessage());
         }
@@ -138,40 +136,23 @@ class LogisticController extends Controller
                 return redirect()->back()->with('error', 'Please Import File Excel!');
             }
             Excel::import(new LogisticImport, $logisticFileRequest->file('file'));
-            return redirect('logistics')->with('success', value: 'Logistics imported successfully.');
+            return redirect('logistics')->with('success', 'Logistics imported successfully.');
         } catch (\Exception $th){
             Log::info($th);
             return redirect()->back()->with('error', $th->getMessage());
         }
     }
+
     public function exportLogistic(Request $request){
         try {
             return Excel::download(new LogisticExport(
                 $request->input('isSale'),
                 $request->input('date_from'),
-                $request->input('date_to'),
+                $request->input('date_to')
             ), 'logistic_report.xlsx');
         } catch (\Exception $th){
             Log::info($th);
             return redirect()->back()->with('error', $th->getMessage());
         }
     }
-    public function index(Request $request) 
-{
-    // ... your existing query logic (e.g., $logistics = Logistics::paginate(10)) ...
-
-    // ADD THESE LINES TO CALCULATE THE COUNTS
-    $countLogistic = \App\Models\Logistics::count(); 
-    $countSold = \App\Models\Logistics::where('is_sale', '0')->count();
-    $countInStock = \App\Models\Logistics::where('is_sale', '1')->count();
-
-    // Ensure they are in the compact() function
-    return view('Logistics.logistic_index', compact(
-        'logistics', 
-        'countLogistic', 
-        'countSold', 
-        'countInStock'
-        // ... other variables like $date_from, etc.
-    ));
-}
 }

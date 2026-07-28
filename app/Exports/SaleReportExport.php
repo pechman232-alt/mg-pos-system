@@ -5,16 +5,19 @@ namespace App\Exports;
 use App\Models\SaleReportModel;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
+use Maatwebsite\Excel\Concerns\WithMapping;
 use Maatwebsite\Excel\Concerns\WithStyles;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Maatwebsite\Excel\Concerns\WithCustomStartCell;
+use Maatwebsite\Excel\Concerns\WithDefaultStyles;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
+use PhpOffice\PhpSpreadsheet\Style\Style;
 use Carbon\Carbon;
 
-class SaleReportExport implements FromCollection, WithHeadings, WithStyles, ShouldAutoSize, WithCustomStartCell
+class SaleReportExport implements FromCollection, WithHeadings, WithMapping, WithStyles, ShouldAutoSize, WithCustomStartCell, WithDefaultStyles
 {
     protected $dateFrom;
     protected $dateTo;
@@ -25,7 +28,17 @@ class SaleReportExport implements FromCollection, WithHeadings, WithStyles, Shou
     }
 
     public function startCell(): string {
-        return 'A6';
+        return 'A5';
+    }
+
+    public function defaultStyles(Style $defaultStyle)
+    {
+        return [
+            'font' => [
+                'name' => 'Khmer OS Siemreap', 
+                'size' => 10,
+            ],
+        ];
     }
 
     public function collection() {
@@ -38,26 +51,15 @@ class SaleReportExport implements FromCollection, WithHeadings, WithStyles, Shou
             ->leftJoin('provinces', 'provinces.id', '=', 'sale_reports.province_id')
             ->leftJoin('branches', 'branches.id', '=', 'sale_reports.branch_id')
             ->select(
-                'sale_reports.customer_name',
-                'sale_reports.phone_number',
-                'sale_reports.gender',
-                'sale_reports.dob',
-                'sale_reports.source_id',
+                'sale_reports.*', 
                 'branches.branch_name',
-                'car_models.model_name',
+                'car_models.model_name as car_model_name',
                 'logistics.vin_number',
                 'logistics.engine_number',
-                'sale_reports.invoice_no',
-                'sale_reports.invoice_date',
-                'sale_reports.delivery_date',
-                'sale_reports.follow_up',
-                'sale_reports.feedback_command',
-                'sale_reports.remark_sa',
-                'warranty_mg.name as warranty',
-                'warranty_leap_motor.name as warranty_leap_motor',
-                'employees.full_name',
-                'provinces.name as province',
-                'sale_reports.contract_no'
+                'warranty_mg.name as warranty_name',
+                'warranty_leap_motor.name as leap_warranty_name',
+                'employees.full_name as employee_name',
+                'provinces.name as province_name'
             );
 
         if (!empty($this->dateFrom) && !empty($this->dateTo)) {
@@ -69,80 +71,117 @@ class SaleReportExport implements FromCollection, WithHeadings, WithStyles, Shou
 
     public function headings(): array {
         return [
-            "CUSTOMER NAME", "PHONE", "GENDER", "DOB", "SOURCE", "BRANCH",
-            "VEHICLE MODEL", "VIN NUMBER", "ENGINE NUMBER", "INVOICE NO",
-            "INVOICE DATE", "DELIVERY DATE", "STATUS", "FEEDBACK COMMENTS",
-            "REMARK SA", "WARRANTY (MG)", "WARRANTY (LEAP)", "SALES PERSON",
-            "PROVINCE", "CONTRACT NO"
+            "MEMBER CARD", "BRAND NAME", "CUSTOMER NAME", "PHONE NUMBER", "GENDER", "DATE OF BIRTH", "SOURCE", 
+            "BRANCH", "VEHICLE MODEL", "VIN NUMBER", "ENGINE NUMBER", "PLATE NUMBER", "INVOICE NO",
+            "INVOICE DATE", "DELIVERY DATE", "STATUS", "FOLLOW-UP", "FEEDBACK COMMENTS", "REMARK SA", 
+            "WARRANTY (MG)", "WARRANTY (LEAP)", "SALES PERSON", "PROVINCE", "CONTRACT NO", "CONTRACT DATE",
+            "VPC & VDR", "OFFER LICENSE PLATE", "OFFER UV FILM", "OFFER FLOOR MAT", "SIDE STEP", 
+            "AUTO TAILGATE", "REAR SPOILER", "CERTIFICATE ENGINE OIL", "PRO OFFER - OIL", "PRO OFFER OIL - DATE",
+            "VEHICLE BATTERY INSPECTION", "PRICE"
+        ];
+    }
+
+    public function map($row): array
+    {
+        // 🌟 មុខងារឆែកមើល បើទទេ ដាក់សញ្ញា -
+        $checkEmpty = function($value) {
+            return (empty($value) || trim($value) === '' || strtoupper(trim($value)) === 'N/A') ? '-' : $value;
+        };
+
+        return [
+            $checkEmpty($row->member_card_id),
+            $checkEmpty($row->brand_name),
+            $checkEmpty($row->customer_name),
+            $checkEmpty($row->phone_number),
+            $checkEmpty($row->gender),
+            $row->dob ? \Carbon\Carbon::parse($row->dob)->format('Y-m-d') : '-',
+            $checkEmpty($row->source_id),
+            $checkEmpty($row->branch_name),
+            $checkEmpty($row->car_model_name), 
+            $checkEmpty($row->vin_number),
+            $checkEmpty($row->engine_number),
+            $checkEmpty($row->plate_number),
+            $checkEmpty($row->invoice_no),
+            $row->invoice_date ? \Carbon\Carbon::parse($row->invoice_date)->format('Y-m-d') : '-',
+            $row->delivery_date ? \Carbon\Carbon::parse($row->delivery_date)->format('Y-m-d') : '-',
+            $row->status == 1 ? 'Active' : 'Inactive',
+            $checkEmpty($row->follow_up),
+            $checkEmpty($row->feedback_command),
+            $checkEmpty($row->remark_sa),
+            $checkEmpty($row->warranty_name),
+            $checkEmpty($row->leap_warranty_name),
+            $checkEmpty($row->employee_name),
+            $checkEmpty($row->province_name),
+            $checkEmpty($row->contract_no),
+            $row->contract_date ? \Carbon\Carbon::parse($row->contract_date)->format('Y-m-d') : '-',
+            $checkEmpty($row->vpc_vdr),
+            $checkEmpty($row->offer_license_plate),
+            $checkEmpty($row->offer_uv_film),
+            $checkEmpty($row->offer_floor_mat),
+            $checkEmpty($row->side_step),
+            $checkEmpty($row->auto_tailgate),
+            $checkEmpty($row->rear_spoiler),
+            $checkEmpty($row->certificate_engine_oil),
+            $checkEmpty($row->pro_offer_oil),
+            $row->pro_offer_oil_date ? \Carbon\Carbon::parse($row->pro_offer_oil_date)->format('Y-m-d') : '-',
+            $row->vihicle_battery ? \Carbon\Carbon::parse($row->vihicle_battery)->format('Y-m-d') : '-',
+            $row->price ? '$' . number_format((float)$row->price, 2) : '-',
         ];
     }
 
     public function styles(Worksheet $sheet) {
         $lastRow = $sheet->getHighestRow();
-        $lastCol = 'T';
+        $lastCol = 'AK';
 
-        // --- 1. TOP HEADER BRANDING ---
-        
-        // Company Name: Using #009EFB (Vibrant Blue)
         $sheet->setCellValue('A1', 'TF MOTORS (CAMBODIA) CO., LTD');
         $sheet->mergeCells("A1:{$lastCol}1");
         $sheet->getStyle('A1')->applyFromArray([
-            'font' => [
-                'bold' => true, 
-                'size' => 18, 
-                'color' => ['rgb' => '009EFB'] // Changed to 009efb
-            ],
+            'font' => ['bold' => true, 'size' => 16, 'color' => ['argb' => 'FF002663']],
             'alignment' => ['horizontal' => Alignment::HORIZONTAL_LEFT]
         ]);
 
-        // Report Title
-        $sheet->setCellValue('A3', 'Sales Report Summary');
-        $sheet->getStyle('A3')->getFont()->setBold(true)->setSize(14)->setColor(new \PhpOffice\PhpSpreadsheet\Style\Color('333333'));
-
-        // Admin Timestamp: Using #17A2B8 (Teal/Info)
-        $dateTime = Carbon::now()->format('m/d/Y h:i:s A');
-        $sheet->setCellValue('A4', "ADMIN [$dateTime]");
-        $sheet->getStyle('A4')->applyFromArray([
-            'font' => [
-                'italic' => true, 
-                'size' => 10, 
-                'color' => ['rgb' => '17A2B8'] // Changed to 17a2b8
-            ]
+        $sheet->setCellValue('A2', 'SALE REPORT SUMMARY DATA');
+        $sheet->mergeCells("A2:{$lastCol}2");
+        $sheet->getStyle('A2')->applyFromArray([
+            'font' => ['bold' => true, 'size' => 12, 'color' => ['argb' => 'FF333333']],
+            'alignment' => ['horizontal' => Alignment::HORIZONTAL_LEFT]
         ]);
 
-
-        // --- 2. TABLE DATA STYLING ---
-
-        $sheet->freezePane('A7');
-
-        // Table Heading Row (Row 6): Gradient Blue/Teal look
-        $sheet->getRowDimension(6)->setRowHeight(35);
-        $sheet->getStyle("A6:{$lastCol}6")->applyFromArray([
-            'font' => ['bold' => true, 'color' => ['rgb' => 'FFFFFF']],
-            'fill' => [
-                'fillType' => Fill::FILL_GRADIENT_LINEAR,
-                'rotation' => 90,
-                'startColor' => ['rgb' => '009EFB'], // Start Blue
-                'endColor'   => ['rgb' => '17A2B8'], // End Teal
-            ],
-            'alignment' => [
-                'horizontal' => Alignment::HORIZONTAL_CENTER,
-                'vertical' => Alignment::VERTICAL_CENTER,
-            ],
+        $dateTime = Carbon::now()->format('d-M-Y h:i A');
+        $sheet->setCellValue('A3', "Exported On: {$dateTime}");
+        $sheet->mergeCells("A3:{$lastCol}3");
+        $sheet->getStyle('A3')->applyFromArray([
+            'font' => ['italic' => true, 'size' => 10, 'color' => ['argb' => 'FF64748B']],
+            'alignment' => ['horizontal' => Alignment::HORIZONTAL_LEFT]
         ]);
 
-        // Zebra Content Rows
-        for ($row = 7; $row <= $lastRow; $row++) {
-            $sheet->getRowDimension($row)->setRowHeight(20);
-            $fillColor = ($row % 2 == 0) ? 'FFFFFF' : 'F4F9FD'; // Very light blue tint
-            
-            $sheet->getStyle("A{$row}:{$lastCol}{$row}")->applyFromArray([
-                'fill' => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['rgb' => $fillColor]],
-                'borders' => ['allBorders' => ['borderStyle' => Border::BORDER_THIN, 'color' => ['rgb' => 'DEE2E6']]],
+        $sheet->freezePane('A6'); 
+        $sheet->setAutoFilter("A5:{$lastCol}{$lastRow}");
+
+        $sheet->getRowDimension(5)->setRowHeight(30);
+        $sheet->getStyle("A5:{$lastCol}5")->applyFromArray([
+            'font' => ['bold' => true, 'color' => ['argb' => 'FFFFFFFF']],
+            // 🌟 ពណ៌ Background (FF + BF9000)
+            'fill' => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['argb' => 'FFBF9000']],
+            'alignment' => ['horizontal' => Alignment::HORIZONTAL_CENTER, 'vertical' => Alignment::VERTICAL_CENTER],
+            'borders' => ['allBorders' => ['borderStyle' => Border::BORDER_THIN, 'color' => ['argb' => 'FF334155']]]
+        ]);
+
+        if ($lastRow > 5) {
+            $sheet->getStyle("A6:{$lastCol}{$lastRow}")->applyFromArray([
+                'borders' => ['allBorders' => ['borderStyle' => Border::BORDER_THIN, 'color' => ['argb' => 'FFCBD5E1']]],
                 'alignment' => ['vertical' => Alignment::VERTICAL_CENTER],
             ]);
+            
+            for ($row = 6; $row <= $lastRow; $row++) {
+                $sheet->getRowDimension($row)->setRowHeight(22);
+                if ($row % 2 == 0) {
+                    $sheet->getStyle("A{$row}:{$lastCol}{$row}")->applyFromArray([
+                        'fill' => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['argb' => 'FFF8FAFC']]
+                    ]);
+                }
+            }
         }
-
         return [];
     }
 }
