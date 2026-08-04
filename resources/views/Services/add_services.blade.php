@@ -215,84 +215,10 @@ body,
     color: var(--mid) !important;
 }
 
-/* ── Date input ── */
-input[type="date"] {
+/* ── Date and Time input ── */
+input[type="date"], input[type="time"] {
     font-family: var(--font);
     font-weight: 600;
-    color: var(--blue);
-}
-
-/* ── Time Slots ── */
-.slots-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-    gap: 8px;
-}
-.slot-item { position: relative; }
-.slot-item input[type="radio"] {
-    position: absolute;
-    opacity: 0; width: 0; height: 0;
-}
-.slot-btn {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 10px 4px;
-    border: 0.5px solid var(--border);
-    border-radius: 8px;
-    background: var(--white);
-    cursor: pointer;
-    transition: all 0.15s;
-    user-select: none;
-}
-.slot-item input:checked + .slot-btn {
-    background: var(--blue);
-    border-color: var(--blue);
-}
-.slot-item input:checked + .slot-btn .slot-time { color: #fff; }
-.slot-item input:checked + .slot-btn .slot-badge { color: rgba(255,255,255,0.65); }
-.slot-item:not(.slot-disabled) .slot-btn:hover {
-    border-color: var(--blue);
-    background: var(--blue-light);
-}
-.slot-item.slot-disabled .slot-btn {
-    background: var(--bg);
-    border-color: transparent;
-    cursor: not-allowed;
-}
-.slot-time {
-    font-size: 11px;
-    font-weight: 700;
-    color: var(--dark);
-}
-.slot-item.slot-disabled .slot-time {
-    color: var(--soft);
-    text-decoration: line-through;
-}
-.slot-badge {
-    font-size: 10px;
-    font-weight: 600;
-    margin-top: 3px;
-}
-.slot-badge.avail { color: var(--green); }
-.slot-badge.full  { color: #f87171; }
-.slot-badge.past  { color: var(--soft); }
-
-.slots-empty {
-    grid-column: 1 / -1;
-    text-align: center;
-    padding: 24px 16px;
-    font-size: 12px;
-    color: var(--soft);
-    background: var(--bg);
-    border-radius: 8px;
-    border: 0.5px dashed var(--border);
-}
-.slots-loading {
-    grid-column: 1 / -1;
-    text-align: center;
-    padding: 24px;
-    font-size: 13px;
     color: var(--blue);
 }
 
@@ -365,10 +291,6 @@ input[type="date"] {
 @media (max-width: 991px) {
     .container-fluid { padding: 16px !important; }
     .sidebar-sticky { position: static; }
-    .slots-grid { grid-template-columns: repeat(3, 1fr); }
-}
-@media (max-width: 480px) {
-    .slots-grid { grid-template-columns: repeat(3, 1fr); }
 }
 </style>
 
@@ -380,7 +302,7 @@ input[type="date"] {
             <div class="page-icon"><i class="fas fa-clipboard-list"></i></div>
             <div>
                 <div class="page-title">Walk-In Service Booking</div>
-                <div class="page-subtitle">ទម្រង់បញ្ចូលការកក់សម្រាប់បុគ្គលិកយានដ្ឋាន</div>
+                <div class="page-subtitle">ទម្រង់បញ្ចូលការកក់សម្រាប់អតិថិជន Walk-in</div>
             </div>
         </div>
         <a href="{{ route('services.index') }}" class="btn-back">
@@ -460,6 +382,7 @@ input[type="date"] {
                                             <option>MG GT 2026</option>
                                             <option>MG 7 1.5T</option>
                                             <option>MG 7 2.0T</option>
+                                            <option>MG 6</option>
                                             <option>MG 350</option>
                                             <option>MG 550</option>
                                             <option>MG 750</option>
@@ -568,15 +491,15 @@ input[type="date"] {
                     <!-- Scheduling -->
                     <div class="card">
                         <div class="card-header">
-                            <div class="card-header-icon"><i class="far fa-calendar-check"></i></div>
-                            <div class="card-header-title">Schedule</div>
+                            <div class="card-header-icon"><i class="far fa-clock"></i></div>
+                            <div class="card-header-title">Walk-in Schedule</div>
                         </div>
                         <div class="card-body">
 
                             <div class="field select-wrap mb-3">
                                 <label class="field-label">សាខា (Branch) <span class="req">*</span></label>
                                 @if($isManager)
-                                    <select name="location" id="location" required onchange="fetchSlots(); updateSummary()">
+                                    <select name="location" id="location" required onchange="updateSummary()">
                                         <option value="" disabled selected>ជ្រើសរើសសាខា</option>
                                         <option value="13">ការិយាល័យកណ្តាល (Head Office)</option>
                                         <option value="11">ផ្លូវលេខ ៥០ ម (Street 50M)</option>
@@ -600,19 +523,22 @@ input[type="date"] {
                                 @endif
                             </div>
 
-                            <div class="field mb-4">
+                            <div class="field mb-3">
                                 <label class="field-label">កាលបរិច្ឆេទ (Date) <span class="req">*</span></label>
                                 <input type="date" name="booking_date" id="booking_date"
                                     value="{{ date('Y-m-d') }}"
                                     min="{{ date('Y-m-d') }}" required
-                                    onchange="fetchSlots(); updateSummary()">
+                                    onchange="updateSummary()">
                             </div>
 
-                            <div class="field-label" style="margin-bottom:8px">
-                                ម៉ោង (Time Slot) <span class="req">*</span>
-                            </div>
-                            <div class="slots-grid" id="time-slots-container">
-                                <div class="slots-empty">សូមជ្រើសរើសសាខា និងកាលបរិច្ឆេទ</div>
+                            <div class="field mb-4">
+                                <label class="field-label">ម៉ោងចូល (Time) <span class="req">*</span></label>
+                                <input type="time" name="booking_time" id="booking_time"
+                                    min="08:00" max="17:00" required
+                                    onchange="validateTime(); updateSummary()">
+                                <small class="text-muted" style="font-size: 11px; margin-top: 5px;">
+                                    <i class="fas fa-info-circle text-info"></i> អនុញ្ញាតចន្លោះម៉ោង 08:00 AM ដល់ 05:00 PM
+                                </small>
                             </div>
 
                         </div>
@@ -667,83 +593,24 @@ input[type="date"] {
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-function fetchSlots() {
-    const date = $('#booking_date').val();
-    const loc  = $('#location').val();
+// ការពារការបញ្ចូលម៉ោងខុសពីចន្លោះ ០៨:០០ ដល់ ១៧:០០
+function validateTime() {
+    const timeInput = document.getElementById('booking_time');
+    const selectedTime = timeInput.value;
 
-    if (!date || !loc) return;
-
-    const day = new Date(date).getDay();
-    if (day === 0) {
-        $('#time-slots-container').html('<div class="slots-empty" style="color:#f87171">សាខាបិទនៅថ្ងៃអាទិត្យ</div>');
-        return;
-    }
-
-    $('#time-slots-container').html('<div class="slots-loading"><i class="fas fa-circle-notch fa-spin"></i> Loading...</div>');
-
-    $.get("{{ route('slots.check') }}", { date: date, location: loc }, function(data) {
-
-        if (data && data.isHoliday) {
+    if (selectedTime) {
+        if (selectedTime < '08:00' || selectedTime > '17:00') {
             Swal.fire({
-                icon: 'warning',
-                title: 'ថ្ងៃឈប់សម្រាកបុណ្យជាតិ',
-                text: data.message,
+                icon: 'error',
+                title: 'ម៉ោងមិនត្រឹមត្រូវ',
+                text: 'សូមអភ័យទោស! ម៉ោងអនុញ្ញាតគឺចាប់ពី 08:00 AM ដល់ 05:00 PM ប៉ុណ្ណោះ។',
                 confirmButtonColor: '#B70101',
-                confirmButtonText: 'ជ្រើសរើសថ្ងៃផ្សេង',
-                allowOutsideClick: false,
-            }).then(() => {
-                $('#booking_date').val('');
-                $('#time-slots-container').html('<div class="slots-empty">សូមជ្រើសរើសថ្ងៃផ្សេង</div>');
             });
-            return;
+            timeInput.value = ''; // លុបទិន្នន័យខុសចេញ
+            return false;
         }
-
-        if (!data || data.length === 0) {
-            $('#time-slots-container').html('<div class="slots-empty" style="color:#f87171">គ្មានម៉ោងទំនេរ</div>');
-            return;
-        }
-
-        const now = new Date();
-        const todayStr = now.getFullYear() + '-' +
-            String(now.getMonth() + 1).padStart(2, '0') + '-' +
-            String(now.getDate()).padStart(2, '0');
-
-        let html = '';
-        data.forEach(function(slot, i) {
-            let isPast = false;
-            if (date === todayStr) {
-                const [t, mod] = slot.time.split(' ');
-                let [h, m] = t.split(':');
-                if (h === '12') h = '00';
-                if (mod === 'PM') h = parseInt(h) + 12;
-                const dt = new Date();
-                dt.setHours(parseInt(h), parseInt(m), 0, 0);
-                if (dt <= now) isPast = true;
-            }
-
-            const disabled = (slot.isFull || isPast);
-            const disabledAttr = disabled ? 'disabled' : '';
-            const itemClass = disabled ? 'slot-item slot-disabled' : 'slot-item';
-
-            let badgeClass = 'avail';
-            let badgeText = slot.remaining + ' left';
-            if (isPast)      { badgeClass = 'past'; badgeText = 'Passed'; }
-            else if (slot.isFull) { badgeClass = 'full'; badgeText = 'Full'; }
-
-            html += `<div class="${itemClass}">
-                <input type="radio" name="booking_time" id="s${i}" value="${slot.time}" ${disabledAttr} required onchange="updateSummary()">
-                <label class="slot-btn" for="s${i}">
-                    <span class="slot-time">${slot.time}</span>
-                    <span class="slot-badge ${badgeClass}">${badgeText}</span>
-                </label>
-            </div>`;
-        });
-
-        $('#time-slots-container').html(html);
-
-    }).fail(function() {
-        $('#time-slots-container').html('<div class="slots-empty" style="color:#f87171">Error loading slots</div>');
-    });
+    }
+    return true;
 }
 
 function updateSummary() {
@@ -765,8 +632,18 @@ function updateSummary() {
     set('s_service', document.getElementById('f_service')?.value);
 
     const date = document.getElementById('booking_date')?.value;
-    const time = document.querySelector("input[name='booking_time']:checked")?.value;
-    set('s_datetime', (date && time) ? date + ' · ' + time : (date || null));
+    const timeVal = document.getElementById('booking_time')?.value;
+    
+    // បំប្លែងម៉ោងទៅជាទម្រង់ 12-hour AM/PM សម្រាប់បង្ហាញលើ Summary ឱ្យស្អាត
+    let formattedTime = null;
+    if(timeVal) {
+        let [h, m] = timeVal.split(':');
+        let ampm = h >= 12 ? 'PM' : 'AM';
+        h = h % 12 || 12;
+        formattedTime = h + ':' + m + ' ' + ampm;
+    }
+
+    set('s_datetime', (date && formattedTime) ? date + ' · ' + formattedTime : (date || null));
 }
 
 function clearSummary() {
@@ -777,21 +654,27 @@ function clearSummary() {
 }
 
 $(document).ready(function() {
-    if ($('#booking_date').val() && $('#location').val()) fetchSlots();
-
     $('#plate').on('input', function() { $(this).val($(this).val().toUpperCase()); });
 
     $('#bookingForm').on('submit', function(e) {
-        if (!$("input[name='booking_time']:checked").val()) {
+        
+        // ឆែកមើលម៉ោងម្តងទៀតមុននឹង Save ដើម្បីប្រាកដថាអត់មានបញ្ហា
+        if (!validateTime()) {
+            e.preventDefault();
+            return;
+        }
+
+        if (!$('#booking_time').val()) {
             e.preventDefault();
             Swal.fire({
                 icon: 'warning',
                 title: 'ភ្លេចរើសម៉ោង',
-                text: 'សូមជ្រើសរើសម៉ោងណាត់ជួបនៅផ្ទាំង Schedule',
+                text: 'សូមបញ្ចូលម៉ោង Walk-in នៅផ្ទាំង Schedule',
                 confirmButtonColor: '#002663',
             });
             return;
         }
+
         $('#btnSubmit').prop('disabled', true)
             .html('<i class="fas fa-spinner fa-spin"></i> កំពុងរក្សាទុក...');
         Swal.fire({

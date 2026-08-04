@@ -9,18 +9,21 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Services\FirebaseService;
 
-// ==========================================
-// 🔓 Public Routes (មិនត្រូវការ Login)
-// ==========================================
+
 Route::get('/locations', [BranchController::class, 'index']);
-Route::get('/slots/check', [ServiceBookingController::class, 'checkSlots']);
-Route::post('/services/public-store', [ServiceBookingController::class, 'publicStore']);
+Route::get('/slots/check', [ServiceBookingController::class, 'checkSlots'])->middleware('throttle:60,1');
+
+Route::post('/services/public-store', [ServiceBookingController::class, 'publicStore'])->middleware('throttle:10,1');
+
+
+
+
 
 
 Route::post('/auth/login-by-qr', [AuthController::class, 'loginByQr']);
 
-// 🌟 សូមថែម ២ បន្ទាត់នេះ ប្រសិនបើមិនទាន់មាន៖
-Route::post('/auth/send-otp', [AuthController::class, 'sendOtp']);
+// 🌟 Update: គួរតែដាក់ការពារ Throttle លើការផ្ញើ OTP ដែរ ដើម្បីការពារកុំឱ្យគេបាញ់ផ្ញើសារលេង
+Route::post('/auth/send-otp', [AuthController::class, 'sendOtp'])->middleware('throttle:3,1');
 Route::post('/auth/verify-otp', [AuthController::class, 'verifyOtp']);
 
 // 🌟 ផ្លូវនេះប្រើសម្រាប់ទាញ History តាមលេខ VIN ដោយមិនបាច់ Login

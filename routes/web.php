@@ -246,22 +246,34 @@ Route::controller(SaleReportController::class)->prefix('sale-reports')->group(fu
     // បន្ថែមនៅក្រោម Route របស់ Services ផ្សេងទៀត
     Route::post('/services/cancel/{id}', [App\Http\Controllers\ServiceBookingController::class, 'cancelBooking'])->name('services.cancel');
     Route::post('/services/archive/{id}', [App\Http\Controllers\ServiceBookingController::class, 'archive'])->name('services.archive');
-    // កែពី LeadController មកជា HomeController (ឬកែទៅតាមទីតាំងជាក់ស្តែងដែល Function នោះស្ថិតនៅ)
-Route::get('/notifications', [App\Http\Controllers\HomeController::class, 'getLeadNotifications'])->name('leads.notifications');
+    
+    // កែពី LeadController មកជា HomeController
+    Route::get('/notifications', [App\Http\Controllers\HomeController::class, 'getLeadNotifications'])->name('leads.notifications');
 
+     //  for ets.date 
+     Route::post('/services/estimation/{id}', [App\Http\Controllers\ServiceBookingController::class, 'updateEstimation'])->name('services.updateEstimation');
+
+   // daily report -> pending YTD
+   Route::get('/services/daily-report', [App\Http\Controllers\ServiceBookingController::class, 'dailyReport'])->name('services.dailyReport');
+   Route::post('/services/update-vin', [App\Http\Controllers\ServiceBookingController::class, 'updateVin'])->name('services.updateVin');
+
+    // 🌟 ផ្នែកគ្រប់គ្រង Services (មានដាក់សោការពារ)
+    // ========================================================
     Route::prefix('services')->controller(ServiceBookingController::class)->group(function () {
+        
+
         Route::get('/', 'index')->name('services.index');
+
+
         Route::get('/add', 'create')->name('services.add');
         Route::post('/store', 'store')->name('services.store');
         Route::get('/edit/{id}', 'edit')->name('services.edit');
         Route::post('/update/{id}', 'update')->name('services.update');
-
-        // ✅ កែពី 'destroy' មក 'delete' ព្រោះក្នុង Controller មុខងាររបស់បងឈ្មោះ delete()
         Route::delete('/delete/{id}', 'delete')->name('services.delete');
 
     });
 
-    // Route សម្រាប់ Check ទិន្នន័យកក់ថ្មី (ទុកដាច់ដោយឡែកដើម្បីកុំឱ្យច្រឡំ name prefix)
+    // Route សម្រាប់ Check ទិន្នន័យកក់ថ្មី
     Route::get('/check-new-bookings', [ServiceBookingController::class, 'checkNewBookings'])->name('bookings.checkNew');
 
     Route::get('/workshop-board', [ServiceBookingController::class, 'workshopIndex'])->name('workshop.index');
@@ -418,10 +430,6 @@ Route::get('/notifications', [App\Http\Controllers\HomeController::class, 'getLe
 
     });
     Route::get('/pos/reports/expense/dashboard', [ExpenseAnalyticsController::class, 'index'])->name('expense.dashboard');
-// Route សម្រាប់ Clear Cache លើ Live Server
-Route::get('/clear-cache', function() {
-    \Illuminate\Support\Facades\Artisan::call('optimize:clear');
-    return "Cache is cleared successfully! កូដថ្មីត្រូវបាន Update ១០០% 🎉";
-});
+
     
 });

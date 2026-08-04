@@ -784,6 +784,10 @@
                 $.ajax({
                     url: $(this).attr('action'),
                     method: 'POST',
+                    // 🌟 ទីតាំងដែលខ្ញុំបាន Update គឺនៅត្រង់នេះ 🌟
+                    headers: {
+                        'X-API-KEY': 'MgDealer@2026!Secure' // បញ្ជូនសោសម្ងាត់ទៅកាន់ Controller 
+                    },
                     data: $(this).serialize(),
                     success: function(response) {
                         if (response.success) {
@@ -844,6 +848,6 @@
                 });
             });
         });
-    </script>
+</script>
 </body>
 </html>

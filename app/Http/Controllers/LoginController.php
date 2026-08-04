@@ -73,13 +73,13 @@ class LoginController extends Controller
                         $roleId = (int) auth('users')->user()->role_id;
 
                         // ១. សម្រាប់ផ្នែកសេវាកម្ម (Service / Workshop)
-                        // ចំណាំ៖ សូមដូរលេខ 3, 4 ទៅជា Role ID របស់ Service នៅក្នុង Database របស់បង
-                        if (in_array($roleId, [10, 11, 14, 12])) {
+                     
+                        if (in_array($roleId, [10, 11, 14, 12, 16])) {
                             return redirect()->route('services.index'); // Route ទៅ Service
                         }
 
                         // ២. សម្រាប់ផ្នែកលក់ (Showroom / Sales)
-                        // ចំណាំ៖ សូមដូរលេខ 2, 5 ទៅជា Role ID របស់ Sales នៅក្នុង Database របស់បង
+                        // ចំណាំ៖ សូមដូរលេខ 2, 5 ទៅជា Role ID របស់ Sales នៅក្នុង Database 
                         if (in_array($roleId, [2, 5])) {
                             // បើសិនជាបងមិនទាន់មានឈ្មោះ Route ទេ អាចប្រើ URL ផ្ទាល់ដូចជា return redirect('/sales'); ក៏បាន
                             return redirect('/sales'); 

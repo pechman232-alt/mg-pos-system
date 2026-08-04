@@ -46,6 +46,7 @@ class ServiceBooking extends Model
         'booking_date' => 'date',
         'mileage'      => 'integer', // 🌟 បន្ថែមទីនេះ ដើម្បីប្រាកដថាទិន្នន័យដែលចូលទៅ DB គឺជាទម្រង់លេខ (INT) ជានិច្ច
         'is_walk_in'   => 'integer', // 🌟 ប្រាកដថាវាជាលេខ 0 ឬ 1
+        'estimation_history' => 'array',
     ];
 
     /**

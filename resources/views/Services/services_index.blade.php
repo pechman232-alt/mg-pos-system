@@ -194,101 +194,19 @@
             width: 100%;
         }
 
-        .status-completed {
-            background-color: #ecfdf5;
-            color: #059669;
-            border: 1px solid #a7f3d0;
-        }
-
-        .status-progress {
-            background-color: #eff6ff;
-            color: #2563eb;
-            border: 1px solid #bfdbfe;
-        }
-
-        .status-pending {
-            background-color: #fffbeb;
-            color: #d97706;
-            border: 1px solid #fde68a;
-        }
-
-        .status-waiting {
-            background-color: #f5f3ff;
-            color: #7c3aed;
-            border: 1px solid #ddd6fe;
-        }
-
-        .status-arrived {
-            background-color: #ecfeff;
-            color: #0891b2;
-            border: 1px solid #a5f3fc;
-        }
-
-        .status-cancel {
-            background-color: #fef2f2;
-            color: #dc2626;
-            border: 1px solid #fecaca;
-        }
-
-        .status-expired,
-        .status-overdue {
-            background-color: #fee2e2;
-            color: #b91c1c;
-            border: 1px solid #fecaca;
-        }
-
-        .status-archived {
-            background-color: #f1f5f9;
-            color: #475569;
-            border: 1px solid #cbd5e1;
-        }
-
-        .status-waiting-approved {
-            background-color: #fffbeb;
-            color: #d97706;
-            border: 1px solid #fde68a;
-        }
-
-        .status-under-diagnosis {
-            background-color: #ecfeff;
-            color: #0891b2;
-            border: 1px solid #a5f3fc;
-        }
-
-        .status-under-repair {
-            background-color: #eff6ff;
-            color: #2563eb;
-            border: 1px solid #bfdbfe;
-        }
-
-        .status-waiting-parts {
-            background-color: #fdf2f8;
-            color: #db2777;
-            border: 1px solid #fbcfe8;
-        }
-
-        .status-waiting-delivery {
-            background-color: #f0fdf4;
-            color: #16a34a;
-            border: 1px solid #bbf7d0;
-        }
-
-        .note-text {
-            max-width: 150px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            font-size: 0.8rem;
-            color: #64748b;
-            font-style: italic;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-
-        .note-text:hover {
-            color: #002663;
-            text-decoration: underline;
-        }
+        .status-completed { background-color: #ecfdf5; color: #059669; border: 1px solid #a7f3d0; }
+        .status-progress { background-color: #eff6ff; color: #2563eb; border: 1px solid #bfdbfe; }
+        .status-pending { background-color: #fffbeb; color: #d97706; border: 1px solid #fde68a; }
+        .status-waiting { background-color: #f5f3ff; color: #7c3aed; border: 1px solid #ddd6fe; }
+        .status-arrived { background-color: #ecfeff; color: #0891b2; border: 1px solid #a5f3fc; }
+        .status-cancel { background-color: #fef2f2; color: #dc2626; border: 1px solid #fecaca; }
+        .status-expired, .status-overdue { background-color: #fee2e2; color: #b91c1c; border: 1px solid #fecaca; }
+        .status-archived { background-color: #f1f5f9; color: #475569; border: 1px solid #cbd5e1; }
+        .status-waiting-approved { background-color: #fffbeb; color: #d97706; border: 1px solid #fde68a; }
+        .status-under-diagnosis { background-color: #ecfeff; color: #0891b2; border: 1px solid #a5f3fc; }
+        .status-under-repair { background-color: #eff6ff; color: #2563eb; border: 1px solid #bfdbfe; }
+        .status-waiting-parts { background-color: #fdf2f8; color: #db2777; border: 1px solid #fbcfe8; }
+        .status-waiting-delivery { background-color: #f0fdf4; color: #16a34a; border: 1px solid #bbf7d0; }
 
         .btn-main-action {
             border-radius: 8px;
@@ -320,242 +238,86 @@
             font-size: 0.85rem;
         }
 
-        .btn-action-icon:hover {
-            transform: translateY(-2px);
-            filter: brightness(1.05);
-        }
+        .btn-action-icon:hover { transform: translateY(-2px); filter: brightness(1.05); }
+        .alert-badge-late { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 900; background-color: #fee2e2; color: #b91c1c; border: 1px solid #fca5a5; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05); }
+        .alert-badge-soon { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 900; background-color: #d1fae5; color: #047857; border: 1px solid #6ee7b7; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05); }
 
-        .text-slate-800 {
-            color: #1e293b;
-        }
+        .btn-act-view { background-color: #eff6ff; color: #2563eb; }
+        .btn-act-view:hover { background-color: #dbeafe; }
+        .btn-act-note { background-color: #e0e7ff; color: #6366f1; }
+        .btn-act-note:hover { background-color: #c7d2fe; }
+        .btn-act-receipt { background-color: #ecfdf5; color: #059669; }
+        .btn-act-receipt:hover { background-color: #d1fae5; }
+        .btn-act-edit { background-color: #fffbeb; color: #d97706; }
+        .btn-act-edit:hover { background-color: #fef3c7; }
+        .btn-act-cancel { background-color: #fef2f2; color: #dc2626; }
+        .btn-act-cancel:hover { background-color: #fee2e2; }
+        .btn-act-archive { background-color: #f1f5f9; color: #475569; }
+        .btn-act-archive:hover { background-color: #e2e8f0; }
+        .btn-act-arrived { background-color: #ecfeff; color: #0891b2; border: 1px solid #a5f3fc; }
+        .btn-act-arrived:hover { background-color: #cffafe; }
 
-        .text-slate-700 {
-            color: #334155;
+        /* 🌟 CSS សម្រាប់ធ្វើឱ្យជួរ Actions ជាប់ជានិច្ច និងបិទពណ៌សកុំឱ្យថ្លា 🌟 */
+        .sticky-actions {
+            position: sticky !important;
+            right: -1px;
+            background-color: #ffffff !important;
+            z-index: 10;
+            box-shadow: -5px 0 10px -2px rgba(0, 0, 0, 0.05) !important;
         }
-
-        .text-slate-600 {
-            color: #475569;
+        thead th.sticky-actions {
+            background-color: #f1f5f9 !important;
+            z-index: 11;
         }
-
-        .text-slate-500 {
-            color: #64748b;
-        }
-
-        .text-slate-400 {
-            color: #94a3b8;
-        }
-
-        .text-slate-300 {
-            color: #cbd5e1;
-        }
-
-        .text-emerald-600 {
-            color: #059669;
-        }
-
-        .text-indigo-400 {
-            color: #818cf8;
-        }
-
-        .text-mg-red {
-            color: var(--mg-red);
-        }
-
-        .text-mg-blue {
-            color: var(--mg-blue);
-        }
-
-        .fw-bold {
-            font-weight: 700;
-        }
-
-        .fw-black {
-            font-weight: 900;
-        }
-
-        .alert-badge-late {
-            display: inline-block;
-            padding: 2px 8px;
-            border-radius: 4px;
-            font-size: 11px;
-            font-weight: 900;
-            background-color: #fee2e2;
-            color: #b91c1c;
-            border: 1px solid #fca5a5;
-            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-        }
-
-        .alert-badge-soon {
-            display: inline-block;
-            padding: 2px 8px;
-            border-radius: 4px;
-            font-size: 11px;
-            font-weight: 900;
-            background-color: #d1fae5;
-            color: #047857;
-            border: 1px solid #6ee7b7;
-            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-        }
-
-        .btn-act-view {
-            background-color: #eff6ff;
-            color: #2563eb;
-        }
-
-        .btn-act-view:hover {
-            background-color: #dbeafe;
-        }
-
-        .btn-act-note {
-            background-color: #e0e7ff;
-            color: #6366f1;
-        }
-
-        .btn-act-note:hover {
-            background-color: #c7d2fe;
-        }
-
-        .btn-act-receipt {
-            background-color: #ecfdf5;
-            color: #059669;
-        }
-
-        .btn-act-receipt:hover {
-            background-color: #d1fae5;
-        }
-
-        .btn-act-edit {
-            background-color: #fffbeb;
-            color: #d97706;
-        }
-
-        .btn-act-edit:hover {
-            background-color: #fef3c7;
-        }
-
-        .btn-act-cancel {
-            background-color: #fef2f2;
-            color: #dc2626;
-        }
-
-        .btn-act-cancel:hover {
-            background-color: #fee2e2;
-        }
-
-        .btn-act-archive {
-            background-color: #f1f5f9;
-            color: #475569;
-        }
-
-        .btn-act-archive:hover {
-            background-color: #e2e8f0;
-        }
-
-        .btn-act-arrived {
-            background-color: #ecfeff;
-            color: #0891b2;
-            border: 1px solid #a5f3fc;
-        }
-
-        .btn-act-arrived:hover {
-            background-color: #cffafe;
+        .table tbody tr:hover td.sticky-actions {
+            background-color: #f8fafc !important;
         }
     </style>
 
-    <div class="container-fluid">
-        <div class="d-flex justify-content-between align-items-center mb-4 animate__animated animate__fadeInDown">
-            <div>
-                <h2 class="dashboard-title m-0">Repair & Service Management System</h2>
-                <p class="text-muted m-0 mt-1 fw-bold" style="font-size: 0.85rem;">គ្រប់គ្រងការងារជួសជុល និងពេលវេលាសេវាកម្ម
-                </p>
-            </div>
-
-            <div class="d-flex gap-3">
-                @if (in_array((int) $userRole, [1, 11]))
-                    <button onclick="generateMonthlyReport()"
-                        class="btn btn-main-action bg-white text-primary border border-primary border-opacity-25 shadow-sm"
-                        title="ទាញរបាយការណ៍ខែនេះស្វ័យប្រវត្តិ">
-                        <i class="fas fa-calendar-alt fs-5"></i> Monthly Report
-                    </button>
-                    <button onclick="promptCustomExport()"
-                        class="btn btn-main-action bg-white text-success border border-success border-opacity-25 shadow-sm">
-                        <i class="fas fa-file-excel fs-5"></i> Export Custom
-                    </button>
-                @endif
-                <a href="{{ route('services.create') }}" class="btn text-white btn-main-action shadow-sm"
-                    style="background: var(--mg-blue);">
-                    <i class="fas fa-plus-circle fs-5"></i> Customer Walk-in
-                </a>
-            </div>
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4 animate__animated animate__fadeInDown">
+        <div>
+            <h2 class="dashboard-title m-0">Repair & Service Management System</h2>
+            <p class="text-muted m-0 mt-1 fw-bold" style="font-size: 0.85rem;">គ្រប់គ្រងការងារជួសជុល និងពេលវេលាសេវាកម្ម</p>
         </div>
+
+        <div class="d-flex gap-3">
+            @if(auth()->check() && in_array((int) auth()->user()->role_id, [1, 2, 6, 11]))
+                <a href="{{ route('services.performance') }}" 
+                   class="btn btn-main-action bg-white text-info border border-info border-opacity-25 shadow-sm"
+                   title="មើលរបាយការណ៍សង្ខេបប្រចាំថ្ងៃ">
+                    <i class="fas fa-chart-line fs-5"></i> Performance
+                </a>
+            @endif
+
+            <button onclick="generateMonthlyReport()"
+                class="btn btn-main-action bg-white text-primary border border-primary border-opacity-25 shadow-sm"
+                title="ទាញរបាយការណ៍ខែនេះស្វ័យប្រវត្តិ">
+                <i class="fas fa-calendar-alt fs-5"></i> Monthly Report
+            </button>
+            <button onclick="promptCustomExport()"
+                class="btn btn-main-action bg-white text-success border border-success border-opacity-25 shadow-sm">
+                <i class="fas fa-file-excel fs-5"></i> Export Custom
+            </button>
+
+            <a href="{{ route('services.create') }}" class="btn text-white btn-main-action shadow-sm"
+                style="background: var(--mg-blue);">
+                <i class="fas fa-plus-circle fs-5"></i> Customer Walk-in
+            </a>
+        </div>
+    </div>
 
         <div class="row g-3 mb-4 animate__animated animate__fadeInUp">
             @php
                 $summary_config = [
-                    [
-                        'key' => 'total',
-                        'label' => 'សរុប',
-                        'sub' => 'Total',
-                        'color' => '#2563eb',
-                        'icon' => 'fa-calendar-check',
-                        'bg' => '#eff6ff',
-                    ],
-                    [
-                        'key' => 'pending',
-                        'label' => 'រង់ចាំអនុម័ត',
-                        'sub' => 'Pending',
-                        'color' => '#d97706',
-                        'icon' => 'fa-clock',
-                        'bg' => '#fef3c7',
-                    ],
-                    [
-                        'key' => 'waiting',
-                        'label' => 'កំពុងរង់ចាំ',
-                        'sub' => 'Waiting',
-                        'color' => '#8b5cf6',
-                        'icon' => 'fa-user-clock',
-                        'bg' => '#ede9fe',
-                    ],
-                    [
-                        'key' => 'progress',
-                        'label' => 'កំពុងធ្វើ',
-                        'sub' => 'In Progress',
-                        'color' => '#0ea5e9',
-                        'icon' => 'fa-screwdriver-wrench',
-                        'bg' => '#f0f9ff',
-                    ],
-                    [
-                        'key' => 'completed',
-                        'label' => 'បានបញ្ចប់',
-                        'sub' => 'Completed',
-                        'color' => '#10b981',
-                        'icon' => 'fa-check-double',
-                        'bg' => '#ecfdf5',
-                    ],
-                    [
-                        'key' => 'overdue',
-                        'label' => 'ហួសម៉ោង',
-                        'sub' => 'Overdue',
-                        'color' => '#dc2626',
-                        'icon' => 'fa-circle-exclamation',
-                        'bg' => '#fee2e2',
-                    ],
-                    [
-                        'key' => 'cancel',
-                        'label' => 'បោះបង់',
-                        'sub' => 'Cancelled',
-                        'color' => '#ef4444',
-                        'icon' => 'fa-ban',
-                        'bg' => '#fef2f2',
-                    ],
-                    [
-                        'key' => 'archive',
-                        'label' => 'បណ្ណសារ',
-                        'sub' => 'Archive',
-                        'color' => '#475569',
-                        'icon' => 'fa-box-archive',
-                        'bg' => '#f1f5f9',
-                    ],
+                    ['key' => 'total', 'label' => 'សរុប', 'sub' => 'Total', 'color' => '#2563eb', 'icon' => 'fa-calendar-check', 'bg' => '#eff6ff'],
+                    ['key' => 'pending', 'label' => 'រង់ចាំអនុម័ត', 'sub' => 'Pending', 'color' => '#d97706', 'icon' => 'fa-clock', 'bg' => '#fef3c7'],
+                    ['key' => 'waiting', 'label' => 'កំពុងរង់ចាំ', 'sub' => 'Waiting', 'color' => '#8b5cf6', 'icon' => 'fa-user-clock', 'bg' => '#ede9fe'],
+                    ['key' => 'progress', 'label' => 'កំពុងធ្វើ', 'sub' => 'In Progress', 'color' => '#0ea5e9', 'icon' => 'fa-screwdriver-wrench', 'bg' => '#f0f9ff'],
+                    ['key' => 'completed', 'label' => 'បានបញ្ចប់', 'sub' => 'Completed', 'color' => '#10b981', 'icon' => 'fa-check-double', 'bg' => '#ecfdf5'],
+                    ['key' => 'overdue', 'label' => 'ហួសម៉ោង', 'sub' => 'Overdue', 'color' => '#dc2626', 'icon' => 'fa-circle-exclamation', 'bg' => '#fee2e2'],
+                    ['key' => 'cancel', 'label' => 'បោះបង់', 'sub' => 'Cancelled', 'color' => '#ef4444', 'icon' => 'fa-ban', 'bg' => '#fef2f2'],
+                    ['key' => 'archive', 'label' => 'បណ្ណសារ', 'sub' => 'Archive', 'color' => '#475569', 'icon' => 'fa-box-archive', 'bg' => '#f1f5f9'],
                 ];
             @endphp
             @foreach ($summary_config as $card)
@@ -571,8 +333,7 @@
                                 <p class="mb-0 text-slate-700 fw-bold"
                                     style="font-size: 0.75rem; white-space: nowrap; line-height: 1.2;">
                                     {{ $card['label'] }} <br>
-                                    <span
-                                        style="font-size: 0.6rem; color: {{ $card['color'] }}; font-weight: 700; text-transform: uppercase;">{{ $card['sub'] }}</span>
+                                    <span style="font-size: 0.6rem; color: {{ $card['color'] }}; font-weight: 700; text-transform: uppercase;">{{ $card['sub'] }}</span>
                                 </p>
                                 <h3 class="fw-black mb-0 text-slate-800"
                                     style="font-size: 1.35rem; line-height: 1.1; margin-top: 3px;">
@@ -585,8 +346,7 @@
             @endforeach
         </div>
 
-        <form id="filterForm" method="GET" action="{{ route('services.index') }}"
-            class="filter-wrapper mb-4 animate__animated animate__fadeIn">
+        <form id="filterForm" method="GET" action="{{ route('services.index') }}" class="filter-wrapper mb-4 animate__animated animate__fadeIn">
             <input type="hidden" name="category" id="catFilter" value="{{ $activeCat }}">
 
             <div class="row g-3 align-items-center">
@@ -668,10 +428,14 @@
                             <th class="text-center">Branch</th>
                             <th class="text-center">Created Date</th>
                             <th class="text-center">Date & Time</th>
+                            <!-- 🌟 Column Est. Complete 🌟 -->
+                            <th class="text-center">Est. Complete</th>
                             <th class="text-center">Status</th>
-                            <th class="text-center">Customer Remark</th>
+                            <!-- 🌟 ពង្រីក Customer Remark 🌟 -->
+                            <th class="text-center" style="min-width: 250px;">Customer Remark</th>
                             <th class="text-center">Admin Notes</th>
-                            <th class="text-center no-export" style="min-width: 200px;">Actions</th>
+                            <!-- 🌟 ថែម sticky-actions និង nowrap 🌟 -->
+                            <th class="text-center no-export sticky-actions" style="min-width: 260px; white-space: nowrap;">Actions</th>
                         </tr>
                     </thead>
                     <tbody id="bookingTableBody">
@@ -691,43 +455,33 @@
                                         $durationStr = ($diff->h > 0 ? $diff->h . 'h ' : '') . $diff->i . 'm';
                                     }
                                 }
-                
+
                                 $saName = $booking->sa_name ?? 'N/A';
                                 $techName = $booking->technician_name ?? 'N/A';
-                
+
                                 $rawLoc = $booking->location;
                                 $locObj = isset($branches) ? collect($branches)->firstWhere('id', $rawLoc) : null;
                                 $displayLocation = $locObj
                                     ? str_ireplace(['MG ', 'Mg '], '', $locObj->branch_name)
                                     : str_ireplace(['MG ', 'Mg '], '', $rawLoc);
                                 $displayLocation = ucwords(trim($displayLocation) ?: 'N/A');
-                
+
                                 $statusDisplay = trim((string) ($booking->status ?? 'Pending'));
                                 $statusKey = strtolower($statusDisplay);
-                
+
                                 $isOverdue = false;
                                 $overdueText = '';
                                 $isSoon = false;
                                 $soonText = '';
-                
-                                if (
-                                    in_array($statusKey, ['pending', 'waiting approved', 'waiting', 'waiting service'])
-                                ) {
+
+                                if (in_array($statusKey, ['pending', 'waiting approved', 'waiting', 'waiting service'])) {
                                     $dateMatch = [];
-                                    preg_match(
-                                        '/(\d{4}-\d{2}-\d{2})|(\d{2}-\d{2}-\d{4})/',
-                                        (string) $booking->booking_date,
-                                        $dateMatch,
-                                    );
+                                    preg_match('/(\d{4}-\d{2}-\d{2})|(\d{2}-\d{2}-\d{4})/', (string) $booking->booking_date, $dateMatch);
                                     $cleanDate = $dateMatch[0] ?? null;
                                     $timeMatch = [];
-                                    preg_match(
-                                        '/(\d{2}:\d{2}:\d{2})|(\d{2}:\d{2})/',
-                                        (string) $booking->booking_time,
-                                        $timeMatch,
-                                    );
+                                    preg_match('/(\d{2}:\d{2}:\d{2})|(\d{2}:\d{2})/', (string) $booking->booking_time, $timeMatch);
                                     $cleanTime = $timeMatch[0] ?? '00:00:00';
-                
+
                                     if ($cleanDate && $cleanDate !== '0000-00-00') {
                                         $bookTs = strtotime($cleanDate . ' ' . $cleanTime);
                                         if ($bookTs !== false && $bookTs > 0) {
@@ -739,14 +493,8 @@
                                                 $d = floor($diffSeconds / 86400);
                                                 $h = floor(($diffSeconds % 86400) / 3600);
                                                 $m = floor(($diffSeconds % 3600) / 60);
-                                                $overdueText = trim(
-                                                    ($d > 0 ? $d . 'd ' : '') .
-                                                        ($h > 0 ? $h . 'h ' : '') .
-                                                        ($m > 0 ? $m . 'm' : ''),
-                                                );
-                                                if (empty($overdueText)) {
-                                                    $overdueText = '1m';
-                                                }
+                                                $overdueText = trim(($d > 0 ? $d . 'd ' : '') . ($h > 0 ? $h . 'h ' : '') . ($m > 0 ? $m . 'm' : ''));
+                                                if (empty($overdueText)) $overdueText = '1m';
                                             } elseif ($bookTs >= $nowPhnomPenhTs && $bookTs - $nowPhnomPenhTs <= 900) {
                                                 $isSoon = true;
                                                 $m = floor(($bookTs - $nowPhnomPenhTs) / 60);
@@ -755,151 +503,174 @@
                                         }
                                     }
                                 }
-                
+
                                 $class = match ($statusKey) {
                                     'completed', 'close' => 'status-completed',
                                     'in progress', 'wip', 'under repair' => 'status-under-repair',
                                     'waiting approved', 'pending' => 'status-waiting-approved',
                                     'waiting service', 'waiting' => 'status-waiting',
                                     'under diagnosis' => 'status-under-diagnosis',
-                                    'waiting parts order local',
-                                    'waiting parts order dhl',
-                                    'waiting parts order by sea'
-                                        => 'status-waiting-parts',
+                                    'waiting parts order local', 'waiting parts order dhl', 'waiting parts order by sea' => 'status-waiting-parts',
                                     'waiting delivery', 'arrived' => 'status-waiting-delivery',
                                     'cancel', 'cancelled' => 'status-cancel',
                                     'expired', 'overdue' => 'status-overdue',
                                     'archived', 'archive' => 'status-archived',
                                     default => 'status-pending',
                                 };
-                
+
                                 $customerRemark = $booking->remark ?? '';
                                 $adminNoteText = $booking->note ?? '';
-                
+
                                 if (in_array($statusKey, ['completed', 'close'])) {
                                     $adminNoteText = 'បានបញ្ចប់ (Close)';
                                 } elseif (in_array($statusKey, ['archived', 'archive'])) {
                                     $adminNoteText = 'បានទុកក្នុងបណ្ណសារ (Archived)';
                                 } elseif (in_array($statusKey, ['cancel', 'cancelled'])) {
                                     $adminNoteText = 'បានបោះបង់ (Cancelled)';
-                                } elseif (
-                                    empty($adminNoteText) &&
-                                    in_array($statusKey, ['in progress', 'wip', 'under repair'])
-                                ) {
+                                } elseif (empty($adminNoteText) && in_array($statusKey, ['in progress', 'wip', 'under repair'])) {
                                     $adminNoteText = 'កំពុងដំណើរការ (WIP)';
                                 }
-                
-                                // 🌟 ថ្ងៃយកឡានមកធ្វើ (Booking Date & Time) 🌟
-                                $displayDate = !empty($booking->booking_date)
-                                    ? date('d-M-Y', strtotime(substr(trim($booking->booking_date), 0, 10)))
-                                    : 'N/A';
-                                $displayTime = !empty($booking->booking_time)
-                                    ? date('h:i A', strtotime(substr(trim($booking->booking_time), 0, 8)))
-                                    : 'N/A';
-                
-                                // 🌟 ថ្ងៃបង្កើតទិន្នន័យ (Created Date & Time) 🌟
-                                $displayCreatedDate = !empty($booking->created_at)
-                                    ? \Carbon\Carbon::parse($booking->created_at)->format('d-M-Y')
-                                    : 'N/A';
-                                $displayCreatedTime = !empty($booking->created_at)
-                                    ? \Carbon\Carbon::parse($booking->created_at)->format('h:i A')
-                                    : 'N/A';
-                
-                                $displayMileage = !empty($booking->mileage)
-                                    ? number_format($booking->mileage) . ' KM'
-                                    : 'N/A';
+
+                                $displayDate = !empty($booking->booking_date) ? date('d-M-Y', strtotime(substr(trim($booking->booking_date), 0, 10))) : 'N/A';
+                                $displayTime = !empty($booking->booking_time) ? date('h:i A', strtotime(substr(trim($booking->booking_time), 0, 8))) : 'N/A';
+                                $displayCreatedDate = !empty($booking->created_at) ? \Carbon\Carbon::parse($booking->created_at)->format('d-M-Y') : 'N/A';
+                                $displayCreatedTime = !empty($booking->created_at) ? \Carbon\Carbon::parse($booking->created_at)->format('h:i A') : 'N/A';
+                                $displayMileage = !empty($booking->mileage) ? number_format($booking->mileage) . ' KM' : 'N/A';
+
+                                // 🌟 ចាប់យកប្រវត្តិអ្នកកំណត់ថ្ងៃ និង Input ចាស់ 🌟
+                                $firstUpdater = '';
+                                $lastUpdater = '';
+                                $lastRemark = '';
+                                $estForInput = '';
+                                $historyData = $booking->estimation_history;
+
+                                if (is_string($historyData)) $historyData = json_decode($historyData, true);
+                                if (is_string($historyData)) $historyData = json_decode($historyData, true);
+
+                                if (!empty($historyData) && is_array($historyData)) {
+                                    $firstRecord = reset($historyData);
+                                    $firstUpdater = $firstRecord['updated_by'] ?? '';
+
+                                    $lastRecord = end($historyData);
+                                    $lastUpdater = $lastRecord['updated_by'] ?? '';
+                                    $lastRemark = $lastRecord['remark'] ?? '';
+                                }
+
+                                if (!empty($booking->estimated_end_datetime)) {
+                                    $displayEstComplete = \Carbon\Carbon::parse($booking->estimated_end_datetime)->format('d-M-Y h:i A');
+                                    // តម្រូវ Format សម្រាប់ input type="datetime-local" 
+                                    $estForInput = \Carbon\Carbon::parse($booking->estimated_end_datetime)->format('Y-m-d\TH:i');
+                                } else {
+                                    $displayEstComplete = 'N/A';
+                                }
                             @endphp
-                
+
                             <tr class="booking-row" data-book-ts="{{ $bookTs }}"
                                 data-status="{{ $statusKey }}"
                                 data-customer="{{ addslashes($booking->customer_name ?? 'N/A') }}">
                                 <td class="text-center text-slate-500">
                                     {{ ($bookings->currentPage() - 1) * $bookings->perPage() + $index + 1 }}</td>
-                
+
                                 <td class="text-slate-800">
                                     <div class="fw-bold" style="font-size: 0.95rem;">
                                         {{ $booking->customer_name ?? 'N/A' }}</div>
-                
+
                                     <div class="mt-1 mb-1">
                                         @if (isset($booking->is_walk_in) && $booking->is_walk_in == 1)
-                                            <span
-                                                style="background:#f0fdf4; color:#16a34a; padding:3px 8px; border-radius:12px; font-size:10px; font-weight:700; border:1px solid #bbf7d0; display:inline-block;"
-                                                title="Walk-in Booked By: {{ $booking->added_by ?? 'Staff' }}">
-                                                <i class="fas fa-user-edit me-1"></i>
-                                                {{ $booking->added_by ?? 'Staff Walk-in' }}
+                                            <span style="background:#f0fdf4; color:#16a34a; padding:3px 8px; border-radius:12px; font-size:10px; font-weight:700; border:1px solid #bbf7d0; display:inline-block;" title="Walk-in Booked By: {{ $booking->added_by ?? 'Staff' }}">
+                                                <i class="fas fa-user-edit me-1"></i> Walk-in: {{ $booking->added_by ?? 'Staff' }}
                                             </span>
                                         @else
-                                            <span
-                                                style="background:#eff6ff; color:#2563eb; padding:3px 8px; border-radius:12px; font-size:10px; font-weight:700; border:1px solid #bfdbfe; display:inline-block;">
+                                            <span style="background:#eff6ff; color:#2563eb; padding:3px 8px; border-radius:12px; font-size:10px; font-weight:700; border:1px solid #bfdbfe; display:inline-block;">
                                                 <i class="fas fa-globe me-1"></i> Online Booking
                                             </span>
                                         @endif
                                     </div>
-                
+
                                     @if ($isOverdue && !empty($overdueText))
                                         <div class="mt-1 animate__animated animate__pulse animate__infinite">
-                                            <span class="alert-badge-late"><i class="fas fa-clock-rotate-left me-1"></i>
-                                                ហួស: {{ $overdueText }}</span>
+                                            <span class="alert-badge-late"><i class="fas fa-clock-rotate-left me-1"></i> ហួស: {{ $overdueText }}</span>
                                         </div>
                                     @elseif ($isSoon && !empty($soonText))
                                         <div class="mt-1 animate__animated animate__pulse animate__infinite">
-                                            <span class="alert-badge-soon"><i class="fas fa-hourglass-half me-1"></i>
-                                                ជិតដល់: {{ $soonText }}</span>
+                                            <span class="alert-badge-soon"><i class="fas fa-hourglass-half me-1"></i> ជិតដល់: {{ $soonText }}</span>
                                         </div>
                                     @endif
                                 </td>
-                
-                                <td class="text-center text-primary"><i
-                                        class="fas fa-phone-alt me-1 text-slate-300"></i>{{ $booking->contact ?? 'N/A' }}
-                                </td>
+
+                                <td class="text-center text-primary"><i class="fas fa-phone-alt me-1 text-slate-300"></i>{{ $booking->contact ?? 'N/A' }}</td>
                                 <td class="text-center text-slate-600">{{ $booking->model ?? 'N/A' }}</td>
-                                <td class="text-center"><span class="badge-plate">{{ $booking->plate ?? 'N/A' }}</span>
-                                </td>
-                                <td class="text-center"><span
-                                        class="badge bg-slate-100 text-slate-600 border border-slate-200">{{ $displayMileage }}</span>
-                                </td>
+                                <td class="text-center"><span class="badge-plate">{{ $booking->plate ?? 'N/A' }}</span></td>
+                                <td class="text-center"><span class="badge bg-slate-100 text-slate-600 border border-slate-200">{{ $displayMileage }}</span></td>
                                 <td class="text-center text-mg-red">{{ $booking->service_type ?? 'N/A' }}</td>
                                 <td class="text-center text-mg-blue">{{ $saName }}</td>
                                 <td class="text-center text-emerald-600">{{ $techName }}</td>
-                                <td class="text-center"><i class="fas fa-map-marker-alt text-danger me-1"></i> <span
-                                        class="fw-bold text-slate-700 branch-name-text">{{ $displayLocation }}</span></td>
-                                
-                                <!-- 🌟 1. Created Date (ដាក់មកនៅពីមុខ) 🌟 -->
+                                <td class="text-center"><i class="fas fa-map-marker-alt text-danger me-1"></i> <span class="fw-bold text-slate-700 branch-name-text">{{ $displayLocation }}</span></td>
+
+                                <!-- 🌟 1. Created Date 🌟 -->
                                 <td class="text-center bg-slate-50" title="ថ្ងៃបញ្ចូលទិន្នន័យចូលប្រព័ន្ធ">
-                                    <div class="fw-bold text-slate-600" style="font-size: 0.85rem;">
-                                        <i class="fas fa-plus-circle text-success me-1"></i> {{ $displayCreatedDate }}
-                                    </div>
-                                    <div class="mt-1 text-slate-400" style="font-size: 0.75rem; font-weight: 700;">
-                                        {{ $displayCreatedTime }}
-                                    </div>
+                                    <div class="fw-bold text-slate-600" style="font-size: 0.85rem;"><i class="fas fa-plus-circle text-success me-1"></i> {{ $displayCreatedDate }}</div>
+                                    <div class="mt-1 text-slate-400" style="font-size: 0.75rem; font-weight: 700;">{{ $displayCreatedTime }}</div>
                                 </td>
-                
-                                <!-- 🌟 2. Date & Time (ថ្ងៃយកឡានមកធ្វើ - នៅពីក្រោយ) 🌟 -->
+
+                                <!-- 🌟 2. Date & Time 🌟 -->
                                 <td class="text-center text-slate-700">
                                     <div>{{ $displayDate }}</div>
                                     <div style="font-size: 11px; color:#64748b;">{{ $displayTime }}</div>
                                 </td>
-                                
-                                <td class="text-center"><span
-                                        class="status-badge {{ $class }}">{{ str_ireplace('Waiting Parts Order', 'Parts', $statusDisplay) }}</span>
+
+                                <!-- 🌟 Column Est. Complete 🌟 -->
+                                <td class="text-center">
+                                    @if (!empty($booking->estimated_end_datetime))
+                                        <div class="mb-1" title="ប្រវត្តិអ្នកកំណត់">
+                                            <span class="badge bg-info text-dark border border-info border-opacity-25 shadow-sm px-2 py-1" style="font-size: 0.75rem;">
+                                                <i class="fas fa-flag-checkered text-primary me-1"></i> {{ $displayEstComplete }}
+                                            </span>
+                                            
+                                            <!-- 🌟 បង្ហាញឈ្មោះប្រវត្តិអ្នកធ្វើ (Story) 🌟 -->
+                                            @if(!empty($firstUpdater))
+                                                <div class="mt-1 fw-bold text-slate-500" style="font-size: 0.65rem;">
+                                                    <i class="fas fa-user-edit text-primary opacity-75"></i> 
+                                                    @if($firstUpdater === $lastUpdater)
+                                                        {{ $firstUpdater }}
+                                                    @else
+                                                        <span class="text-success" title="អ្នកកំណត់ដំបូងគេ">{{ $firstUpdater }}</span> 
+                                                        <i class="fas fa-arrow-right mx-1 text-slate-300" style="font-size: 8px;"></i> 
+                                                        <span class="text-danger" title="អ្នក Update ចុងក្រោយ">{{ $lastUpdater }}</span>
+                                                    @endif
+                                                </div>
+                                            @endif
+                                        </div>
+                                    @else
+                                        <span class="text-slate-300 d-block mb-1" style="font-size: 0.8rem;">-</span>
+                                    @endif
+
+                                    @if (!in_array($statusKey, ['completed', 'close', 'cancel', 'cancelled', 'archive', 'archived']))
+                                    <button onclick="openEstimationPopup('{{ encrypt($booking->id) }}', '{{ addslashes($booking->plate ?? 'N/A') }}', '{{ $displayCreatedDate }} {{ $displayCreatedTime }}', '{{ $displayDate }} {{ $displayTime }}', '{{ $startTimeStr }}', '{{ $estForInput }}', '{{ base64_encode(is_string($booking->estimation_history) ? $booking->estimation_history : json_encode($booking->estimation_history)) }}')" class="btn btn-sm btn-outline-primary d-block mx-auto mt-1" style="font-size: 0.65rem; padding: 2px 8px; border-radius: 6px;">
+                                        <i class="fas fa-plus"></i> Est. Complete
+                                    </button>
+                                @endif
                                 </td>
+
+                                <td class="text-center"><span class="status-badge {{ $class }}">{{ str_ireplace('Waiting Parts Order', 'Parts', $statusDisplay) }}</span></td>
+                                
+                                <!-- 🌟 Customer Remark ពង្រីកធំ 🌟 -->
                                 <td class="text-center">
                                     @if (!empty($customerRemark))
-                                        <div style="max-width: 130px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 0.8rem; color: #ea580c; margin: 0 auto;"
-                                            title="{{ $customerRemark }}">
+                                        <div style="max-width: 280px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis; white-space: normal; font-size: 0.8rem; color: #ea580c; margin: 0 auto; text-align: left; line-height: 1.4;" title="{{ $customerRemark }}">
                                             <i class="fas fa-quote-left me-1 opacity-50"></i> {{ $customerRemark }}
                                         </div>
                                     @else
                                         <span class="text-slate-300">-</span>
                                     @endif
                                 </td>
+                                
                                 <td>
                                     @if (!empty($adminNoteText))
                                         <div class="note-container" style="max-width: 130px; margin: 0 auto;">
                                             <div class="note-text" title="{{ $adminNoteText }}"
                                                 @if (!in_array($statusKey, ['completed', 'close', 'archived', 'archive', 'cancel', 'cancelled'])) onclick="editNotePopup('{{ encrypt($booking->id ?? 0) }}', '{{ addslashes($adminNoteText) }}', '{{ $booking->status }}')" @else style="cursor: default; color: #059669; font-weight: 600;" @endif>
-                                                <i class="fas fa-comment-dots text-indigo-400 me-1"></i>
-                                                {{ $adminNoteText }}
+                                                <i class="fas fa-comment-dots text-indigo-400 me-1"></i> {{ $adminNoteText }}
                                             </div>
                                         </div>
                                     @else
@@ -909,57 +680,71 @@
                                         </div>
                                     @endif
                                 </td>
-                                <td class="text-center no-export">
-                                    <div class="d-flex justify-content-center flex-wrap gap-1">
-                
+
+                                <!-- 🌟 Actions Column ដាក់ sticky-actions និង flex-nowrap 🌟 -->
+                                <td class="text-center no-export sticky-actions" style="white-space: nowrap;">
+                                    <div class="d-flex justify-content-center flex-nowrap gap-1">
                                         <button
-                                            onclick="showQuickView('{{ addslashes($booking->customer_name ?? 'N/A') }}', '{{ addslashes($booking->contact ?? 'N/A') }}', '{{ addslashes($booking->model ?? 'N/A') }}', '{{ addslashes($booking->plate ?? 'N/A') }}', '{{ addslashes($displayMileage) }}', '{{ addslashes($booking->service_type ?? 'N/A') }}', '{{ $displayDate }}', '{{ $displayTime }}', '{{ $durationStr }}', '{{ addslashes($displayLocation) }}', '{{ addslashes($saName) }}', '{{ addslashes($techName) }}', '{{ addslashes($statusDisplay) }}', '{{ $class }}', '{{ addslashes($customerRemark) }}', '{{ addslashes($adminNoteText) }}')"
-                                            class="btn-action-icon btn-act-view" title="Quick View"><i
-                                                class="fas fa-eye"></i></button>
-                
-                                        @if (in_array($statusKey, ['pending', 'waiting approved', 'waiting']))
+                                            onclick="showQuickView(
+                                            '{{ addslashes(str_replace(["\r", "\n"], ' ', $booking->customer_name ?? 'N/A')) }}', 
+                                            '{{ addslashes(str_replace(["\r", "\n"], ' ', $booking->contact ?? 'N/A')) }}', 
+                                            '{{ addslashes(str_replace(["\r", "\n"], ' ', $booking->model ?? 'N/A')) }}', 
+                                            '{{ addslashes(str_replace(["\r", "\n"], ' ', $booking->plate ?? 'N/A')) }}', 
+                                            '{{ addslashes(str_replace(["\r", "\n"], ' ', $displayMileage ?? 'N/A')) }}', 
+                                            '{{ addslashes(str_replace(["\r", "\n"], ' ', $booking->service_type ?? 'N/A')) }}', 
+                                            '{{ addslashes(str_replace(["\r", "\n"], ' ', $displayDate ?? 'N/A')) }}', 
+                                            '{{ addslashes(str_replace(["\r", "\n"], ' ', $displayTime ?? 'N/A')) }}', 
+                                            '{{ addslashes(str_replace(["\r", "\n"], ' ', $displayEstComplete ?? 'N/A')) }}', 
+                                            '{{ addslashes(str_replace(["\r", "\n"], ' ', $durationStr ?? 'N/A')) }}', 
+                                            '{{ addslashes(str_replace(["\r", "\n"], ' ', $displayLocation ?? 'N/A')) }}', 
+                                            '{{ addslashes(str_replace(["\r", "\n"], ' ', $saName ?? 'N/A')) }}', 
+                                            '{{ addslashes(str_replace(["\r", "\n"], ' ', $techName ?? 'N/A')) }}', 
+                                            '{{ addslashes(str_replace(["\r", "\n"], ' ', $statusDisplay ?? 'N/A')) }}', 
+                                            '{{ addslashes(str_replace(["\r", "\n"], ' ', $class ?? '')) }}', 
+                                            '{{ addslashes(str_replace(["\r", "\n"], ' ', $customerRemark ?? 'N/A')) }}', 
+                                            '{{ addslashes(str_replace(["\r", "\n"], ' ', $adminNoteText ?? 'N/A')) }}'
+                                        )"
+                                            class="btn-action-icon btn-act-view" title="Quick View">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+
+                                        @if (in_array($statusKey, ['pending', 'waiting approved', 'waiting', 'overdue']))
                                             <button
                                                 onclick="markAsArrivedIndex('{{ $booking->id }}', '{{ addslashes($booking->plate ?? '') }}')"
                                                 class="btn-action-icon btn-act-arrived"
-                                                title="សម្គាល់ថាអតិថិជនមកដល់ (Mark as Arrived)"><i
-                                                    class="fas fa-map-marker-alt"></i></button>
+                                                title="សម្គាល់ថាអតិថិជនមកដល់ (Mark as Arrived)"><i class="fas fa-map-marker-alt"></i></button>
                                         @endif
-                
+
                                         @if (!in_array($statusKey, ['completed', 'close', 'archived', 'archive', 'cancel', 'cancelled']))
                                             <button
                                                 onclick="editNotePopup('{{ encrypt($booking->id ?? 0) }}', '{{ addslashes($adminNoteText) }}', '{{ $booking->status }}')"
-                                                class="btn-action-icon btn-act-note" title="Add / Edit Note"><i
-                                                    class="fas fa-sticky-note"></i></button>
+                                                class="btn-action-icon btn-act-note" title="Add / Edit Note"><i class="fas fa-sticky-note"></i></button>
                                         @endif
-                
+
                                         @if (in_array($statusKey, ['completed', 'close']))
                                             <button
                                                 onclick="showCompleteJobPopup('{{ $booking->id ?? '' }}', '{{ addslashes($booking->customer_name ?? '') }}', '{{ $booking->contact ?? '' }}', '{{ $booking->model ?? '' }}', '{{ $booking->plate ?? '' }}', '{{ addslashes($displayMileage) }}', '{{ $booking->service_type ?? '' }}', '{{ $displayDate }}', '{{ $startTimeStr }}', '{{ $endTimeStr }}', '{{ $durationStr }}', '{{ addslashes($displayLocation) }}', '{{ addslashes($saName) }}', '{{ addslashes($techName) }}')"
-                                                class="btn-action-icon btn-act-receipt" title="Receipt"><i
-                                                    class="fas fa-receipt"></i></button>
+                                                class="btn-action-icon btn-act-receipt" title="Receipt"><i class="fas fa-receipt"></i></button>
                                         @endif
-                
+
                                         @if (!in_array($statusKey, ['cancel', 'cancelled', 'archived', 'archive']))
                                             <a href="{{ route('services.edit', encrypt($booking->id ?? 0)) }}"
-                                                class="btn-action-icon btn-act-edit" title="Edit"><i
-                                                    class="fas fa-edit"></i></a>
+                                                class="btn-action-icon btn-act-edit" title="Edit"><i class="fas fa-edit"></i></a>
                                         @endif
-                
+
                                         @if (!in_array($statusKey, ['cancel', 'cancelled', 'completed', 'close', 'expired', 'overdue', 'archived', 'archive']))
                                             <button
                                                 onclick="confirmCancel('{{ $booking->id }}', '{{ addslashes($booking->customer_name ?? '') }}')"
-                                                class="btn-action-icon btn-act-cancel" title="Cancel Booking"><i
-                                                    class="fas fa-ban"></i></button>
+                                                class="btn-action-icon btn-act-cancel" title="Cancel Booking"><i class="fas fa-ban"></i></button>
                                             <form id="cancel-form-{{ $booking->id }}"
                                                 action="{{ url('/services/cancel/' . encrypt($booking->id ?? 0)) }}"
                                                 method="POST" class="d-none">@csrf @method('POST')</form>
                                         @endif
-                
+
                                         @if (!in_array($statusKey, ['archived', 'archive']))
                                             <button
                                                 onclick="confirmArchive('{{ $booking->id }}', '{{ addslashes($booking->customer_name ?? '') }}')"
-                                                class="btn-action-icon btn-act-archive" title="Archive Data"><i
-                                                    class="fas fa-box-archive"></i></button>
+                                                class="btn-action-icon btn-act-archive" title="Archive Data"><i class="fas fa-box-archive"></i></button>
                                             <form id="archive-form-{{ $booking->id }}"
                                                 action="{{ url('/services/archive/' . encrypt($booking->id ?? 0)) }}"
                                                 method="POST" class="d-none">@csrf @method('POST')</form>
@@ -969,7 +754,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="16" class="text-center py-5">
+                                <td colspan="17" class="text-center py-5">
                                     <h5 class="fw-bold text-slate-500">មិនទាន់មានទិន្នន័យនៅឡើយទេ</h5>
                                 </td>
                             </tr>
@@ -985,6 +770,106 @@
     </div>
 
     <script>
+   // 🌟 កូដ Pop-up ថ្មី មានបែងចែក ប្រវត្តិ (History) និង បញ្ចូលថ្មី (New Record) 🌟
+function openEstimationPopup(encId, plate, createdDate, bookingDate, startTime, existingEst, base64History) {
+    
+    // បំប្លែងប្រវត្តិពី Base64 មកជាអក្សរធម្មតាវិញ
+    let historyText = '';
+    try {
+        let decodedHistory = atob(base64History);
+        let historyArr = JSON.parse(decodedHistory);
+        if (typeof historyArr === 'string') historyArr = JSON.parse(historyArr); 
+        
+        if (Array.isArray(historyArr) && historyArr.length > 0) {
+            historyArr.forEach(h => {
+                let dt = h.updated_at || '';
+                let by = h.updated_by || 'Unknown';
+                let est = h.estimated_datetime ? h.estimated_datetime.replace('T', ' ') : '-';
+                let rmk = h.remark || 'គ្មាន';
+                historyText += `[${dt}] ${by}:\n ➔ Est: ${est}\n ➔ Note: ${rmk}\n\n`;
+            });
+        }
+    } catch(e) { console.log(e); }
+
+    let displayHistory = historyText ? historyText : 'មិនទាន់មានប្រវត្តិនៅឡើយទេ...';
+    let currentEst = existingEst ? existingEst : '';
+
+    Swal.fire({
+        title: '<h5 class="text-primary fw-bold m-0"><i class="fas fa-clock"></i> បន្ថែមមតិយោបល់ (Add Feedback)</h5>',
+        html: `
+            <div class="text-start mt-3 p-3 bg-light rounded-3 border mb-3" style="font-size: 0.85rem;">
+                <div class="row g-2">
+                    <div class="col-6"><p class="mb-1 text-slate-700">🚗 ស្លាកលេខ: <strong class="text-danger">${plate}</strong></p></div>
+                    <div class="col-6"><p class="mb-1 text-slate-700">📅 ថ្ងៃបង្កើត: <strong class="text-indigo-600">${createdDate}</strong></p></div>
+                    <div class="col-6"><p class="mb-1 text-slate-700">🗓️ ថ្ងៃកក់: <strong class="text-primary">${bookingDate}</strong></p></div>
+                    <div class="col-6"><p class="mb-0 text-slate-700">⏱️ ចាប់ផ្តើម/មកដល់: <strong class="text-success">${startTime}</strong></p></div>
+                </div>
+            </div>
+
+            <div class="text-start">
+                <label class="form-label fw-bold text-slate-500" style="font-size: 0.8rem;">ប្រវត្តិមតិយោបល់ (History) :</label>
+                <textarea class="form-control mb-3 custom-scrollbar" style="border-radius: 8px; font-size: 0.8rem; background-color: #f1f5f9; color: #475569;" rows="4" readonly>${displayHistory}</textarea>
+                
+                <hr style="border-top: 2px dashed #cbd5e1; margin: 15px 0;">
+
+                <label class="form-label fw-bold text-danger" style="font-size: 0.85rem;">ជ្រើសរើសថ្ងៃ និងម៉ោងថ្មី (New Record) * :</label>
+                <input type="datetime-local" id="swal-est-datetime" class="form-control mb-3" style="border-radius: 8px;" value="${currentEst}">
+                
+                <label class="form-label fw-bold text-danger" style="font-size: 0.85rem;">មូលហេតុ / ចំណាំថ្មី (New Remark) * :</label>
+                <input type="text" id="swal-est-remark" class="form-control" placeholder="វាយបញ្ចូលទីនេះ..." style="border-radius: 8px;">
+            </div>
+        `,
+        showCancelButton: true,
+        confirmButtonText: '<i class="fas fa-paper-plane"></i> បញ្ជូន',
+        cancelButtonText: 'បោះបង់',
+        confirmButtonColor: '#e31e24', 
+        cancelButtonColor: '#64748b',
+        customClass: { popup: 'rounded-4 shadow-lg' },
+        width: '550px',
+        preConfirm: () => {
+            const estDt = document.getElementById('swal-est-datetime').value;
+            const remark = document.getElementById('swal-est-remark').value;
+            if (!estDt) {
+                Swal.showValidationMessage('សូមជ្រើសរើសថ្ងៃ និងម៉ោងរួចរាល់!');
+                return false;
+            }
+            if (!remark) {
+                Swal.showValidationMessage('សូមបញ្ចូលមូលហេតុ / ចំណាំថ្មី!');
+                return false;
+            }
+            return { datetime: estDt, remark: remark };
+        }
+    }).then((result) => {
+        if (result.isConfirmed) {
+            Swal.fire({ title: 'កំពុងបញ្ជូន...', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
+            
+            $.ajax({
+                url: `/services/estimation/${encId}`,
+                type: 'POST',
+                headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
+                data: {
+                    new_estimated_datetime: result.value.datetime,
+                    estimation_remark: result.value.remark
+                },
+                success: function(res) {
+                    if (res.success) {
+                        Swal.fire({ toast: true, position: 'top-end', icon: 'success', title: 'បញ្ជូនជោគជ័យ!', showConfirmButton: false, timer: 1500 })
+                        .then(() => window.location.reload());
+                    } else {
+                        Swal.fire('បរាជ័យ', res.message || 'មានបញ្ហា!', 'error');
+                    }
+                },
+                error: function(xhr) {
+                    let errMsg = 'មានបញ្ហាក្នុងការភ្ជាប់ (Status: ' + xhr.status + ')';
+                    if (xhr.status === 403) errMsg = 'គណនីរបស់អ្នកគ្មានសិទ្ធិទេ!';
+                    if (xhr.status === 419) errMsg = 'Session ផុតកំណត់ សូម Refresh (F5)!';
+                    Swal.fire('បរាជ័យ', errMsg, 'error');
+                }
+            });
+        }
+    });
+}
+
         function filterByCategory(category) {
             document.getElementById('catFilter').value = category === 'total' ? 'all' : category;
             document.getElementById('filterForm').submit();
@@ -1008,9 +893,7 @@
                 cancelButtonColor: '#cbd5e1',
                 confirmButtonText: '<i class="fas fa-ban me-1"></i> បាទ បោះបង់វា!',
                 cancelButtonText: 'ថយក្រោយ',
-                customClass: {
-                    popup: 'rounded-4'
-                }
+                customClass: { popup: 'rounded-4' }
             }).then((result) => {
                 if (result.isConfirmed) document.getElementById('cancel-form-' + id).submit();
             });
@@ -1026,15 +909,12 @@
                 cancelButtonColor: '#cbd5e1',
                 confirmButtonText: '<i class="fas fa-box-archive me-1"></i> បាទ ទុកក្នុងបណ្ណសារ',
                 cancelButtonText: 'ថយក្រោយ',
-                customClass: {
-                    popup: 'rounded-4'
-                }
+                customClass: { popup: 'rounded-4' }
             }).then((result) => {
                 if (result.isConfirmed) document.getElementById('archive-form-' + id).submit();
             });
         }
 
-        // 🌟 មុខងារ Arrived ថ្មី (ពេលចុចប៊ូតុង Arrived) 🌟
         function markAsArrivedIndex(id, plate) {
             Swal.fire({
                 title: 'អតិថិជនមកដល់ហើយ?',
@@ -1045,38 +925,20 @@
                 cancelButtonColor: '#cbd5e1',
                 confirmButtonText: '<i class="fas fa-check-circle me-1"></i> មកដល់ហើយ',
                 cancelButtonText: 'បោះបង់',
-                customClass: {
-                    popup: 'rounded-4'
-                }
+                customClass: { popup: 'rounded-4' }
             }).then((result) => {
                 if (result.isConfirmed) {
-                    Swal.fire({
-                        title: 'កំពុងដំណើរការ...',
-                        allowOutsideClick: false,
-                        didOpen: () => {
-                            Swal.showLoading();
-                        }
-                    });
+                    Swal.fire({ title: 'កំពុងដំណើរការ...', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
                     $.ajax({
                         url: `{{ url('workshop/arrive') }}/${id}`,
                         type: 'POST',
-                        data: {
-                            _token: '{{ csrf_token() }}'
-                        },
+                        headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
                         success: function() {
-                            Swal.fire({
-                                toast: true,
-                                position: 'top-end',
-                                icon: 'success',
-                                title: 'ទទួលបានជោគជ័យ!',
-                                showConfirmButton: false,
-                                timer: 2000
-                            });
+                            Swal.fire({ toast: true, position: 'top-end', icon: 'success', title: 'ទទួលបានជោគជ័យ!', showConfirmButton: false, timer: 2000 });
                             setTimeout(() => window.location.reload(), 1000);
                         },
                         error: function(xhr) {
-                            let errMsg = xhr.responseJSON ? xhr.responseJSON.message :
-                                'មានបញ្ហាក្នុងការភ្ជាប់ទៅប្រព័ន្ធ!';
+                            let errMsg = xhr.responseJSON ? xhr.responseJSON.message : 'មានបញ្ហាក្នុងការភ្ជាប់ទៅប្រព័ន្ធ!';
                             Swal.fire('បរាជ័យ', errMsg, 'error');
                         }
                     });
@@ -1119,8 +981,7 @@
                     selectHtml += `<option value="${key}" ${isSel}>${allOpts[key]}</option>`;
                 }
             } else {
-                if (defaultVal === '') selectHtml +=
-                    `<option value="" disabled selected>--- សូមជ្រើសរើសកំណត់ចំណាំ ---</option>`;
+                if (defaultVal === '') selectHtml += `<option value="" disabled selected>--- សូមជ្រើសរើសកំណត់ចំណាំ ---</option>`;
                 for (let key in allOpts) {
                     let isSel = (key === defaultVal) ? 'selected' : '';
                     selectHtml += `<option value="${key}" ${isSel}>${allOpts[key]}</option>`;
@@ -1135,9 +996,7 @@
                 cancelButtonText: 'បិទ',
                 confirmButtonColor: '#002663',
                 cancelButtonColor: '#64748b',
-                customClass: {
-                    popup: 'rounded-4'
-                },
+                customClass: { popup: 'rounded-4' },
                 showLoaderOnConfirm: true,
                 preConfirm: () => {
                     let val = document.getElementById('swal-note-select').value;
@@ -1149,10 +1008,8 @@
                     return $.ajax({
                         url: `/services/note/${id}`,
                         type: 'POST',
-                        data: {
-                            _token: '{{ csrf_token() }}',
-                            note: val
-                        }
+                        headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
+                        data: { note: val }
                     }).then(res => {
                         if (!res.success) throw new Error(res.message);
                         return res;
@@ -1163,13 +1020,8 @@
                 allowOutsideClick: () => !Swal.isLoading()
             }).then(res => {
                 if (res.isConfirmed) {
-                    Swal.fire({
-                        title: 'ជោគជ័យ!',
-                        text: 'បានរក្សាទុក!',
-                        icon: 'success',
-                        timer: 1500,
-                        showConfirmButton: false
-                    }).then(() => window.location.reload());
+                    Swal.fire({ title: 'ជោគជ័យ!', text: 'បានរក្សាទុក!', icon: 'success', timer: 1500, showConfirmButton: false })
+                    .then(() => window.location.reload());
                 }
             });
         }
@@ -1179,14 +1031,10 @@
             let isShowingAlert = false;
             setInterval(function() {
                 if (isShowingAlert) return;
-                $.get("{{ route('bookings.checkNew') }}", {
-                    last_id: lastId
-                }).done(function(res) {
+                $.get("{{ route('bookings.checkNew') }}", { last_id: lastId }).done(function(res) {
                     if (res.hasNew) {
                         isShowingAlert = true;
-                        new Audio(
-                                'https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3')
-                            .play().catch(e => {});
+                        new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3').play().catch(e => {});
                         Swal.fire({
                             title: '🔔 ការកក់ថ្មីបានចូលមកដល់!',
                             text: `អតិថិជន: ${res.customer} | ស្លាកលេខ: ${res.plate}`,
@@ -1194,13 +1042,9 @@
                             confirmButtonColor: '#002663',
                             confirmButtonText: 'បង្ហាញទិន្នន័យថ្មី',
                             allowOutsideClick: false,
-                            customClass: {
-                                popup: 'rounded-4'
-                            }
+                            customClass: { popup: 'rounded-4' }
                         }).then((result) => {
-                            if (result.isConfirmed) {
-                                window.location.reload();
-                            }
+                            if (result.isConfirmed) window.location.reload();
                             isShowingAlert = false;
                         });
                         lastId = res.new_id;
@@ -1212,43 +1056,18 @@
                     let ts = parseInt($(this).data('book-ts'));
                     let status = $(this).data('status');
                     let customerName = $(this).data('customer');
-                    if (ts > 0 && (status === 'pending' || status === 'overdue' || status ===
-                            'waiting approved')) {
+                    if (ts > 0 && (status === 'pending' || status === 'overdue' || status === 'waiting approved')) {
                         let diffLate = nowTs - ts;
                         let diffSoon = ts - nowTs;
                         if (diffLate >= 900 && diffLate < 960 && !$(this).data('alerted-late')) {
                             $(this).data('alerted-late', true);
-                            new Audio(
-                                'https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3'
-                                ).play().catch(e => {});
-                            Swal.fire({
-                                toast: true,
-                                position: 'top-end',
-                                icon: 'warning',
-                                title: `អតិថិជន ${customerName} ហួសម៉ោង 15 នាទីហើយ! (Overdue)`,
-                                showConfirmButton: false,
-                                timer: 8000,
-                                customClass: {
-                                    popup: 'rounded-4 shadow-lg'
-                                }
-                            });
+                            new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3').play().catch(e => {});
+                            Swal.fire({ toast: true, position: 'top-end', icon: 'warning', title: `អតិថិជន ${customerName} ហួសម៉ោង 15 នាទីហើយ! (Overdue)`, showConfirmButton: false, timer: 8000, customClass: { popup: 'rounded-4 shadow-lg' } });
                         }
                         if (diffSoon >= 840 && diffSoon <= 900 && !$(this).data('alerted-soon')) {
                             $(this).data('alerted-soon', true);
-                            new Audio(
-                                'https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3'
-                                ).play().catch(e => {});
-                            Swal.fire({
-                                toast: true,
-                                position: 'top-end',
-                                icon: 'info',
-                                title: `អតិថិជន ${customerName} សល់ 15 នាទីទៀតដល់ម៉ោងជួសជុល!`,
-                                showConfirmButton: false,
-                                timer: 8000,
-                                customClass: {
-                                    popup: 'rounded-4 shadow-lg'
-                                }
-                            });
+                            new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3').play().catch(e => {});
+                            Swal.fire({ toast: true, position: 'top-end', icon: 'info', title: `អតិថិជន ${customerName} សល់ 15 នាទីទៀតដល់ម៉ោងជួសជុល!`, showConfirmButton: false, timer: 8000, customClass: { popup: 'rounded-4 shadow-lg' } });
                         }
                     }
                 });
@@ -1274,9 +1093,7 @@
                 cancelButtonColor: '#64748b',
                 confirmButtonText: '<i class="fas fa-file-excel me-1"></i> ទាញយក',
                 cancelButtonText: 'បោះបង់',
-                customClass: {
-                    popup: 'rounded-4 shadow-lg'
-                },
+                customClass: { popup: 'rounded-4 shadow-lg' },
                 preConfirm: () => {
                     const from = document.getElementById('exportFromDate').value;
                     const to = document.getElementById('exportToDate').value;
@@ -1284,10 +1101,7 @@
                         Swal.showValidationMessage('សូមជ្រើសរើសកាលបរិច្ឆេទទាំងពីរ!');
                         return false;
                     }
-                    return {
-                        from: from,
-                        to: to
-                    };
+                    return { from: from, to: to };
                 }
             }).then((result) => {
                 if (result.isConfirmed) {
@@ -1306,14 +1120,7 @@
         }
 
         function executeExportAPI(fromDate, toDate, isMonthly) {
-            Swal.fire({
-                title: 'កំពុងប្រមូលទិន្នន័យ...',
-                text: 'សូមរង់ចាំបន្តិច',
-                allowOutsideClick: false,
-                didOpen: () => {
-                    Swal.showLoading();
-                }
-            });
+            Swal.fire({ title: 'កំពុងប្រមូលទិន្នន័យ...', text: 'សូមរង់ចាំបន្តិច', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
             let branch = $('#branchFilter').length ? $('#branchFilter').val() : 'all';
             let search = $('#liveSearch').val();
             let category = $('#catFilter').val();
@@ -1321,14 +1128,7 @@
             $.ajax({
                 url: window.location.href.split('?')[0],
                 type: 'GET',
-                data: {
-                    fetch_all_for_export: 1,
-                    from_date: fromDate,
-                    to_date: toDate,
-                    branch: branch,
-                    search: search,
-                    category: category
-                },
+                data: { fetch_all_for_export: 1, from_date: fromDate, to_date: toDate, branch: branch, search: search, category: category },
                 success: async function(res) {
                     if (res.success && res.data.length > 0) {
                         await buildExcelFile(res.data, fromDate, toDate, isMonthly);
@@ -1338,245 +1138,70 @@
                         Swal.fire('បរាជ័យ', 'មិនអាចទាញទិន្នន័យបានទេ', 'error');
                     }
                 },
-                error: function() {
-                    Swal.fire('បរាជ័យ', 'មានបញ្ហាបច្ចេកទេស', 'error');
-                }
+                error: function() { Swal.fire('បរាជ័យ', 'មានបញ្ហាបច្ចេកទេស', 'error'); }
             });
         }
 
         async function buildExcelFile(dataList, fromDate, toDate, isMonthly) {
-            Swal.fire({
-                title: 'កំពុងរៀបចំ File Excel...',
-                allowOutsideClick: false,
-                didOpen: () => {
-                    Swal.showLoading();
-                }
-            });
+            Swal.fire({ title: 'កំពុងរៀបចំ File Excel...', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
             const workbook = new ExcelJS.Workbook();
             const worksheet = workbook.addWorksheet('MG Report');
-            const defaultFont = {
-                name: 'Khmer OS Content',
-                size: 10
-            };
-            const headers = [{
-                    header: 'Customer Name',
-                    key: 'col_0'
-                }, {
-                    header: 'Contact',
-                    key: 'col_1'
-                }, {
-                    header: 'Model',
-                    key: 'col_2'
-                }, {
-                    header: 'Plate',
-                    key: 'col_3'
-                },
-                {
-                    header: 'Mileage',
-                    key: 'col_4'
-                }, {
-                    header: 'Service Type',
-                    key: 'col_5'
-                }, {
-                    header: 'Service Advisor',
-                    key: 'col_6'
-                }, {
-                    header: 'Technician',
-                    key: 'col_7'
-                },
-                {
-                    header: 'Branch',
-                    key: 'col_8'
-                }, {
-                    header: 'Date & Time',
-                    key: 'col_9'
-                }, {
-                    header: 'Status',
-                    key: 'col_10'
-                }, {
-                    header: 'Start Time',
-                    key: 'col_11'
-                },
-                {
-                    header: 'End Time',
-                    key: 'col_12'
-                }, {
-                    header: 'Duration',
-                    key: 'col_13'
-                }, {
-                    header: 'Customer Remark',
-                    key: 'col_14'
-                }, {
-                    header: 'Admin Notes',
-                    key: 'col_15'
-                }
+            const defaultFont = { name: 'Khmer OS Content', size: 10 };
+            const headers = [
+                { header: 'Customer Name', key: 'col_0' }, { header: 'Contact', key: 'col_1' }, { header: 'Model', key: 'col_2' }, { header: 'Plate', key: 'col_3' },
+                { header: 'Mileage', key: 'col_4' }, { header: 'Service Type', key: 'col_5' }, { header: 'Service Advisor', key: 'col_6' }, { header: 'Technician', key: 'col_7' },
+                { header: 'Branch', key: 'col_8' }, { header: 'Date & Time', key: 'col_9' }, { header: 'Est. Complete', key: 'col_10' }, { header: 'Status', key: 'col_11' }, 
+                { header: 'Start Time', key: 'col_12' }, { header: 'End Time', key: 'col_13' }, { header: 'Duration', key: 'col_14' }, { header: 'Customer Remark', key: 'col_15' }, { header: 'Admin Notes', key: 'col_16' }
             ];
             const totalCols = headers.length;
             worksheet.mergeCells(1, 1, 1, totalCols);
             const titleCell = worksheet.getCell(1, 1);
-            titleCell.value = isMonthly ? 'MG SERVICE CAMBODIA - MONTHLY REPORT' :
-                `MG SERVICE CAMBODIA - EXPORT REPORT (${fromDate} TO ${toDate})`;
-            titleCell.font = {
-                name: 'Khmer OS Content',
-                size: 14,
-                bold: true,
-                color: {
-                    argb: 'FF002663'
-                }
-            };
-            titleCell.alignment = {
-                vertical: 'middle',
-                horizontal: 'center'
-            };
+            titleCell.value = isMonthly ? 'MG SERVICE CAMBODIA - MONTHLY REPORT' : `MG SERVICE CAMBODIA - EXPORT REPORT (${fromDate} TO ${toDate})`;
+            titleCell.font = { name: 'Khmer OS Content', size: 14, bold: true, color: { argb: 'FF002663' } };
+            titleCell.alignment = { vertical: 'middle', horizontal: 'center' };
             worksheet.mergeCells(2, 1, 2, totalCols);
             const dateCell = worksheet.getCell(2, 1);
             dateCell.value = 'Export Date: ' + new Date().toLocaleString('en-GB');
-            dateCell.font = {
-                name: 'Khmer OS Content',
-                size: 10,
-                italic: true,
-                color: {
-                    argb: 'FF64748B'
-                }
-            };
-            dateCell.alignment = {
-                horizontal: 'center'
-            };
+            dateCell.font = { name: 'Khmer OS Content', size: 10, italic: true, color: { argb: 'FF64748B' } };
+            dateCell.alignment = { horizontal: 'center' };
             worksheet.getRow(4).values = headers.map(h => h.header);
-            worksheet.columns = headers.map(h => ({
-                key: h.key
-            }));
+            worksheet.columns = headers.map(h => ({ key: h.key }));
             const headerRow = worksheet.getRow(4);
             headerRow.eachCell((cell) => {
-                cell.font = {
-                    name: 'Khmer OS Content',
-                    size: 10,
-                    bold: true,
-                    color: {
-                        argb: 'FFFFFFFF'
-                    }
-                };
-                cell.fill = {
-                    type: 'pattern',
-                    pattern: 'solid',
-                    fgColor: {
-                        argb: 'FF002663'
-                    }
-                };
-                cell.alignment = {
-                    vertical: 'middle',
-                    horizontal: 'center',
-                    wrapText: true
-                };
-                cell.border = {
-                    top: {
-                        style: 'medium',
-                        color: {
-                            argb: 'FF002663'
-                        }
-                    },
-                    left: {
-                        style: 'thin',
-                        color: {
-                            argb: 'FFFFFFFF'
-                        }
-                    },
-                    bottom: {
-                        style: 'medium',
-                        color: {
-                            argb: 'FF002663'
-                        }
-                    },
-                    right: {
-                        style: 'thin',
-                        color: {
-                            argb: 'FFFFFFFF'
-                        }
-                    }
-                };
+                cell.font = { name: 'Khmer OS Content', size: 10, bold: true, color: { argb: 'FFFFFFFF' } };
+                cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF002663' } };
+                cell.alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
+                cell.border = { top: { style: 'medium', color: { argb: 'FF002663' } }, left: { style: 'thin', color: { argb: 'FFFFFFFF' } }, bottom: { style: 'medium', color: { argb: 'FF002663' } }, right: { style: 'thin', color: { argb: 'FFFFFFFF' } } };
             });
             headerRow.height = 25;
-            const getColLetter = (c) => {
-                let t, l = '';
-                while (c > 0) {
-                    t = (c - 1) % 26;
-                    l = String.fromCharCode(t + 65) + l;
-                    c = (c - t - 1) / 26;
-                }
-                return l;
-            };
+            const getColLetter = (c) => { let t, l = ''; while (c > 0) { t = (c - 1) % 26; l = String.fromCharCode(t + 65) + l; c = (c - t - 1) / 26; } return l; };
             worksheet.autoFilter = `A4:${getColLetter(totalCols)}4`;
             dataList.forEach(rowData => {
                 const newRow = worksheet.addRow(rowData);
                 newRow.eachCell((cell) => {
                     cell.font = defaultFont;
-                    cell.alignment = {
-                        vertical: 'middle',
-                        horizontal: 'center',
-                        wrapText: true
-                    };
-                    cell.border = {
-                        top: {
-                            style: 'thin',
-                            color: {
-                                argb: 'FFCBD5E1'
-                            }
-                        },
-                        left: {
-                            style: 'thin',
-                            color: {
-                                argb: 'FFCBD5E1'
-                            }
-                        },
-                        bottom: {
-                            style: 'thin',
-                            color: {
-                                argb: 'FFCBD5E1'
-                            }
-                        },
-                        right: {
-                            style: 'thin',
-                            color: {
-                                argb: 'FFCBD5E1'
-                            }
-                        }
-                    };
+                    cell.alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
+                    cell.border = { top: { style: 'thin', color: { argb: 'FFCBD5E1' } }, left: { style: 'thin', color: { argb: 'FFCBD5E1' } }, bottom: { style: 'thin', color: { argb: 'FFCBD5E1' } }, right: { style: 'thin', color: { argb: 'FFCBD5E1' } } };
                 });
             });
             worksheet.columns.forEach((column) => {
                 let maxLen = 0;
-                column.eachCell({
-                    includeEmpty: true
-                }, (cell, rowNumber) => {
-                    if (rowNumber >= 4) {
-                        const val = cell.value ? cell.value.toString() : '';
-                        if (val.length > maxLen) {
-                            maxLen = val.length;
-                        }
-                    }
+                column.eachCell({ includeEmpty: true }, (cell, rowNumber) => {
+                    if (rowNumber >= 4) { const val = cell.value ? cell.value.toString() : ''; if (val.length > maxLen) { maxLen = val.length; } }
                 });
                 column.width = Math.min(Math.max(maxLen + 2, 12), 45);
             });
             const buffer = await workbook.xlsx.writeBuffer();
-            const blob = new Blob([buffer], {
-                type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-            });
+            const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
             const fileNamePrefix = isMonthly ? "MG_Monthly_Report_" : "MG_Custom_Report_";
             saveAs(blob, fileNamePrefix + new Date().toISOString().slice(0, 10) + ".xlsx");
             Swal.close();
-            Swal.fire({
-                toast: true,
-                position: 'top-end',
-                icon: 'success',
-                title: 'Export Excel ជោគជ័យ!',
-                showConfirmButton: false,
-                timer: 3000
-            });
+            Swal.fire({ toast: true, position: 'top-end', icon: 'success', title: 'Export Excel ជោគជ័យ!', showConfirmButton: false, timer: 3000 });
         }
 
-        // 🌟 មុខងារ Quick View 🌟
-        function showQuickView(name, phone, model, plate, mileage, service, date, time, duration, branch, sa, tech, status,
+        function showQuickView(name, phone, model, plate, mileage, service, date, time, est_complete, duration, branch, sa, tech, status,
             statusClass, remark, note) {
+            let estHtml = est_complete !== 'N/A' ? `<p style="margin: 5px 0 0; font-weight: 700; color: #0891b2; font-size: 0.85rem;"><i class="fas fa-flag-checkered me-1"></i> Est: ${est_complete}</p>` : '';
             let html = `
             <div style="text-align: left; font-family: 'Plus Jakarta Sans', 'Noto Sans Khmer', sans-serif; padding: 5px;">
                 <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px dashed #cbd5e1; padding-bottom: 15px; margin-bottom: 20px;">
@@ -1594,7 +1219,7 @@
                 <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 15px; margin-bottom: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.01);">
                     <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
                         <div style="flex: 1;"><p style="margin: 0 0 5px; color: #64748b; font-size: 0.75rem; font-weight: 800; text-transform: uppercase;">សេវាកម្ម / Service Type</p><p style="margin: 0; font-weight: 800; color: #e31e24; font-size: 1rem;">${service}</p></div>
-                        <div style="flex: 1; text-align: right;"><p style="margin: 0 0 5px; color: #64748b; font-size: 0.75rem; font-weight: 800; text-transform: uppercase;">កាលបរិច្ឆេទ / Date & Time</p><p style="margin: 0; font-weight: 700; color: #334155; font-size: 0.95rem;"><i class="far fa-calendar text-primary me-1"></i> ${date} <span style="color:#cbd5e1; margin:0 5px;">|</span> <i class="far fa-clock text-primary me-1"></i> ${time}</p></div>
+                        <div style="flex: 1; text-align: right;"><p style="margin: 0 0 5px; color: #64748b; font-size: 0.75rem; font-weight: 800; text-transform: uppercase;">កាលបរិច្ឆេទ / Date & Time</p><p style="margin: 0; font-weight: 700; color: #334155; font-size: 0.95rem;"><i class="far fa-calendar text-primary me-1"></i> ${date} <span style="color:#cbd5e1; margin:0 5px;">|</span> <i class="far fa-clock text-primary me-1"></i> ${time}</p>${estHtml}</div>
                     </div><hr style="border-color: #e2e8f0; margin: 12px 0; border-style: dashed;">
                     <div style="display: flex; justify-content: space-between;">
                         <div style="flex: 1;"><p style="margin: 0 0 5px; color: #64748b; font-size: 0.75rem; font-weight: 800; text-transform: uppercase;">សាខា / Branch</p><p style="margin: 0; font-weight: 700; color: #002663; font-size: 0.9rem;"><i class="fas fa-map-marker-alt text-danger me-1"></i> ${branch}</p></div>
@@ -1606,20 +1231,10 @@
                     <div style="background: #f8fafc; padding: 12px 15px; border-radius: 10px; border: 1px solid #e2e8f0; border-left: 4px solid #64748b;"><p style="margin: 0 0 5px; color: #475569; font-size: 0.75rem; font-weight: 800; text-transform: uppercase;">កំណត់ចំណាំផ្ទៃក្នុង / Admin Note</p><p style="margin: 0; font-size: 0.9rem; color: #334155; font-style: italic; line-height: 1.5;">${note ? `<i class="fas fa-sticky-note text-slate-400 me-1"></i> ${note}` : '<span style="color: #cbd5e1;">មិនមានកំណត់ចំណាំទេ...</span>'}</p></div>
                 </div>
             </div>`;
-            Swal.fire({
-                html: html,
-                showCloseButton: true,
-                showConfirmButton: false,
-                width: '650px',
-                customClass: {
-                    popup: 'rounded-4 shadow-lg'
-                }
-            });
+            Swal.fire({ html: html, showCloseButton: true, showConfirmButton: false, width: '650px', customClass: { popup: 'rounded-4 shadow-lg' } });
         }
 
-        // 🌟 មុខងារ បោះពុម្ពវិក្កយបត្រ 🌟
-        function showCompleteJobPopup(id, name, phone, vehicle, plate, mileage, service, date, start, end, duration, branch,
-            sa, tech) {
+        function showCompleteJobPopup(id, name, phone, vehicle, plate, mileage, service, date, start, end, duration, branch, sa, tech) {
             let ticketHTML = `
             <div id="printable-ticket" style="font-family: 'Plus Jakarta Sans', 'Noto Sans Khmer', sans-serif; padding: 25px; color: #1e293b; text-align: left; background: white; border-radius: 16px; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px rgba(0,0,0,0.02);">
                 <div style="display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px dashed #cbd5e1; padding-bottom: 15px; margin-bottom: 20px;">
@@ -1645,58 +1260,21 @@
                     <i class="fas fa-barcode" style="font-size: 3.5rem; color: #1e293b; letter-spacing: -3px; transform: scaleY(1.5);"></i><p style="font-size: 0.7rem; color: #94a3b8; margin-top: 10px; font-family: monospace;">*${id}*</p>
                 </div>
             </div>`;
-            Swal.fire({
-                html: ticketHTML,
-                width: '580px',
-                showCloseButton: true,
-                showDenyButton: true,
-                showConfirmButton: true,
-                confirmButtonText: '<i class="fas fa-print me-1"></i> បោះពុម្ព (Print)',
-                confirmButtonColor: '#002663',
-                denyButtonText: '<i class="fas fa-file-pdf me-1"></i> Save PDF',
-                denyButtonColor: '#e31e24',
-                background: '#ffffff',
-                customClass: {
-                    popup: 'rounded-4 shadow-lg'
-                }
-            }).then((result) => {
-                if (result.isConfirmed) printTicketFromPopup();
-                else if (result.isDenied) saveTicketAsPDF(plate);
-            });
+            Swal.fire({ html: ticketHTML, width: '580px', showCloseButton: true, showDenyButton: true, showConfirmButton: true, confirmButtonText: '<i class="fas fa-print me-1"></i> បោះពុម្ព (Print)', confirmButtonColor: '#002663', denyButtonText: '<i class="fas fa-file-pdf me-1"></i> Save PDF', denyButtonColor: '#e31e24', background: '#ffffff', customClass: { popup: 'rounded-4 shadow-lg' } }).then((result) => { if (result.isConfirmed) printTicketFromPopup(); else if (result.isDenied) saveTicketAsPDF(plate); });
         }
 
         function printTicketFromPopup() {
             const printContent = document.getElementById('printable-ticket').innerHTML;
             const windowPrint = window.open('', '', 'width=800,height=900');
-            windowPrint.document.write(
-                `<html><head><title>Print Receipt</title><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Noto+Sans+Khmer:wght@400;500;600;700&display=swap" rel="stylesheet"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"><style>body { font-family: 'Plus Jakarta Sans', 'Noto Sans Khmer', sans-serif; padding: 20px; color: #1e293b; } @media print { body { -webkit-print-color-adjust: exact; print-color-adjust: exact; } }</style></head><body>${printContent}</body></html>`
-            );
+            windowPrint.document.write(`<html><head><title>Print Receipt</title><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Noto+Sans+Khmer:wght@400;500;600;700&display=swap" rel="stylesheet"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"><style>body { font-family: 'Plus Jakarta Sans', 'Noto Sans Khmer', sans-serif; padding: 20px; color: #1e293b; } @media print { body { -webkit-print-color-adjust: exact; print-color-adjust: exact; } }</style></head><body>${printContent}</body></html>`);
             windowPrint.document.close();
             windowPrint.focus();
-            setTimeout(() => {
-                windowPrint.print();
-                windowPrint.close();
-            }, 800);
+            setTimeout(() => { windowPrint.print(); windowPrint.close(); }, 800);
         }
 
         function saveTicketAsPDF(plate) {
             const element = document.getElementById('printable-ticket');
-            const opt = {
-                margin: 0.3,
-                filename: 'MG_Service_Receipt_' + plate + '.pdf',
-                image: {
-                    type: 'jpeg',
-                    quality: 0.98
-                },
-                html2canvas: {
-                    scale: 2
-                },
-                jsPDF: {
-                    unit: 'in',
-                    format: 'a5',
-                    orientation: 'portrait'
-                }
-            };
+            const opt = { margin: 0.3, filename: 'MG_Service_Receipt_' + plate + '.pdf', image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2 }, jsPDF: { unit: 'in', format: 'a5', orientation: 'portrait' } };
             html2pdf().set(opt).from(element).save();
         }
     </script>

@@ -11,6 +11,8 @@ use Illuminate\Support\Facades\Log;
 use App\Services\FirebaseService;
 
 class ServiceBookingController extends Controller
+
+    
 {
     private function resolveId($id)
     {
@@ -161,6 +163,19 @@ class ServiceBookingController extends Controller
     }
     public function publicStore(Request $request)
     {
+        // 🌟 របាំងការពារកំពូល៖ ឆែកមើលថាតើមានសោសម្ងាត់ (API Key) ដែរឬទេ?
+        $secretKey = $request->header('X-API-KEY');
+        
+        // សោសម្ងាត់នេះ មានតែ Website របស់បងទេដែលដឹង! (បងអាចដូរពាក្យនេះបានតាមចិត្ត)
+        if ($secretKey !== 'MgDealer@2026!Secure') {
+            // បើអត់មានសោ ឬសោខុស ទាត់ចោលភ្លាមៗ មិនបាច់ឱ្យឆ្លងទៅឆែកអីផ្សេងទៀតទេ!
+            return response()->json([
+                'success' => false, 
+                'message' => 'Access Denied! អ្នកគ្មានសិទ្ធិបាញ់ទិន្នន័យចូលប្រព័ន្ធនេះទេ។ (Invalid API Key)'
+            ], 403);
+        }
+
+        // ១. តម្រូវឱ្យមានទិន្នន័យគ្រប់គ្រាន់
         $request->validate([
             'customer_name' => 'required', 
             'contact'       => 'required', 
@@ -173,13 +188,13 @@ class ServiceBookingController extends Controller
             'booking_time'  => 'required'
         ]);
 
+        // ២. ឆែកមើលថ្ងៃឈប់សម្រាកបុណ្យជាតិ
         $holidays = $this->getCambodiaHolidays();
         if (in_array($request->booking_date, $holidays)) {
             return response()->json(['success' => false, 'message' => 'សូមអភ័យទោស! ថ្ងៃដែលអ្នកជ្រើសរើសគឺជាថ្ងៃឈប់សម្រាកបុណ្យជាតិ។'], 422);
         }
 
-        // 🌟 កូដថ្មី៖ ឆែកមើលក្រែងលោឡាននេះកំពុងជាប់កក់ (Status មិនទាន់ Completed/Cancel) 🌟
-        // លុបដកឃ្លា និងសញ្ញា - ចេញទាំងអស់ ដើម្បីកុំឱ្យអតិថិជនវាយបំភាន់ប្រព័ន្ធបាន
+        // ៣. ឆែកមើលក្រែងលោឡាននេះកំពុងជាប់កក់ (Active Booking)
         $cleanPlate = strtoupper(preg_replace('/[^A-Za-z0-9]/', '', $request->plate));
         
         $activeBooking = \App\Models\ServiceBooking::whereRaw("UPPER(REPLACE(REPLACE(plate, ' ', ''), '-', '')) = ?", [$cleanPlate])
@@ -189,30 +204,45 @@ class ServiceBookingController extends Controller
             ])
             ->first();
 
-        // បើរកឃើញថាមានកក់មែន បោះសារ Error ជា JSON ទៅកាន់ SweetAlert
         if ($activeBooking) {
             return response()->json([
                 'success' => false, 
                 'message' => 'សុំទោស! ស្លាកលេខរថយន្តនេះ កំពុងមានការកក់នៅក្នុងប្រព័ន្ធរួចហើយ។ សូមរង់ចាំការកក់ចាស់បញ្ចប់សិន។'
             ], 422);
         }
-        // 🌟 បញ្ចប់កូដឆែក 🌟
 
         try {
             $formattedTime = \Carbon\Carbon::parse($request->booking_time)->format('H:i:s');
+            
+            // 🌟 ៤. របាំងការពារការបាញ់ទិន្នន័យសាខាក្លែងបន្លំពី PowerShell / Postman 🌟
             $locationValue = $request->location;
-            $branchId = is_numeric($locationValue) ? $locationValue : null;
             
-            if ($branchId) {
+            // ឆែកមើលថា location ដែលបាញ់មកជាលេខ ID ដែរឬទេ?
+            if (is_numeric($locationValue)) {
+                
+                // ទៅឆែកក្នុង Database ថាតើមាន ID សាខានេះពិតប្រាកដឬអត់?
                 $branch = DB::table('branches')->where('id', $locationValue)->first();
-                if ($branch) {
-                    $locationValue = $branch->branch_name;
+                
+                if (!$branch) {
+                    // បើរកមិនឃើញ មានន័យថាគេលួចបន្លំលេខ ID (ឧ. ដាក់ 999) ត្រូវទាត់ចោលភ្លាម!
+                    return response()->json(['success' => false, 'message' => 'ទិន្នន័យសាខាមិនត្រឹមត្រូវទេ! (Invalid Branch)'], 422);
                 }
+                
+                // បើត្រឹមត្រូវ យកឈ្មោះសាខាទៅ Save ជំនួសលេខ ID
+                $locationValue = $branch->branch_name;
+                $branchId = $branch->id;
+                
+            } else {
+                // បើគេបាញ់មកជាអក្សរផ្ដេសផ្ដាស មិនមែនជាលេខ ក៏ត្រូវទាត់ចោលដែរ
+                return response()->json(['success' => false, 'message' => 'ទម្រង់សាខាមិនត្រឹមត្រូវទេ!'], 422);
             }
+            // 🌟 បញ្ចប់របាំងការពារ 🌟
             
+            // ៥. សម្អាតទិន្នន័យលេខកុងទ័រ (យកតែលេខ)
             $cleanMileage = (int) preg_replace('/[^0-9]/', '', $request->mileage);
             $bookingStatus = ($request->has('is_walk_in') && $request->is_walk_in == 1) ? 'Arrived' : 'Pending';
 
+            // ៦. បញ្ចូលទិន្នន័យទៅក្នុង Database
             $booking = new \App\Models\ServiceBooking;
             $booking->fill([
                 'customer_name' => $request->customer_name, 
@@ -231,9 +261,11 @@ class ServiceBookingController extends Controller
             ]);
             $booking->save();
 
+            // ៧. ផ្ញើ Notification
             $this->sendNewBookingAlert($booking, '🌐 ប្រព័ន្ធ Online Booking (អតិថិជនកក់ខ្លួនឯង)');
 
             return response()->json(['success' => true, 'message' => 'Booking successfully created!', 'booking_id' => $booking->id]);
+            
         } catch (\Exception $e) {
             \Log::error('Public Store Booking Error: ' . $e->getMessage());
             return response()->json(['success' => false, 'message' => 'បញ្ហាប្រព័ន្ធ៖ '.$e->getMessage()], 500);
@@ -243,6 +275,7 @@ class ServiceBookingController extends Controller
     {
         $user = auth()->user();
         $query = ServiceBooking::query();
+        
 
         $workshopBranchIds = [10, 11, 12, 13];
         $branches = DB::table('branches')->whereIn('id', $workshopBranchIds)->get();
@@ -354,26 +387,207 @@ class ServiceBookingController extends Controller
                 }
             }
 
-            if ($activeCat === 'all' || $activeCat === 'total' || $activeCat === $bookCategory) {
-                $filteredIds[] = $book->id;
+            // 🌟 នេះគឺជាចំណុចដែលកែសម្រួលដើម្បីលាក់ Status ទាំង ៣ ពីទំព័រមុខ 🌟
+            if ($activeCat === 'all' || $activeCat === 'total') {
+                // ប្រសិនបើកំពុងមើល All យើងដក Cancel, Archive, និង Overdue ចេញពីតារាង
+                if (!in_array($bookCategory, ['cancel', 'archive', 'overdue'])) {
+                    $filteredIds[] = $book->id;
+                }
+            } else {
+                // ប្រសិនបើចុចលើកាតណាមួយ (ឧទាហរណ៍ចុចកាត Cancel) នោះយើងបង្ហាញវាធម្មតា
+                if ($activeCat === $bookCategory) {
+                    $filteredIds[] = $book->id;
+                }
             }
         }
 
-        // 🌟 ដូរ booking_time ទៅជា 'asc' ដើម្បីរៀបម៉ោង ៨, ៩, ១០ តាមលំដាប់ 🌟
+        // ដូរ booking_time ទៅជា 'asc' ដើម្បីរៀបម៉ោង ៨, ៩, ១០ តាមលំដាប់
         $finalQuery = ServiceBooking::whereIn('id', $filteredIds)
-            ->orderBy('booking_date', 'desc') // រក្សាទុក 'desc' បើចង់អោយថ្ងៃថ្មីៗលោតមកលើគេ
-            ->orderBy('booking_time', 'asc'); // ដូរទៅ 'asc' ដើម្បីរៀបម៉ោងពីតូចទៅធំ
+            ->orderBy('booking_date', 'desc') 
+            ->orderBy('booking_time', 'asc'); 
+            
         $bookings = $finalQuery->paginate(15)->withQueryString();
 
         return view('Services.services_index', compact('bookings', 'stats', 'branches', 'fromDate', 'toDate'));
     }
+    public function updateEstimation(Request $request, $id)
+    {
+        try {
+            $realId = decrypt($id);
+            $booking = ServiceBooking::findOrFail($realId);
 
+            // 🌟 ១. ចាប់យកឈ្មោះអ្នកកំពុង Login ឱ្យបានប្រាកដ 🌟
+            $user = auth()->user();
+            $userName = $user->name ?? $user->username ?? $user->first_name ?? 'Admin (ID: ' . ($user->id ?? 0) . ')';
+
+            // 🌟 ២. ទាញប្រវត្តិ និងការពារកុំឱ្យ Error JSON 🌟
+            $history = $booking->estimation_history;
+            if (is_string($history)) {
+                $history = json_decode($history, true);
+            }
+            if (is_string($history)) { // ការពារ Double Encode
+                $history = json_decode($history, true);
+            }
+            if (!is_array($history)) {
+                $history = [];
+            }
+
+            // 🌟 ៣. បង្កើតកំណត់ត្រាថ្មី 🌟
+            $history[] = [
+                'estimated_datetime' => $request->new_estimated_datetime,
+                'remark'             => $request->estimation_remark,
+                'updated_by'         => $userName, // បោះឈ្មោះដែលចាប់បានចូល
+                'updated_at'         => now()->toDateTimeString(),
+            ];
+
+            // 🌟 ៤. Save ចូល Database 🌟
+            $booking->estimation_history = json_encode($history);
+            $booking->estimated_end_datetime = $request->new_estimated_datetime;
+            $booking->save();
+
+            return response()->json(['success' => true]);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => $e->getMessage()]);
+        }
+    }
+    public function dailyReport(Request $request)
+    {
+        $fromDate = $request->input('from_date'); 
+        $toDate = $request->input('to_date');
+        $selectedStatus = $request->input('status', 'pending_wip'); 
+        $selectedBranch = $request->input('branch', 'all'); 
+    
+        $query = \App\Models\ServiceBooking::query();
+    
+        // 🌟 1. Filter តាមសាខា (ចងទិន្នន័យលេខ និងឈ្មោះបញ្ចូលគ្នា) 🌟
+        if ($selectedBranch !== 'all') {
+            $query->where(function($q) use ($selectedBranch) {
+                // ស្វែងរកតាមពាក្យដែលបានរើសធម្មតា
+                $q->where('location', 'LIKE', '%' . $selectedBranch . '%');
+
+                // ស្វែងរកបន្ថែមសម្រាប់សាខាធំៗ ដើម្បីចាប់យកលេខ ID បញ្ចូលគ្នា
+                $str = strtolower($selectedBranch);
+                if (str_contains($str, '50m') || $str == '11') {
+                    $q->orWhere('location', 'LIKE', '%50m%')->orWhere('location', '11')->orWhere('branch_id', 11);
+                } elseif (str_contains($str, 'hq') || str_contains($str, 'head') || $str == '13') {
+                    $q->orWhere('location', 'LIKE', '%hq%')->orWhere('location', 'LIKE', '%head%')->orWhere('location', '13')->orWhere('branch_id', 13);
+                } elseif (str_contains($str, 'btb') || str_contains($str, 'battambang') || $str == '10') {
+                    $q->orWhere('location', 'LIKE', '%btb%')->orWhere('location', 'LIKE', '%battambang%')->orWhere('location', '10')->orWhere('branch_id', 10);
+                } elseif (str_contains($str, 'sr') || str_contains($str, 'siem') || $str == '12') {
+                    $q->orWhere('location', 'LIKE', '%sr%')->orWhere('location', 'LIKE', '%siem%')->orWhere('location', '12')->orWhere('branch_id', 12);
+                }
+            });
+        }
+    
+        if (!empty($fromDate) && !empty($toDate)) {
+            $query->whereDate('booking_date', '>=', $fromDate)
+                  ->whereDate('booking_date', '<=', $toDate);
+        }
+    
+        if ($selectedStatus !== 'all') {
+            if ($selectedStatus === 'pending') {
+                $query->whereIn('status', ['Pending', 'Waiting Approved', 'Waiting', 'Waiting Parts Order Local', 'Waiting Parts Order DHL', 'Waiting Parts Order by Sea', 'Waiting Delivery']);
+            } elseif ($selectedStatus === 'wip') {
+                $query->whereIn('status', ['In Progress', 'WIP', 'Under Repair', 'Under Diagnosis']);
+            } elseif ($selectedStatus === 'pending_wip') {
+                $query->whereNotIn('status', ['Completed', 'Close', 'Cancel', 'Cancelled', 'Archive', 'Archived']);
+            } else {
+                $query->where('status', $selectedStatus);
+            }
+        }
+    
+        $reports = $query->orderBy('created_at', 'desc')->get();
+    
+        if ($request->ajax() && $request->has('fetch_all_for_export')) {
+            return response()->json(['success' => true, 'data' => $reports]);
+        }
+    
+        $branchSummaries = [];
+        foreach ($reports as $booking) {
+            $branch = $booking->location ?? 'Unknown';
+            $branch = ucwords(trim(str_ireplace(['MG ', 'Mg '], '', $branch))); 
+            
+            // 🌟 2. ច្របាច់បញ្ចូលទិន្នន័យសាខាឱ្យចេញជា Card តែមួយរួមគ្នា 🌟
+            $branchLower = strtolower($branch);
+            $branchId = $booking->branch_id ?? '';
+
+            if (str_contains($branchLower, '50m') || $branch == '11' || $branchId == 11) {
+                $branch = 'Service 50m';
+            } elseif (str_contains($branchLower, 'hq') || str_contains($branchLower, 'head') || $branch == '13' || $branchId == 13) {
+                $branch = 'Service Hq (head Office)';
+            } elseif (str_contains($branchLower, 'btb') || str_contains($branchLower, 'battambang') || $branch == '10' || $branchId == 10) {
+                $branch = 'Service Btb (battambang)';
+            } elseif (str_contains($branchLower, 'sr') || str_contains($branchLower, 'siem') || $branch == '12' || $branchId == 12) {
+                $branch = 'Service Sr (siem Reap)';
+            }
+    
+            $statusKey = strtolower(trim($booking->status));
+    
+            if (!isset($branchSummaries[$branch])) {
+                $branchSummaries[$branch] = ['waiting' => 0, 'wip' => 0, 'delayed' => 0, 'total' => 0, 'cars' => []];
+            }
+    
+            $isWaiting = in_array($statusKey, ['pending', 'waiting approved', 'waiting', 'waiting parts order local', 'waiting parts order dhl', 'waiting parts order by sea', 'waiting delivery']);
+            $isWip = in_array($statusKey, ['in progress', 'wip', 'under repair', 'under diagnosis']);
+            
+            $isDelayed = false;
+            if (empty($booking->estimated_end_datetime)) {
+                $isDelayed = true; 
+            } else {
+                if (\Carbon\Carbon::parse($booking->estimated_end_datetime)->isPast()) {
+                    $isDelayed = true; 
+                }
+            }
+    
+            if ($isWaiting) $branchSummaries[$branch]['waiting']++;
+            if ($isWip) $branchSummaries[$branch]['wip']++;
+            if ($isDelayed) $branchSummaries[$branch]['delayed']++;
+            $branchSummaries[$branch]['total']++;
+    
+            $branchSummaries[$branch]['cars'][] = [
+                'plate' => $booking->plate ?? 'N/A',
+                'customer' => $booking->customer_name ?? 'N/A',
+                'status' => $booking->status,
+                'is_wip' => $isWip,
+                'is_delayed' => $isDelayed,
+                'est_complete' => $booking->estimated_end_datetime ? \Carbon\Carbon::parse($booking->estimated_end_datetime)->format('d-M-Y h:i A') : 'N/A'
+            ];
+        }
+    
+        // 🌟 3. ទាញយកឈ្មោះសាខាស្អាតៗទៅឱ្យ Filter Dropdown ប្រើ 🌟
+        $rawBranches = \App\Models\ServiceBooking::whereNotNull('location')->pluck('location')->toArray();
+        $cleanBranches = [];
+        foreach($rawBranches as $loc) {
+            $b = ucwords(trim(str_ireplace(['MG ', 'Mg '], '', $loc)));
+            $str = strtolower($b);
+            
+            if (str_contains($str, '50m') || $b == '11') $b = 'Service 50m';
+            elseif (str_contains($str, 'hq') || str_contains($str, 'head') || $b == '13') $b = 'Service Hq (head Office)';
+            elseif (str_contains($str, 'btb') || str_contains($str, 'battambang') || $b == '10') $b = 'Service Btb (battambang)';
+            elseif (str_contains($str, 'sr') || str_contains($str, 'siem') || $b == '12') $b = 'Service Sr (siem Reap)';
+            
+            if (!in_array($b, $cleanBranches)) {
+                $cleanBranches[] = $b;
+            }
+        }
+        sort($cleanBranches);
+        $allBranches = $cleanBranches;
+    
+        return view('Services.daily_report', compact('reports', 'fromDate', 'toDate', 'selectedStatus', 'selectedBranch', 'branchSummaries', 'allBranches'));
+    }
     public function create()
     {
+        // ពិនិត្យសិទ្ធិ User ហាមឃាត់ POS account (role_id == 18)
+        if (auth()->check() && auth()->user()->role_id == 18) {
+            abort(403, 'Access Denied! POS accounts do not have permission to access the booking creation page.');
+        }
+
+        // បង្ហាញផ្ទាំង Form បញ្ចូលទិន្នន័យ (Add Service)
         return view('Services.add_services');
     }
 
     public function store(Request $request)
+    
     {
         $request->validate([
             'customer_name' => 'required',
@@ -492,74 +706,97 @@ if ($activeBooking) {
             return back()->with('error', 'បញ្ហាប្រព័ន្ធ៖ '.$e->getMessage())->withInput();
         }
     
-    }public function edit($id)
-    {
-        // ស្វែងរកទិន្នន័យ Booking តាម ID
-        $booking = ServiceBooking::findOrFail($this->resolveId($id));
-
-        // 🌟 ១. ចាប់យក Branch ID ពីការកក់របស់អតិថិជន
-        // បើ branch_id អត់មានទិន្នន័យ (Null) វានឹងយក location មកប្រើជំនួស
-        $branchId = $booking->branch_id ?? $booking->location;
-
-        // 🌟 ២. ទាញយកឈ្មោះ SA និង មេជាង តាមសាខានោះចេញពី Table User
-        // ⚠️ ចំណាំ៖ សូមបងពិនិត្យមើលក្នុង Database ថា role_id របស់ SA ពិតជាលេខ 9 និងមេជាងលេខ 10 មែនឬអត់
-        $serviceAdvisors = \App\Models\User::where('branch_id', $branchId)
-                                           ->where('role_id', 9) 
-                                           ->where('status', 1) // ទាញយកតែបុគ្គលិកដែលកំពុងធ្វើការ (Active)
-                                           ->pluck('full_name');
-
-        $technicians = \App\Models\User::where('branch_id', $branchId)
-                                       ->where('role_id', 10)
-                                       ->where('status', 1) // ទាញយកតែបុគ្គលិកដែលកំពុងធ្វើការ (Active)
-                                       ->pluck('full_name');
-
-        // បញ្ជូនទិន្នន័យទាំងអស់ទៅកាន់ View
-        return view('Services.edit_services', compact('booking', 'serviceAdvisors', 'technicians'));
     }
+    public function edit($id)
+    {
+        $booking = \App\Models\ServiceBooking::findOrFail($this->resolveId($id));
 
+        $adminRoles = [1, 2, 6, 11];
+        $isAdmin = in_array(auth()->user()->role_id, $adminRoles);
+        
+        // 🌟 ចាប់យកទីតាំង (ការពារបញ្ហា Column ខុសគ្នា)
+        $targetBranchId = $booking->location ?? $booking->branch_id ?? auth()->user()->branch_id;
+        
+        $saQuery = \App\Models\User::where('role_id', 12)->where('status', 1);
+        $techQuery = \App\Models\EmployeeModel::where('status', 1);
+
+        $techPositionIds = [195, 196, 199, 200]; 
+
+        if ($isAdmin) {
+            // បើជា Admin គឺអាចមើលឃើញ SAs & មេជាងទាំងអស់
+            $techQuery->whereIn('position_id', $techPositionIds);
+        } else {
+            // 🌟 បើជា User ធម្មតា ទាញយកតែ SAs និងជាង ដែលមាន branch_id ដូចគ្នានឹងសាខាខ្លួនឯងប៉ុណ្ណោះ
+            $userBranch = auth()->user()->branch_id;
+            
+            $saQuery->where('branch_id', $userBranch);
+            $techQuery->where('branch_id', $userBranch)
+                      ->whereIn('position_id', $techPositionIds);
+        }
+
+        // ៤. ទាញយកទិន្នន័យចេញមកជា Array
+        $serviceAdvisors = $saQuery->pluck('full_name');
+        $technicians = $techQuery->pluck('full_name');
+
+        // ៥. ឡុកទម្រង់មិនឱ្យកែប្រែពេលឡានធ្វើរួច
+        $currentStatus = $booking->status ? strtolower($booking->status) : '';
+        $isLocked = in_array($currentStatus, ['completed', 'close', 'cancelled', 'archive', 'archived']);
+
+        // ៦. ចាប់យកឈ្មោះ User ដែលកំពុង Login
+        $currentUserName = auth()->user()->full_name ?? auth()->user()->name ?? auth()->user()->username ?? '';
+
+        return view('Services.edit_services', compact('booking', 'serviceAdvisors', 'technicians', 'isLocked', 'currentUserName'));
+    }
     public function update(Request $request, $id)
     {
-     
-        // 1. Validate តែទិន្នន័យចាំបាច់ដែលបញ្ជូនមកពី Form ប៉ុណ្ណោះ
+        // ១. Validate ទិន្នន័យចាំបាច់ (ដក 'location' ออกពី required ដើម្បីការពាររឿងអត់រើសសាខា)
         $request->validate([
             'customer_name' => 'required', 
             'contact'       => 'required', 
             'plate'         => 'required', 
             'model'         => 'required', 
-            'service_type'  => 'required'
+            'service_type'  => 'required',
+            'booking_date'  => 'required|date',
+            'booking_time'  => 'required',
         ]);
     
         try {
             $booking = ServiceBooking::findOrFail($this->resolveId($id));
     
-            // 2. ប្រើ update() ដើម្បី Save ទិន្នន័យថ្មី
+            // ២. ប្រើ update() ដើម្បី Save ទិន្នន័យថ្មីទាំងអស់ចូល Database
             $booking->update([
                 'customer_name'   => $request->customer_name,
                 'contact'         => $request->contact,
-                'plate'           => strtoupper($request->plate), // បំប្លែងស្លាកលេខទៅជាអក្សរធំជានិច្ច
+                'plate'           => strtoupper($request->plate), // បំប្លែងស្លាកលេខជាអក្សរធំជានិច្ច
                 'model'           => $request->model,
+                'mileage'         => $request->mileage,          // 🌟 គីឡូម៉ែត្រ
                 'service_type'    => $request->service_type,
-                'remark'          => $request->remark,
-                'note'            => $request->note,
                 
-                // 🌟 Update ព័ត៌មាន SA, មេជាង, និងម៉ោង 🌟
-                // ប្រសិនបើ Status ត្រូវបាន Lock (អត់មានផ្ញើមកពី Form) វានឹងរក្សា Status ចាស់ដដែល
-                'status'          => $request->status ?? $booking->status,
-                'sa_name'         => $request->sa_name,
-                'technician_name' => $request->technician_name,
+                // 🌟 ពេលវេលា និងកាលបរិច្ឆេទកក់ 🌟
+                'booking_date'    => $request->booking_date,
+                'booking_time'    => $request->booking_time,
                 'start_time'      => $request->start_time,
                 'end_time'        => $request->end_time,
+                
+                // 🌟 សាខា និងបុគ្គលិកចាត់តាំង (ប្រើ ?? $booking->location ដើម្បីការពារពេលអត់រើសសាខាថ្មី) 🌟
+                'location'        => $request->location ?? $booking->location,
+                'sa_name'         => $request->sa_name,
+                'technician_name' => $request->technician_name,
+                
+                // 🌟 ស្ថានភាព និងកំណត់ចំណាំ 🌟
+                'status'          => $request->status ?? $booking->status,
+                'remark'          => $request->remark,
+                'note'            => $request->note,
             ]);
     
             return redirect()->route('services.index')->with('success', 'កែប្រែព័ត៌មានជោគជ័យ!');
             
-        } catch (Exception $e) {
-            // កត់ត្រា Error ទុកក្នុង Log ដើម្បីងាយស្រួលឆែកមើលពេលមានបញ្ហា
+        } catch (\Exception $e) {
+            // កត់ត្រា Error ទុកក្នុង Log និងត្រឡប់ទៅវិញព្រមទាំងបង្ហាញមូលហេតុ
             \Log::error('Update Booking Error: ' . $e->getMessage()); 
             return back()->with('error', 'បញ្ហាប្រព័ន្ធ៖ '.$e->getMessage())->withInput();
         }
     }
-
     public function delete($id)
     {
         ServiceBooking::findOrFail($this->resolveId($id))->delete();
@@ -744,9 +981,43 @@ if ($activeBooking) {
     public function startJob(Request $request, $id)
     {
         try {
-            $job = ServiceBooking::findOrFail($id);
-            $job->update(['status' => 'In Progress', 'start_time' => Carbon::now()->format('H:i:s'), 'sa_name' => $request->sa_name, 'technician_name' => $request->technician_name]);
+            $job = \App\Models\ServiceBooking::findOrFail($id);
+            
+            // បន្ថែមការកត់ត្រា job_started_at និងចាប់យក booking_date ពី Popup
+            $job->update([
+                'booking_date'    => $request->booking_date, // 🌟 ចាប់យកថ្ងៃកក់ដែលបញ្ជូនមកពី AJAX
+                'status'          => 'In Progress', 
+                'start_time'      => \Carbon\Carbon::now()->format('H:i:s'), 
+                'job_started_at'  => \Carbon\Carbon::now(), 
+                'sa_name'         => $request->sa_name, 
+                'technician_name' => $request->technician_name
+            ]);
+            
             $this->sendTelegramStatusAlert($job);
+
+            return response()->json(['success' => true]);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => $e->getMessage()]);
+        }
+    }
+    public function holdJob($id)
+    {
+        try {
+            $booking = ServiceBooking::findOrFail($id);
+            
+            $updateData = ['status' => 'Hold'];
+
+            // 🌟 គណនាវិនាទីដែលធ្វើបាន រួចបូកបញ្ចូលទៅ total_seconds
+            if ($booking->job_started_at) {
+                $startTime = Carbon::parse($booking->job_started_at);
+                $secondsWorked = $startTime->diffInSeconds(Carbon::now());
+                
+                $updateData['total_seconds'] = $booking->total_seconds + $secondsWorked;
+                $updateData['job_started_at'] = null; // លុបម៉ោងចាប់ផ្តើមចោល ដើម្បីត្រៀម Resume លើកក្រោយ
+            }
+
+            $booking->update($updateData);
+            $this->sendTelegramStatusAlert($booking);
 
             return response()->json(['success' => true]);
         } catch (Exception $e) {
@@ -754,29 +1025,22 @@ if ($activeBooking) {
         }
     }
 
-    public function holdJob($id)
-    {
-        try {
-            $booking = ServiceBooking::findOrFail($id);
-            $booking->update(['status' => 'Hold']);
-            $this->sendTelegramStatusAlert($booking);
-
-            return response()->json(['success' => true]);
-        } catch (Exception $e) {
-            return response()->json(['success' => false]);
-        }
-    }
-
     public function resumeJob($id)
     {
         try {
             $booking = ServiceBooking::findOrFail($id);
-            $booking->update(['status' => 'In Progress']);
+            
+            // 🌟 ពេល Resume ត្រូវកត់ត្រា job_started_at សារជាថ្មី ដើម្បីឱ្យនាឡិកាបន្តរាប់
+            $booking->update([
+                'status' => 'In Progress',
+                'job_started_at' => Carbon::now() 
+            ]);
+            
             $this->sendTelegramStatusAlert($booking);
 
             return response()->json(['success' => true]);
         } catch (Exception $e) {
-            return response()->json(['success' => false]);
+            return response()->json(['success' => false, 'message' => $e->getMessage()]);
         }
     }
 
@@ -784,7 +1048,22 @@ if ($activeBooking) {
     {
         try {
             $job = ServiceBooking::findOrFail($id);
-            $job->update(['status' => 'Completed', 'end_time' => now('Asia/Phnom_Penh')->format('H:i:s')]);
+            
+            $updateData = [
+                'status' => 'Completed', 
+                'end_time' => now('Asia/Phnom_Penh')->format('H:i:s')
+            ];
+
+            // 🌟 គណនាវិនាទីចុងក្រោយ បូកបញ្ចូលទៅ total_seconds មុននឹងបញ្ចប់
+            if ($job->job_started_at) {
+                $startTime = Carbon::parse($job->job_started_at);
+                $secondsWorked = $startTime->diffInSeconds(Carbon::now());
+                
+                $updateData['total_seconds'] = $job->total_seconds + $secondsWorked;
+                $updateData['job_started_at'] = null; 
+            }
+
+            $job->update($updateData);
             $this->sendTelegramStatusAlert($job);
 
             return response()->json(['success' => true]);
@@ -794,6 +1073,7 @@ if ($activeBooking) {
             return response()->json(['success' => false, 'message' => $e->getMessage()]);
         }
     }
+  
 
     public function updateNote(Request $request, $id)
     {
@@ -833,63 +1113,190 @@ if ($activeBooking) {
             return response()->json(['success' => false, 'message' => $e->getMessage()]);
         }
     }
-
-    public function performanceOverview(Request $request)
+    public function performanceOverview (Request $request)
     {
         $user = auth()->user();
         $workshopBranchIds = [10, 11, 12, 13];
         $branches = DB::table('branches')->whereIn('id', $workshopBranchIds)->get();
-        $selectedDate = $request->input('date', \Carbon\Carbon::today('Asia/Phnom_Penh')->format('Y-m-d'));
+        
+        // 🌟 ទទួលតម្លៃ From Date និង To Date
+        $fromDate = $request->input('from_date', Carbon::today('Asia/Phnom_Penh')->startOfMonth()->format('Y-m-d'));
+        $toDate = $request->input('to_date', Carbon::today('Asia/Phnom_Penh')->format('Y-m-d'));
+        
+        $selectedDate = $toDate;
         $baseQuery = ServiceBooking::query();
+        
         if ($user && ! in_array((int) $user->role_id, [1, 6, 11])) {
             $this->applyBranchFilterScope($baseQuery, $user->branch_id);
         } elseif ($request->filled('branch') && $request->branch !== 'all') {
             $this->applyBranchFilterScope($baseQuery, $request->branch);
         }
+
+        $dailyStandardSeconds = 8 * 3600; // 8 ម៉ោង = 28,800 វិនាទី
+
+        // ទាញយកទិន្នន័យពី Database តាមចន្លោះ From Date និង To Date
+        $monthlyBookings = (clone $baseQuery)
+            ->whereNotNull('technician_name')
+            ->where('technician_name', '!=', '')
+            ->where(function($query) use ($fromDate, $toDate) {
+                $query->whereBetween('booking_date', [$fromDate, $toDate])
+                      ->orWhereBetween('updated_at', [$fromDate . ' 00:00:00', $toDate . ' 23:59:59'])
+                      ->orWhereBetween('created_at', [$fromDate . ' 00:00:00', $toDate . ' 23:59:59']);
+            })
+            ->get();
+        
         $dailyCars = (clone $baseQuery)->whereDate('booking_date', $selectedDate)->get();
         $carsIn = $dailyCars->count();
         $carsDelivery = $dailyCars->whereIn('status', ['Completed', 'Close', 'completed', 'close'])->count();
         $todayPending = $dailyCars->whereNotIn('status', ['Completed', 'Close', 'Cancel', 'Archive', 'completed', 'close', 'cancel', 'archive'])->count();
+        
         $allPendingCars = (clone $baseQuery)->whereDate('booking_date', '<=', $selectedDate)->whereNotIn('status', ['Completed', 'Close', 'Cancel', 'Archive', 'completed', 'close', 'cancel', 'archive'])->get();
         $totalPending = $allPendingCars->count();
         $totalOrderPartLocal = $allPendingCars->whereIn('status', ['Waiting Parts Order Local', 'waiting parts order local'])->count();
         $totalOrderPartSea = $allPendingCars->whereIn('status', ['Waiting Parts Order by Sea', 'waiting parts order by sea'])->count();
+        
         $totalPartWarranty = 0;
         $totalPartRetail = 0;
         $saDailyStats = [];
         $saCarsInStats = [];
         $saDeliveryStats = [];
+        
         foreach ($dailyCars->whereNotNull('sa_name')->where('sa_name', '!=', '')->groupBy('sa_name') as $sa => $cars) {
-            $walkInCount = $cars->where('status', 'Arrived')->count();
-            $bookingCount = $cars->count() - $walkInCount;
-            $saDailyStats[$sa] = ['total' => $cars->count(), 'booking' => $bookingCount, 'walkin' => $walkInCount];
+            $walkInCount = $cars->filter(function ($car) {
+                return empty($car->booking_time);
+            })->count();
+            
+            $bookingCount = $cars->count() - $walkInCount; 
+            
+            $saDailyStats[$sa] = [
+                'total' => $cars->count(), 
+                'booking' => $bookingCount, 
+                'walkin' => $walkInCount
+            ];
+            
             $saCarsInStats[$sa] = $cars->count();
         }
+        
         foreach ($dailyCars->whereIn('status', ['Completed', 'Close', 'completed', 'close'])->whereNotNull('sa_name')->where('sa_name', '!=', '')->groupBy('sa_name') as $sa => $cars) {
             $saDeliveryStats[$sa] = $cars->count();
         }
+        
         $saPendingStats = [];
         foreach ($allPendingCars->whereNotNull('sa_name')->where('sa_name', '!=', '')->groupBy('sa_name') as $sa => $cars) {
             $saPendingStats[$sa] = $cars->count();
         }
-        $pendingDescStats = ['Under Repair' => $allPendingCars->whereIn('status', ['In Progress', 'WIP', 'Under Repair', 'in progress', 'wip', 'under repair'])->count(), 'Under Diagnostic' => $allPendingCars->whereIn('status', ['Under Diagnosis', 'under diagnosis'])->count(), 'Waiting Part' => $allPendingCars->whereIn('status', ['Waiting Parts Order Local', 'Waiting Parts Order DHL', 'Waiting Parts Order by Sea'])->count(), 'Waiting Approve' => $allPendingCars->whereIn('status', ['Waiting Approved', 'waiting approved'])->count(), 'Waiting Delivery' => $allPendingCars->whereIn('status', ['Waiting Delivery', 'waiting delivery'])->count(), 'Waiting QT' => 0, 'Under BP' => 0];
+        
+        $pendingDescStats = [
+            'Under Repair' => $allPendingCars->whereIn('status', ['In Progress', 'WIP', 'Under Repair', 'in progress', 'wip', 'under repair'])->count(), 
+            'Under Diagnostic' => $allPendingCars->whereIn('status', ['Under Diagnosis', 'under diagnosis'])->count(), 
+            'Waiting Part' => $allPendingCars->whereIn('status', ['Waiting Parts Order Local', 'Waiting Parts Order DHL', 'Waiting Parts Order by Sea'])->count(), 
+            'Waiting Approve' => $allPendingCars->whereIn('status', ['Waiting Approved', 'waiting approved'])->count(), 
+            'Waiting Delivery' => $allPendingCars->whereIn('status', ['Waiting Delivery', 'waiting delivery'])->count(), 
+            'Waiting QT' => 0, 
+            'Under BP' => 0
+        ];
+        
         $branchPendingStats = [];
         foreach ($allPendingCars->groupBy('location') as $loc => $cars) {
             $locObj = collect($branches)->firstWhere('id', $loc);
             $displayLoc = $locObj ? str_ireplace(['MG ', 'Mg '], '', $locObj->branch_name) : $loc;
             $branchPendingStats[$displayLoc] = $cars->count();
         }
+        
         $completedQuery = (clone $baseQuery)->whereIn('status', ['Completed', 'Close', 'completed', 'close']);
-        if ($request->filled('date')) {
-            $completedQuery->whereDate('booking_date', $selectedDate);
+        if ($request->filled('to_date') || $request->filled('date') || $request->filled('from_date')) {
+            $completedQuery->whereBetween('booking_date', [$fromDate, $toDate]);
         }
+        
         $topSA = (clone $completedQuery)->select('sa_name', DB::raw('count(*) as total'))->whereNotNull('sa_name')->where('sa_name', '!=', '')->groupBy('sa_name')->orderBy('total', 'desc')->take(10)->get();
         $topTech = (clone $completedQuery)->select('technician_name', DB::raw('count(*) as total'))->whereNotNull('technician_name')->where('technician_name', '!=', '')->groupBy('technician_name')->orderBy('total', 'desc')->take(10)->get();
         $totalThroughput = (clone $completedQuery)->count();
 
-        return view('Services.performance_overview', compact('branches', 'selectedDate', 'carsIn', 'carsDelivery', 'todayPending', 'totalPending', 'totalOrderPartLocal', 'totalOrderPartSea', 'totalPartWarranty', 'totalPartRetail', 'saDailyStats', 'saCarsInStats', 'saDeliveryStats', 'saPendingStats', 'pendingDescStats', 'branchPendingStats', 'topSA', 'topTech', 'totalThroughput'));
-    }
+        $techPerformances = [];
+        $groupedByTech = $monthlyBookings->groupBy('technician_name');
 
+        foreach ($groupedByTech as $techName => $bookings) {
+            
+            $calculateSeconds = function($booking) {
+                try {
+                    if (isset($booking->total_seconds) && (int)$booking->total_seconds > 0) {
+                        return (int) $booking->total_seconds;
+                    }
+                    
+                    if (!empty($booking->start_time) && !empty($booking->end_time)) {
+                        $dateStr = !empty($booking->booking_date) 
+                            ? Carbon::parse($booking->booking_date)->format('Y-m-d') 
+                            : date('Y-m-d');
+                        
+                        $start = Carbon::parse($dateStr . ' ' . trim($booking->start_time));
+                        $end = Carbon::parse($dateStr . ' ' . trim($booking->end_time));
+                        
+                        if ($end->lessThan($start)) {
+                             $end->addDay();
+                        }
+                        
+                        return $start->diffInSeconds($end);
+                    }
+                } catch (\Exception $e) {
+                    return 0; 
+                }
+                return 0;
+            };
+
+            // គណនាប្រចាំថ្ងៃ (Daily)
+            $dailySeconds = $bookings->filter(function($booking) use ($selectedDate) {
+                try {
+                    $dateToParse = $booking->booking_date ?? $booking->updated_at ?? $booking->created_at ?? now();
+                    return Carbon::parse($dateToParse)->timezone('Asia/Phnom_Penh')->format('Y-m-d') === $selectedDate;
+                } catch (\Exception $e) {
+                    return false;
+                }
+            })->sum($calculateSeconds);
+            
+            $dailyPercent = ($dailySeconds > 0) ? ($dailySeconds / $dailyStandardSeconds) * 100 : 0;
+            $dailyOTSeconds = max(0, $dailySeconds - $dailyStandardSeconds);
+            
+            // 🌟 គណនា Period Target តាមចំនួនថ្ងៃជាក់ស្តែងដែលជាងម្នាក់ៗមានការងារធ្វើ (Active Days)
+            $activeDaysCount = $bookings->map(function($booking) {
+                $dateToParse = $booking->booking_date ?? $booking->updated_at ?? $booking->created_at;
+                return $dateToParse ? Carbon::parse($dateToParse)->format('Y-m-d') : null;
+            })->filter()->unique()->count();
+            
+            $activeDaysCount = $activeDaysCount > 0 ? $activeDaysCount : 1;
+            $periodStandardSeconds = $activeDaysCount * $dailyStandardSeconds;
+
+            // គណនាសរុបតាម Range (Period) ធៀបនឹង Target ថ្ងៃជាក់ស្តែង
+            $monthlySeconds = $bookings->sum($calculateSeconds);
+            $monthlyPercent = ($monthlySeconds > 0 && $periodStandardSeconds > 0) ? ($monthlySeconds / $periodStandardSeconds) * 100 : 0;
+            $monthlyOTSeconds = max(0, $monthlySeconds - $periodStandardSeconds);
+
+            $techPerformances[] = (object)[
+                'name' => $techName,
+                
+                // Daily Data
+                'daily_actual_hours'   => floor($dailySeconds / 3600),
+                'daily_actual_minutes' => floor(($dailySeconds % 3600) / 60),
+                'daily_percent'        => $dailyPercent,
+                'daily_bar_percent'    => min(100, $dailyPercent), 
+                'daily_ot_hours'       => floor($dailyOTSeconds / 3600),
+                'daily_ot_minutes'     => floor(($dailyOTSeconds % 3600) / 60),
+                
+                // Period Data (Calculated based on Active Working Days)
+                'monthly_percent'      => $monthlyPercent,
+                'monthly_actual_hours' => floor($monthlySeconds / 3600),
+                'monthly_actual_minutes'=> floor(($monthlySeconds % 3600) / 60),
+                'monthly_ot_hours'     => floor($monthlyOTSeconds / 3600),
+                'monthly_ot_minutes'   => floor(($monthlyOTSeconds % 3600) / 60),
+            ];
+        }
+
+        return view('Services.performance_overview', compact(
+            'branches', 'fromDate', 'toDate', 'selectedDate', 'carsIn', 'carsDelivery', 'todayPending', 'totalPending', 
+            'totalOrderPartLocal', 'totalOrderPartSea', 'totalPartWarranty', 'totalPartRetail', 
+            'saDailyStats', 'saCarsInStats', 'saDeliveryStats', 'saPendingStats', 'pendingDescStats', 
+            'branchPendingStats', 'topSA', 'topTech', 'totalThroughput', 'techPerformances'
+        ));
+    }
     public function cancelBooking($id)
     {
         try {
@@ -991,22 +1398,41 @@ if ($activeBooking) {
 
     private function executeTelegramCurl($text, $locationData = null)
     {
-        $token = env('TELEGRAM_BOT_TOKEN', '8792417237:AAFuvisWQ1vIZmnN3Zwa5klrSTWqPtM7P1I');
-        $chat_id = '-1003846752483';
+        $chat_id = (string) env('TELEGRAM_CHAT_ID_DEFAULT', '');
+        
         if (! empty($locationData)) {
             $loc = strtolower(trim((string) $locationData));
             if ($loc === '13' || strpos($loc, 'hq') !== false || strpos($loc, 'head') !== false) {
-                $chat_id = '-1003912255068';
+                $chat_id = (string) env('TELEGRAM_CHAT_ID_HQ', $chat_id);
             } elseif ($loc === '11' || strpos($loc, '50m') !== false || strpos($loc, '50') !== false) {
-                $chat_id = '-1003823333337';
+                $chat_id = (string) env('TELEGRAM_CHAT_ID_50M', $chat_id);
             } elseif ($loc === '12' || strpos($loc, 'sr') !== false || strpos($loc, 'siem') !== false) {
-                $chat_id = '-1003902078135';
+                $chat_id = (string) env('TELEGRAM_CHAT_ID_SR', $chat_id);
             } elseif ($loc === '10' || strpos($loc, 'btb') !== false || strpos($loc, 'battambang') !== false) {
-                $chat_id = '-1003921310439';
+                $chat_id = (string) env('TELEGRAM_CHAT_ID_BTB', $chat_id);
             }
         }
+    
+        // បើរកមិនឃើញ Chat ID ណាសោះ ឱ្យវា return ឈប់ដំណើរការដើម្បីកុំឱ្យ Error
+        if ($chat_id === '') {
+            \Log::warning('Telegram Chat ID is missing for location: ' . $locationData);
+            return;
+        }
+    
+        $token = env('TELEGRAM_BOT_TOKEN');
+        if (empty($token)) {
+            \Log::error('Telegram Bot Token is missing in .env');
+            return;
+        }
+    
         $url = "https://api.telegram.org/bot{$token}/sendMessage";
-        $data = ['chat_id' => $chat_id, 'text' => $text, 'parse_mode' => 'HTML', 'disable_web_page_preview' => true];
+        $data = [
+            'chat_id' => $chat_id, 
+            'text' => $text, 
+            'parse_mode' => 'HTML', 
+            'disable_web_page_preview' => true
+        ];
+    
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_POST, 1);
@@ -1014,7 +1440,14 @@ if ($activeBooking) {
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
         curl_setopt($ch, CURLOPT_TIMEOUT, 5);
-        curl_exec($ch);
+        
+        $response = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        
+        if (curl_errno($ch) || $httpCode !== 200) {
+            \Log::error('Telegram Send Error: ' . curl_error($ch) . ' | HTTP Code: ' . $httpCode);
+        }
+        
         curl_close($ch);
     }
 
