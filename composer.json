@@ -4,9 +4,9 @@
     "description": "The skeleton application for the Laravel framework.",
     "keywords": ["laravel", "framework"],
     "license": "MIT",
-    "require": {
-        "php": "^8.2",
-        "barryvdh/laravel-snappy": "^1.0",
+  "require": {
+    "php": "8.2.*",
+    "barryvdh/laravel-snappy": "^1.0",
         "doctrine/dbal": "^4.3",
         "kreait/firebase-php": "^5.26",
         "laravel/framework": "^11.9",
