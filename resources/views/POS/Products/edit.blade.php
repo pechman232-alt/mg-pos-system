@@ -5,41 +5,24 @@
 
 <style>
     .product-container { font-family: 'Plus Jakarta Sans', 'Battambang', sans-serif !important; }
-    
-    .form-control, .form-select {
-        padding: 0.6rem 1rem;
-        font-size: 0.95rem;
-    }
-    
     .form-control:focus, .form-select:focus {
         border-color: #CE181E;
         box-shadow: 0 0 0 0.25rem rgba(206, 24, 30, 0.15);
     }
-    
-    .input-group-text { 
-        background-color: #f8fafc; 
-        color: #475569; 
-        padding-left: 1.2rem;
-        padding-right: 0.8rem;
-    }
-    
+    .input-group-text { background-color: #f8fafc; color: #64748b; }
     .btn-brand { background-color: #CE181E; color: white; border: none; transition: 0.3s; }
     .btn-brand:hover { background-color: #a81116; color: white; transform: translateY(-2px); }
-    
-    .edit-card {
-        border-radius: 12px;
-        transition: all 0.3s ease;
-    }
+    .readonly-bg { background-color: #f1f5f9 !important; cursor: not-allowed; }
 </style>
 
 <div class="container-fluid flex-grow-1 container-p-y product-container">
     
-    <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4">
         <h4 class="fw-bold mb-0 text-uppercase">
             <span class="text-muted fw-light">ទំនិញស្តុក /</span> កែប្រែព័ត៌មានទំនិញ (Edit Product)
         </h4>
-        <div class="mt-3 mt-md-0 d-flex gap-2">
-            <a href="{{ route('products.index') }}" class="btn btn-outline-secondary shadow-sm fw-semibold">
+        <div class="mt-2 mt-md-0">
+            <a href="{{ route('products.index') }}" class="btn btn-outline-secondary shadow-sm fw-bold">
                 <i class="bx bx-arrow-back me-1"></i> ត្រឡប់ក្រោយ
             </a>
         </div>
@@ -47,45 +30,42 @@
 
     <div class="row">
         <div class="col-12">
-            <div class="card edit-card border-0 shadow-sm mb-4">
-                
-                <div class="card-header bg-white border-bottom p-4 d-flex align-items-center">
-                    <div class="bg-label-warning p-2 rounded me-3 d-flex align-items-center justify-content-center" style="background-color: rgba(255, 171, 0, 0.1); color: #ffab00; width: 45px; height: 45px;">
-                        <i class="bx bx-edit-alt fs-3"></i>
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-transparent border-bottom py-3 d-flex align-items-center">
+                    <div class="bg-label-warning p-2 rounded me-3" style="background-color: rgba(255, 171, 0, 0.1); color: #ffab00;">
+                        <i class="bx bx-edit fs-4"></i>
                     </div>
-                    <div>
-                        <h5 class="m-0 fw-bold text-dark">កែប្រែព័ត៌មានទំនិញ</h5>
-                        <small class="text-muted">សូមបំពេញព័ត៌មានខាងក្រោមឱ្យបានត្រឹមត្រូវ</small>
-                    </div>
+                    <h5 class="m-0 fw-bold" style="color: #0f172a;">ព័ត៌មានលម្អិតរបស់ទំនិញ</h5>
                 </div>
                 
-                <div class="card-body p-4 p-md-5">
+                <div class="card-body pt-4">
                     <form action="{{ route('products.update', $product->id) }}" method="POST">
                         @csrf
-                        @method('PUT') 
-
+                        @method('PUT')
+                        
                         <div class="row g-4">
-                            <div class="col-md-6 col-12">
-                                <label class="form-label fw-semibold text-dark">Item Code (កូដទំនិញ) <span class="text-danger">*</span></label>
+                            
+                            <div class="col-xl-6 col-lg-6 col-md-6 col-12">
+                                <label class="form-label fw-semibold text-muted mb-1">Item Code (កូដទំនិញ) <span class="text-danger">*</span></label>
                                 <div class="input-group input-group-merge shadow-none border rounded">
-                                    <span class="input-group-text border-0"><i class="bx bx-barcode-reader fs-5"></i></span>
-                                    <input type="text" name="item_code" class="form-control border-0 ps-0" value="{{ $product->item_code }}" required>
+                                    <span class="input-group-text border-0"><i class="bx bx-barcode-reader"></i></span>
+                                    <input type="text" name="item_code" class="form-control border-0 ps-0 fw-bold" required value="{{ $product->item_code }}">
                                 </div>
                             </div>
 
-                            <div class="col-md-6 col-12">
-                                <label class="form-label fw-semibold text-dark">Product Name (ឈ្មោះទំនិញ) <span class="text-danger">*</span></label>
+                            <div class="col-xl-6 col-lg-6 col-md-6 col-12">
+                                <label class="form-label fw-semibold text-muted mb-1">Product Name (ឈ្មោះទំនិញ) <span class="text-danger">*</span></label>
                                 <div class="input-group input-group-merge shadow-none border rounded">
-                                    <span class="input-group-text border-0"><i class="bx bx-package fs-5"></i></span>
-                                    <input type="text" name="item_name" class="form-control border-0 ps-0" value="{{ $product->item_name }}" required>
+                                    <span class="input-group-text border-0"><i class="bx bx-package"></i></span>
+                                    <input type="text" name="item_name" class="form-control border-0 ps-0" required value="{{ $product->item_name }}">
                                 </div>
                             </div>
 
-                            <div class="col-md-6 col-12">
-                                <label class="form-label fw-semibold text-dark">Category (ប្រភេទទំនិញ)</label>
+                            <div class="col-xl-6 col-lg-6 col-md-6 col-12">
+                                <label class="form-label fw-semibold text-muted mb-1">Category (ប្រភេទទំនិញ) <span class="text-danger">*</span></label>
                                 <div class="input-group input-group-merge shadow-none border rounded">
-                                    <span class="input-group-text border-0"><i class="bx bx-category fs-5"></i></span>
-                                    <select name="category" class="form-select border-0 ps-0">
+                                    <span class="input-group-text border-0"><i class="bx bx-category"></i></span>
+                                    <select name="category" class="form-select border-0 ps-0" required>
                                         <option value="">-- ជ្រើសរើសប្រភេទ --</option>
                                         <optgroup label="4 WHEEL (រថយន្ត)">
                                             <option value="MG 4WHEEL" {{ $product->category == 'MG 4WHEEL' ? 'selected' : '' }}>MG 4WHEEL</option>
@@ -99,46 +79,63 @@
                                 </div>
                             </div>
 
-                            <div class="col-md-6 col-12">
-                                <label class="form-label fw-semibold text-dark">Current Stock (ចំនួនស្តុក)</label>
-                                <div class="input-group input-group-merge shadow-none border rounded bg-light">
-                                    <span class="input-group-text border-0 bg-transparent"><i class="bx bx-layer fs-5 text-muted"></i></span>
-                                    <input type="number" name="stock_qty" class="form-control border-0 bg-transparent ps-0 fw-bold text-dark" value="{{ $product->stock_qty }}" min="0">
-                                </div>
-                            </div>
-
-                            <div class="col-md-6 col-12">
-                                <label class="form-label fw-semibold text-dark">Cost (តម្លៃទិញចូល) <span class="text-danger">*</span></label>
+                            <div class="col-xl-6 col-lg-6 col-md-6 col-12">
+                                <label class="form-label fw-semibold text-muted mb-1">Location / Branch (ឃ្លាំងទទួលទំនិញ) <span class="text-danger">*</span></label>
                                 <div class="input-group input-group-merge shadow-none border rounded">
-                                    <span class="input-group-text border-0 fw-bold text-success fs-5">$</span>
-                                    <input type="number" step="0.01" name="cost" class="form-control border-0 ps-0 fw-semibold" value="{{ $product->cost }}" required>
+                                    <span class="input-group-text border-0"><i class="bx bx-store-alt"></i></span>
+                                    <select name="location_id" class="form-select border-0 ps-0" required>
+                                        <option value="">-- ជ្រើសរើសឃ្លាំង/សាខា --</option>
+                                        <option value="25" {{ $product->location_id == 25 ? 'selected' : '' }}>Mg Cambodia Warehouse (MG)</option>
+                                        <option value="23" {{ $product->location_id == 23 ? 'selected' : '' }}>VIVe Warehouse (Leapmotor)</option>
+                                        <option value="26" {{ $product->location_id == 26 ? 'selected' : '' }}>IM Warehouse (IM)</option>
+                                        <option value="27" {{ $product->location_id == 27 ? 'selected' : '' }}>Royal Warehouse (Royal Enfield)</option>
+                                    </select>
                                 </div>
                             </div>
 
-                            <div class="col-md-6 col-12">
-                                <label class="form-label fw-semibold text-dark">Price (តម្លៃលក់ចេញ) <span class="text-danger">*</span></label>
-                                <div class="input-group input-group-merge shadow-none border rounded" style="border-color: rgba(206, 24, 30, 0.3) !important; background-color: #fffafb;">
-                                    <span class="input-group-text border-0 bg-transparent fw-bold text-primary fs-5">$</span>
-                                    <input type="number" step="0.01" name="selling_price" class="form-control border-0 bg-transparent ps-0 fw-bold text-primary" value="{{ $product->selling_price ?? $product->price }}" required>
+                            <!-- ស្តុកទុកជា Readonly ព្រោះការកែប្រែស្តុកគួរធ្វើឡើងតាមការ Receive ឬ Adjust Stock -->
+                            <div class="col-xl-6 col-lg-6 col-md-6 col-12">
+                                <label class="form-label fw-semibold text-muted mb-1">Current Stock (ស្តុកបច្ចុប្បន្ន)</label>
+                                <div class="input-group input-group-merge shadow-none border rounded readonly-bg">
+                                    <span class="input-group-text border-0 readonly-bg"><i class="bx bx-layer"></i></span>
+                                    <input type="number" name="stock_qty" class="form-control border-0 ps-0 readonly-bg fw-bold text-dark" value="{{ $product->stock_qty }}" readonly>
+                                </div>
+                                <small class="text-muted" style="font-size: 0.75rem;">* ចំនួនស្តុកអាចកែប្រែបានតាមរយៈការ Receive ឫផ្ទេរទំនិញ</small>
+                            </div>
+
+                            <div class="col-xl-6 col-lg-6 col-md-6 col-12">
+                                <label class="form-label fw-semibold text-muted mb-1">Cost (តម្លៃទិញចូល) <span class="text-danger">*</span></label>
+                                <div class="input-group input-group-merge shadow-none border rounded">
+                                    <span class="input-group-text border-0 fw-bold text-success">$</span>
+                                    <input type="number" step="0.01" name="cost" class="form-control border-0 ps-0 fw-bold" required value="{{ $product->cost }}">
                                 </div>
                             </div>
 
+                            <div class="col-xl-6 col-lg-6 col-md-6 col-12">
+                                <label class="form-label fw-semibold text-muted mb-1">Price (តម្លៃលក់ចេញ) <span class="text-danger">*</span></label>
+                                <div class="input-group input-group-merge shadow-none border rounded">
+                                    <span class="input-group-text border-0 fw-bold text-primary">$</span>
+                                    <input type="number" step="0.01" name="price" class="form-control border-0 ps-0 fw-bold" required value="{{ $product->price }}">
+                                </div>
+                            </div>
+
+                            <!-- ✅ ផ្នែក Description ត្រូវបានបញ្ចូលយ៉ាងត្រឹមត្រូវ -->
                             <div class="col-12">
-                                <label class="form-label fw-semibold text-dark">Description (ការពិពណ៌នា)</label>
+                                <label class="form-label fw-semibold text-muted mb-1">Description (ការពិពណ៌នា)</label>
                                 <div class="input-group input-group-merge shadow-none border rounded">
-                                    <span class="input-group-text border-0 align-items-start pt-3"><i class="bx bx-comment-detail fs-5"></i></span>
-                                    <textarea name="description" class="form-control border-0 ps-0 py-2" rows="4" placeholder="បញ្ចូលព័ត៌មានបន្ថែមនៅទីនេះ...">{{ $product->description }}</textarea>
+                                    <span class="input-group-text border-0 align-items-start pt-2"><i class="bx bx-comment-detail"></i></span>
+                                    <textarea name="description" class="form-control border-0 ps-0" rows="3" placeholder="ព័ត៌មានបន្ថែមពីទំនិញ...">{{ $product->description }}</textarea>
                                 </div>
                             </div>
                         </div>
 
-                        <hr class="my-5 border-light">
+                        <hr class="my-4 border-secondary">
 
-                        <div class="d-flex flex-column flex-sm-row justify-content-end gap-3">
-                            <a href="{{ route('products.index') }}" class="btn btn-light fw-bold px-4 py-2 shadow-sm order-2 order-sm-1">
+                        <div class="d-flex justify-content-end gap-3">
+                            <a href="{{ route('products.index') }}" class="btn btn-light fw-semibold px-4 shadow-sm border">
                                 <i class="bx bx-x me-1"></i> បោះបង់ (Cancel)
                             </a>
-                            <button type="submit" class="btn btn-warning text-dark fw-bold px-5 py-2 shadow-sm order-1 order-sm-2">
+                            <button type="submit" class="btn btn-warning fw-bold px-5 shadow-sm text-dark">
                                 <i class="bx bx-save me-1"></i> រក្សាទុកការកែប្រែ (Update)
                             </button>
                         </div>

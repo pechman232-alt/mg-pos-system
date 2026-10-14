@@ -3,205 +3,183 @@
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <style>
-    /* --- GLOBAL BRANDING --- */
+    /* =========================================================
+       CLEAN SaaS DESIGN SYSTEM 
+       ========================================================= */
     :root {
-        --brand-primary: #4f46e5;    /* Indigo */
-        --brand-success: #10b981;    /* Emerald */
-        --brand-warning: #f59e0b;    /* Amber */
-        --brand-danger: #ef4444;     /* Rose */
-        --bg-body: #f8fafc;
-        --font-family: 'Plus Jakarta Sans', sans-serif !important;
+        --primary: #4F46E5;      /* Indigo 600 */
+        --primary-hover: #4338CA;
+        --surface: #FFFFFF;
+        --bg-body: #F8FAFC;      /* Slate 50 */
+        --text-main: #111827;    /* Gray 900 */
+        --text-muted: #6B7280;   /* Gray 500 */
+        --border-color: #E5E7EB; /* Gray 200 */
+        --input-bg: #F9FAFB;
+        
+        --font-body: 'Inter', sans-serif;
+        --font-display: 'Plus Jakarta Sans', sans-serif;
     }
 
-    body, .container-xxl {
-        font-family: var(--font-family);
-        background-color: var(--bg-body);
-        font-size: 0.85rem;
-        color: #1e293b;
-    }
+    body { font-family: var(--font-body); background-color: var(--bg-body); color: var(--text-main); -webkit-font-smoothing: antialiased; }
+    .fluid-full-container { width: 100%; padding: 24px 32px; }
 
-    /* Force Full Width */
-    .container-xxl {
-        max-width: 100% !important;
-        width: 100% !important;
-        padding: 1.5rem 2rem !important;
-    }
+    /* Animation */
+    @keyframes fadeInUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+    .animate-card { animation: fadeInUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; opacity: 0; }
+    .stagger-1 { animation: fadeInUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; animation-delay: 100ms; opacity: 0; }
 
-    /* Professional 4-Color Header Gradient */
-    .card-header-gradient {
-        background: linear-gradient(90deg, #4f46e5 0%, #7c3aed 33%, #ec4899 66%, #ef4444 100%) !important;
-        padding: 20px 25px;
-        border-radius: 12px 12px 0 0 !important;
-        border-bottom: none;
-    }
-
-    .full-width-card {
-        width: 100% !important;
-        border: none;
-        border-radius: 12px;
-        box-shadow: 0 10px 25px rgba(0,0,0,0.05);
-        background: #fff;
+    /* --- FORM CARD --- */
+    .form-card {
+        background: var(--surface); border: 1px solid var(--border-color);
+        border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);
         overflow: hidden;
     }
 
-    .header-title {
-        color: #ffffff !important;
-        font-weight: 800;
-        font-size: 1rem;
-        margin: 0;
-        letter-spacing: -0.5px;
+    .card-header-clean {
+        padding: 20px 24px; border-bottom: 1px solid var(--border-color);
+        display: flex; justify-content: space-between; align-items: center;
+        background: #FFFFFF;
     }
 
-    .form-label {
-        font-weight: 700;
-        font-size: 0.75rem;
-        color: #475569;
-        text-transform: none;
-        margin-bottom: 8px;
-        display: flex;
-        align-items: center;
-        gap: 6px;
+    .header-title {
+        font-family: var(--font-display); font-size: 1.1rem; font-weight: 700;
+        color: var(--text-main); margin: 0; display: flex; align-items: center; gap: 8px;
     }
+
+    .btn-back-clean {
+        background: #FFFFFF; color: var(--text-muted); border: 1px solid var(--border-color);
+        font-size: 0.875rem; font-weight: 600; padding: 8px 16px; border-radius: 8px;
+        text-decoration: none; transition: all 0.2s ease; display: inline-flex; align-items: center; gap: 6px;
+    }
+    .btn-back-clean:hover { background: #F3F4F6; color: var(--text-main); }
+
+    /* --- INPUTS --- */
+    .form-label { font-weight: 600; font-size: 0.8rem; color: #4B5563; margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
+    .form-label i { color: #9CA3AF; font-size: 0.9rem; }
 
     .form-control, .form-select {
-        padding: 12px 16px;
-        border-radius: 10px;
-        border: 1.5px solid #e2e8f0;
-        font-size: 0.85rem;
-        background-color: #ffffff;
-        font-weight: 500;
-        transition: all 0.2s ease;
+        height: 44px; padding: 8px 16px; border-radius: 8px;
+        border: 1px solid var(--border-color); font-size: 0.875rem;
+        background-color: var(--input-bg); color: var(--text-main); transition: all 0.2s ease; width: 100%;
     }
+    .form-control:focus, .form-select:focus { background-color: #FFFFFF; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1); outline: none; }
+    .is-invalid { border-color: #EF4444 !important; background-color: #FEF2F2 !important; }
 
-    .form-control:focus, .form-select:focus {
-        border-color: var(--brand-primary);
-        box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
-        outline: none;
-    }
+    /* Textarea */
+    textarea.form-control { height: auto; min-height: 80px; padding: 12px 16px; resize: vertical; }
 
-    .is-invalid {
-        border-color: var(--brand-danger) !important;
-        background-color: #fef2f2 !important;
-    }
-
+    /* --- SUBMIT BUTTON --- */
     .btn-update {
-        background-color: #1e293b;
-        color: white;
-        border: none;
-        font-weight: 700;
-        padding: 14px 24px;
-        border-radius: 10px;
-        font-size: 0.9rem;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        box-shadow: 0 4px 12px rgba(30, 41, 59, 0.2);
+        background-color: var(--primary); color: white; border: none;
+        font-weight: 600; padding: 12px 24px; border-radius: 8px;
+        font-size: 0.9rem; cursor: pointer; transition: all 0.2s ease;
+        display: inline-flex; align-items: center; justify-content: center; gap: 8px; width: 100%;
     }
+    .btn-update:hover { background-color: var(--primary-hover); transform: translateY(-1px); box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.2); }
 
-    .btn-update:hover { background-color: #000; transform: translateY(-1px); color: white; }
-
-    .btn-back {
-        background: rgba(255, 255, 255, 0.2);
-        color: #fff;
-        border: 1px solid rgba(255, 255, 255, 0.4);
-        font-size: 0.75rem;
-        font-weight: 700;
-        padding: 6px 16px;
-        text-decoration: none;
-        border-radius: 8px;
-        transition: 0.2s;
-    }
-    .btn-back:hover { background: rgba(255, 255, 255, 0.3); color: #fff; }
-
-    /* Animation */
-    .animate-up {
-        opacity: 0;
-        transform: translateY(12px);
-        animation: fadeInUp 0.4s ease forwards;
-    }
-    @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
 </style>
 
-<div class="container-xxl flex-grow-1 container-p-y">
-    <div class="row">
-        <div class="col-12">
-            <div class="card full-width-card animate-up">
-                <div class="card-header-gradient d-flex justify-content-between align-items-center">
-                    <h5 class="header-title">
-                        <i class='fas fa-edit me-2'></i>UPDATE LOGISTICS DOSSIER
-                    </h5>
-                    <a href="{{ url('/logistics') }}" class="btn btn-back">
-                        <i class="fas fa-times me-1"></i> DISCARD CHANGES
-                    </a>
-                </div>
+<div class="fluid-full-container">
+    <div class="form-card animate-card">
+        
+        <!-- Header -->
+        <div class="card-header-clean">
+            <h5 class="header-title">
+                <i class="fas fa-edit text-muted"></i> UPDATE LOGISTICS RECORD
+            </h5>
+            <a href="{{ url('/logistics') }}" class="btn-back-clean">
+                <i class="fas fa-times"></i> Discard Changes
+            </a>
+        </div>
 
-                <div class="card-body p-5">
-                    <form action="{{ url('logistics/update', encrypt($logistics->id)) }}" method="POST" id="editForm">
-                        @csrf
-                        <div class="row g-4">
-                            
-                            <div class="col-md-6">
-                                <label class="form-label"><i class="fas fa-car-side text-primary"></i> Vehicle Model</label>
-                                <select name="model_name_id" class="form-select @error('model_name_id') is-invalid @enderror">
-                                    <option value="" disabled>Select Model</option>
-                                    @foreach ($carModels as $item)
-                                        <option value="{{ $item->id }}" @if ($item->id == $logistics->model_name_id) selected @endif>
-                                            {{ $item->model_name }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                            </div>
+        <div class="card-body p-4 p-md-5">
+            <form action="{{ url('logistics/update', encrypt($logistics->id)) }}" method="POST" id="editForm">
+                @csrf
+                <div class="row g-4 stagger-1">
+                    
+                    <!-- Section Title -->
+                    <div class="col-12 mb-2">
+                        <h6 class="text-muted fw-bold text-uppercase" style="font-size: 0.75rem; letter-spacing: 0.5px; border-bottom: 1px solid #E5E7EB; padding-bottom: 8px;">Vehicle Specifications</h6>
+                    </div>
 
-                            <div class="col-md-6">
-                                <label class="form-label"><i class="fas fa-calendar-alt text-warning"></i> Model Year</label>
-                                <input type="number" name="model_year" class="form-control @error('model_year') is-invalid @enderror" value="{{ $logistics->model_year }}" placeholder="YYYY">
-                            </div>
+                    <!-- Vehicle Model -->
+                    <div class="col-md-6 col-xl-4">
+                        <label class="form-label"><i class="fas fa-car-side"></i> Vehicle Model</label>
+                        <select name="model_name_id" class="form-select @error('model_name_id') is-invalid @enderror">
+                            <option value="" disabled>Select Model</option>
+                            @foreach ($carModels as $item)
+                                <option value="{{ $item->id }}" @if ($item->id == $logistics->model_name_id) selected @endif>
+                                    {{ $item->model_name }}
+                                </option>
+                            @endforeach
+                        </select>
+                        @error('model_name_id') <div class="text-danger mt-1 fw-medium" style="font-size: 12px;">{{ $message }}</div> @enderror
+                    </div>
 
-                            <div class="col-md-6">
-                                <label class="form-label"><i class="fas fa-palette text-success"></i> Exterior Color</label>
-                                <select name="exterior_color" class="form-select @error('exterior_color') is-invalid @enderror">
-                                    <option value="" disabled>Select Color</option>
-                                    @foreach ($colors as $item)
-                                        <option value="{{ $item->color_name }}" @if ($item->color_name == $logistics->exterior_color) selected @endif>
-                                            {{ $item->color_name }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                            </div>
+                    <!-- Production Year -->
+                    <div class="col-md-6 col-xl-4">
+                        <label class="form-label"><i class="far fa-calendar-check"></i> Model Year</label>
+                        <input type="number" name="model_year" class="form-control @error('model_year') is-invalid @enderror" value="{{ $logistics->model_year }}" placeholder="YYYY">
+                    </div>
 
-                            <div class="col-md-6">
-                                <label class="form-label"><i class="fas fa-couch text-info"></i> Interior Color</label>
-                                <input type="text" name="interior_color" class="form-control @error('interior_color') is-invalid @enderror" value="{{ $logistics->interior_color }}" placeholder="Interior Trim">
-                            </div>
+                    <!-- Exterior Color -->
+                    <div class="col-md-6 col-xl-4">
+                        <label class="form-label"><i class="fas fa-palette"></i> Exterior Color</label>
+                        <select name="exterior_color" class="form-select @error('exterior_color') is-invalid @enderror">
+                            <option value="" disabled>Select Color</option>
+                            @foreach ($colors as $item)
+                                <option value="{{ $item->color_name }}" @if ($item->color_name == $logistics->exterior_color) selected @endif>
+                                    {{ $item->color_name }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
 
-                            <div class="col-md-6">
-                                <label class="form-label"><i class="fas fa-barcode text-danger"></i> VIN Number</label>
-                                <input type="text" id="vin_input" name="vin_number" class="form-control @error('vin_number') is-invalid @enderror" value="{{ $logistics->vin_number }}" placeholder="CHASSIS NO.">
-                            </div>
+                    <!-- VIN Number -->
+                    <div class="col-md-6 col-xl-4">
+                        <label class="form-label"><i class="fas fa-barcode"></i> Chassis / VIN Number</label>
+                        <input type="text" id="vin_input" name="vin_number" class="form-control @error('vin_number') is-invalid @enderror" 
+                               value="{{ $logistics->vin_number }}" placeholder="CHASSIS NO." maxlength="17" style="text-transform: uppercase;">
+                    </div>
 
-                            <div class="col-md-6">
-                                <label class="form-label"><i class="fas fa-engine text-secondary"></i> Engine Number</label>
-                                <input type="text" name="engine_number" class="form-control @error('engine_number') is-invalid @enderror" value="{{ $logistics->engine_number }}" placeholder="ENGINE NO.">
-                            </div>
+                    <!-- Engine Number -->
+                    <div class="col-md-6 col-xl-4">
+                        <label class="form-label"><i class="fas fa-microchip"></i> Engine Number</label>
+                        <input type="text" name="engine_number" class="form-control @error('engine_number') is-invalid @enderror" 
+                               value="{{ $logistics->engine_number }}" placeholder="ENGINE NO.">
+                    </div>
 
-                            <div class="col-12">
-                                <label class="form-label"><i class="fas fa-sticky-note text-muted"></i> Internal Remarks</label>
-                                <textarea name="remark" class="form-control" rows="3" placeholder="Enter additional notes...">{{ $logistics->remark }}</textarea>
-                            </div>
+                    <!-- Interior Trim -->
+                    <div class="col-md-6 col-xl-4">
+                        <label class="form-label"><i class="fas fa-couch"></i> Interior Trim</label>
+                        <input type="text" name="interior_color" class="form-control @error('interior_color') is-invalid @enderror" 
+                               value="{{ $logistics->interior_color }}" placeholder="e.g. Black Leather">
+                    </div>
 
-                            <div class="col-12 mt-5">
-                                <button type="submit" class="btn btn-update w-100" id="btnUpdate">
-                                    <i class='fas fa-sync-alt me-2'></i> COMMIT UPDATES
+                    <!-- Remarks -->
+                    <div class="col-12 mt-4">
+                        <label class="form-label"><i class="far fa-sticky-note"></i> Internal Remarks</label>
+                        <textarea name="remark" class="form-control" placeholder="Enter additional notes...">{{ $logistics->remark }}</textarea>
+                    </div>
+
+                    <!-- Submit Action -->
+                    <div class="col-12 mt-5 border-top pt-4">
+                        <div class="row justify-content-end">
+                            <div class="col-md-4">
+                                <button type="submit" class="btn-update" id="btnUpdate">
+                                    <i class='fas fa-sync-alt'></i> COMMIT UPDATES
                                 </button>
                             </div>
                         </div>
-                    </form>
+                    </div>
+
                 </div>
-            </div>
+            </form>
         </div>
     </div>
 </div>
@@ -212,7 +190,8 @@
         position: 'top-end',
         showConfirmButton: false,
         timer: 4000,
-        timerProgressBar: true
+        timerProgressBar: true,
+        customClass: { popup: 'rounded-3 shadow-sm border-0' }
     });
 
     // --- VIN AUTO-UPPERCASE ---
@@ -223,15 +202,18 @@
         });
     }
 
-    // --- Loading State ---
+    // --- Form Submit Loading State (Clean Theme) ---
     document.getElementById('editForm').onsubmit = function() {
         Swal.fire({
-            title: 'Updating...',
-            text: 'Synchronizing record with database',
+            title: 'Updating Record...',
+            text: 'Synchronizing changes with database.',
             allowOutsideClick: false,
-            didOpen: () => { Swal.showLoading(); }
+            showConfirmButton: false,
+            didOpen: () => { Swal.showLoading(); },
+            customClass: { popup: 'rounded-4 shadow-sm border-0', title: 'font-weight-bold' }
         });
         document.getElementById('btnUpdate').disabled = true;
+        document.getElementById('btnUpdate').innerHTML = '<i class="fas fa-circle-notch fa-spin me-2"></i> PROCESSING...';
     };
 
     // --- Validation Toasts ---

@@ -1,174 +1,152 @@
 @extends('layouts.homePages')
 @section('content')
 
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
 <style>
-    /* ====== BRAND IDENTITY ====== */
+    /* =========================================================
+       CLEAN SaaS DESIGN SYSTEM 
+       ========================================================= */
     :root {
-        --brand-indigo: #4f46e5;
-        --brand-purple: #7c3aed;
-        --brand-pink: #ec4899;
-        --brand-red: #ef4444;
-        --bg-body: #f8fafc;
-        --font-family: 'Plus Jakarta Sans', sans-serif !important;
-        --radius: 16px;
+        --primary: #4F46E5;      /* Indigo 600 */
+        --primary-hover: #4338CA;
+        --surface: #FFFFFF;
+        --bg-body: #F8FAFC;      /* Slate 50 */
+        --text-main: #111827;    /* Gray 900 */
+        --text-muted: #6B7280;   /* Gray 500 */
+        --border-color: #E5E7EB; /* Gray 200 */
+        --input-bg: #F9FAFB;
+        
+        --font-body: 'Inter', sans-serif;
+        --font-display: 'Plus Jakarta Sans', sans-serif;
     }
 
-    body {
-        background-color: var(--bg-body);
-        font-family: var(--font-family);
-        margin: 0;
+    body { font-family: var(--font-body); background-color: var(--bg-body); color: var(--text-main); margin: 0; -webkit-font-smoothing: antialiased; }
+    .fluid-page-wrapper { width: 100% !important; max-width: 100% !important; padding: 24px 32px !important; }
+
+    /* Animation */
+    @keyframes fadeInUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+    .animate-card { animation: fadeInUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; opacity: 0; }
+    .stagger-1 { animation: fadeInUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; animation-delay: 100ms; opacity: 0; }
+
+    /* --- FORM CARD --- */
+    .form-card {
+        background: var(--surface); border: 1px solid var(--border-color);
+        border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        overflow: hidden; width: 100%;
     }
 
-    /* ====== 100% FIT SCREEN WRAPPER ====== */
-    .fluid-page-wrapper {
-        width: 100% !important;
-        max-width: 100% !important;
-        padding: 1.5rem !important;
-        animation: slideUp 0.6s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+    /* Clean Header */
+    .card-header-clean {
+        padding: 20px 24px; border-bottom: 1px solid var(--border-color);
+        display: flex; justify-content: space-between; align-items: center;
+        background: #FFFFFF;
     }
 
-    @keyframes slideUp {
-        from { opacity: 0; transform: translateY(30px); }
-        to { opacity: 1; transform: translateY(0); }
+    .header-title {
+        font-family: var(--font-display); font-size: 1.1rem; font-weight: 700;
+        color: var(--text-main); margin: 0; display: flex; align-items: center; gap: 8px;
     }
 
-    /* ====== FULL-WIDTH CARD ====== */
-    .card-custom {
-        border: none !important;
-        border-radius: var(--radius) !important;
-        box-shadow: 0 15px 35px rgba(79, 70, 229, 0.08) !important;
-        background-color: #fff;
-        overflow: hidden;
-        width: 100%;
+    .btn-back-clean {
+        background: #FFFFFF; color: var(--text-muted); border: 1px solid var(--border-color);
+        font-size: 0.875rem; font-weight: 600; padding: 8px 16px; border-radius: 8px;
+        text-decoration: none; transition: all 0.2s ease; display: inline-flex; align-items: center; gap: 6px;
+    }
+    .btn-back-clean:hover { background: #F3F4F6; color: var(--text-main); }
+
+    /* --- INPUTS --- */
+    .card-body-custom { padding: 32px 40px !important; }
+
+    .form-label {
+        font-weight: 600; font-size: 0.8rem; color: #4B5563;
+        margin-bottom: 8px; display: flex; align-items: center; gap: 6px;
+    }
+    .form-label i { color: #9CA3AF; font-size: 0.9rem; }
+
+    .form-control-custom {
+        height: 48px; padding: 12px 16px; border-radius: 8px;
+        border: 1px solid var(--border-color); font-size: 0.9rem;
+        background-color: var(--input-bg); color: var(--text-main);
+        transition: all 0.2s ease; width: 100%; font-weight: 500;
     }
 
-    /* PREMIUM GRADIENT HEADER */
-    .card-header-gradient {
-        background: linear-gradient(90deg, var(--brand-indigo) 0%, var(--brand-purple) 50%, var(--brand-pink) 100%) !important;
-        color: white !important;
-        padding: 1.5rem 2.5rem !important;
-        font-weight: 800;
-        font-size: 1.25rem;
-        display: flex;
-        align-items: center;
-        gap: 15px;
-        border: none;
-        letter-spacing: 0.5px;
+    .form-control-custom:focus {
+        background-color: #FFFFFF; border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1); outline: none;
     }
 
-    /* ====== FORM ELEMENTS ====== */
-    .card-body {
-        padding: 4rem 3rem !important; /* Increased padding for widescreen */
+    .form-control-custom::placeholder { color: #9CA3AF; font-weight: 400; }
+    
+    .is-invalid { border-color: #EF4444 !important; background-color: #FEF2F2 !important; }
+
+    .text-error-custom {
+        color: #EF4444; font-size: 0.8rem; font-weight: 500;
+        margin-top: 6px; display: flex; align-items: center; gap: 4px;
     }
 
-    .highlight-label {
-        font-weight: 700;
-        color: var(--brand-indigo); 
-        background: rgba(79, 70, 229, 0.08);
-        padding: 8px 16px;
-        border-radius: 8px;
-        display: inline-block;
-        margin-bottom: 1.5rem;
-        font-size: 13px;
-        text-transform: uppercase;
-        letter-spacing: 1px;
+    /* --- ACTION BUTTONS --- */
+    .btn-save {
+        background-color: var(--primary); color: white; border: none;
+        font-weight: 600; padding: 12px 24px; border-radius: 8px;
+        font-size: 0.9rem; cursor: pointer; transition: all 0.2s ease;
+        display: inline-flex; align-items: center; justify-content: center; gap: 8px;
     }
-
-    .form-control-premium {
-        border-radius: 14px;
-        border: 1.5px solid #e2e8f0;
-        padding: 20px 25px;
-        font-size: 18px !important;
-        font-weight: 600;
-        transition: all 0.3s ease;
-        background-color: #f8fafc;
-        color: #1e293b;
-        width: 100%;
-    }
-
-    .form-control-premium:focus {
-        background-color: #fff;
-        border-color: var(--brand-indigo) !important;
-        box-shadow: 0 0 0 6px rgba(79, 70, 229, 0.1) !important;
-        outline: none;
-    }
-
-    /* ====== ACTION BUTTONS ====== */
-    .btn-publish {
-        background: linear-gradient(135deg, var(--brand-indigo), var(--brand-purple)) !important;
-        border: none !important;
-        color: #fff !important;
-        font-weight: 800;
-        padding: 18px 60px !important;
-        border-radius: 14px;
-        transition: 0.3s;
-        box-shadow: 0 4px 15px rgba(124, 58, 237, 0.2);
-        cursor: pointer;
-        font-size: 14px;
-    }
-
-    .btn-publish:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 12px 30px rgba(124, 58, 237, 0.4);
-    }
+    .btn-save:hover { background-color: var(--primary-hover); transform: translateY(-1px); box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.2); }
 
     .btn-cancel {
-        border: 1.5px solid #e2e8f0 !important;
-        background-color: #fff;
-        color: #64748b !important;
-        font-weight: 700;
-        padding: 18px 40px !important;
-        border-radius: 14px;
-        transition: 0.3s;
-        text-decoration: none !important;
-        display: inline-block;
+        background: #FFFFFF; color: var(--text-muted); border: 1px solid var(--border-color);
+        font-weight: 600; padding: 12px 24px; border-radius: 8px; font-size: 0.9rem;
+        text-decoration: none; display: inline-flex; align-items: center; transition: 0.2s; gap: 8px;
     }
-
-    .btn-cancel:hover {
-        background-color: #fef2f2;
-        color: var(--brand-red) !important;
-        border-color: #fecaca !important;
-    }
+    .btn-cancel:hover { background: #F9FAFB; color: var(--text-main); }
 </style>
 
 <div class="fluid-page-wrapper">
-    <div class="card-custom">
-        <div class="card-header-gradient">
-            <i class="fas fa-crown"></i>
-            NEW MEMBER CARD AUTHORIZATION
+    <div class="form-card animate-card">
+        
+        <!-- Clean Header -->
+        <div class="card-header-clean">
+            <h5 class="header-title">
+                <i class="far fa-id-card text-muted"></i> NEW MEMBER CARD AUTHORIZATION
+            </h5>
+            <a href="{{ url('/member-cards') }}" class="btn-back-clean">
+                <i class="fas fa-arrow-left"></i> Back to Registry
+            </a>
         </div>
-
-        <div class="card-body">
-            <form action="{{ url('/member-cards/store') }}" method="POST">
+        
+        <div class="card-body-custom">
+            <form action="{{ url('/member-cards/store') }}" method="POST" id="mainForm">
                 @csrf
+                
                 <div class="row">
-                    <div class="mb-5 col-12">
-                        <label class="highlight-label" for="member_card">Card Security Identifier</label>
-                        <input type="text" 
-                               id="member_card"
-                               placeholder="Assign digital identifier (e.g. TF-CARD-10029-2026)" 
-                               class="form-control-premium @error('member_card') border-danger @enderror" 
-                               name="member_card" 
-                               value="{{ old('member_card') }}"
-                               required autofocus>
-                        
+                    <div class="col-md-8 col-lg-6 mb-4 stagger-1">
+                        <label class="form-label" for="member_card">
+                            <i class="fas fa-barcode"></i> Card Security Identifier
+                        </label>
+                        <input type="text" id="member_card" name="member_card" 
+                               placeholder="e.g. TF-CARD-10029-2026" 
+                               class="form-control-custom @error('member_card') is-invalid @enderror" 
+                               value="{{ old('member_card') }}" required autofocus autocomplete="off" style="text-transform: uppercase;">
+                    
                         @error('member_card')
-                            <div class="mt-3 text-danger fw-800 small">
-                                <i class="fas fa-exclamation-triangle me-2"></i> {{ $message }}
+                            <div class="text-error-custom">
+                                <i class="fas fa-exclamation-circle"></i> {{ $message }}
                             </div>
                         @enderror
                     </div>
                 </div>
 
-                <div class="mt-5 border-top pt-5 d-flex gap-4 justify-content-start">
-                    <button type="submit" class="btn-publish shadow-sm">
-                        <i class="fas fa-check-circle me-2"></i> AUTHORIZE & SYNC RECORD
+                <!-- Action Footer -->
+                <div class="mt-4 pt-4 border-top d-flex gap-3 stagger-1">
+                    <button type="submit" class="btn-save" id="btnSubmit">
+                        <i class="fas fa-check-circle"></i> AUTHORIZE & SYNC RECORD
                     </button>
-                    <a href="{{ url('/member-cards') }}" class="btn btn-cancel shadow-sm">
+                    <a href="{{ url('/member-cards') }}" class="btn-cancel">
                         DISCARD
                     </a>
                 </div>
@@ -178,6 +156,13 @@
 </div>
 
 <script>
+    // Form Submit Loading State
+    document.getElementById('mainForm').onsubmit = function() {
+        const btn = document.getElementById('btnSubmit');
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> PROCESSING...';
+    };
+
     /**
      * Trigger Confetti Celebration on Success session
      */
@@ -192,14 +177,14 @@
                     angle: 60,
                     spread: 60,
                     origin: { x: 0 },
-                    colors: ['#4f46e5', '#7c3aed', '#ec4899']
+                    colors: ['#4F46E5', '#6366F1', '#818CF8']
                 });
                 confetti({
                     particleCount: 4,
                     angle: 120,
                     spread: 60,
                     origin: { x: 1 },
-                    colors: ['#4f46e5', '#7c3aed', '#ec4899']
+                    colors: ['#4F46E5', '#6366F1', '#818CF8']
                 });
 
                 if (Date.now() < end) {

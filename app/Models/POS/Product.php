@@ -4,24 +4,25 @@ namespace App\Models\POS;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Traits\Auditable;
 
 class Product extends Model
 {
-    use HasFactory;
+    // ✅ បន្ថែម Auditable នៅទីនេះ
+    use HasFactory, Auditable;
 
     protected $table = 'products'; 
 
     protected $fillable = [
-        'item_code', 
-        'item_name', 
-        'category', 
-        'stock_qty', 
-        'cost', 
-        'selling_price',
-        'description',
+        'item_code',
+        'item_name',
+        'category',
         'location_id',
-        'user_id',     
-        'updated_by'   
+        'cost',
+        'price',
+        'stock_qty',
+        'description',
+        'user_id'
     ];
 
     // =========================================
@@ -44,8 +45,6 @@ class Product extends Model
      */
     public function user()
     {
-        // ការប្រើ withDefault ជួយការពារកុំឱ្យ Error "Attempt to read property username on null" 
-        // ក្នុងករណីទំនិញនោះអត់មាន user_id
         return $this->belongsTo(\App\Models\User::class, 'user_id', 'id')
                     ->withDefault([
                         'username' => 'System/Admin',

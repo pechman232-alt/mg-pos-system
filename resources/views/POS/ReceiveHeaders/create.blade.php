@@ -88,24 +88,33 @@
                             </div>
 
                             <div class="col-xl-4 col-md-6 col-12">
-                                <label class="form-label fw-semibold text-muted">សាខា / ទីតាំង (Location) <span class="text-danger">*</span></label>
+                                <label class="form-label fw-semibold text-muted">Location / Branch <span class="text-danger">*</span></label>
                                 <div class="input-group input-group-merge shadow-none border rounded @error('location_id') border-danger @enderror">
                                     <span class="input-group-text border-0 bg-transparent"><i class="bx bx-store"></i></span>
                                     <select name="location_id" class="form-select border-0 ps-0" required>
-                                        <option value="">-- ជ្រើសរើសទីតាំង --</option>
+                                        <option value="">-- Select Location --</option>
                                         
-                                        {{-- ✅ បានកែប្រែ៖ បង្ហាញសាខាទាំងអស់ ដើម្បីកុំឱ្យបាត់ Vive Warehouse --}}
-                                        @foreach($branches as $branch)
-                                            <option value="{{ $branch->id }}" {{ old('location_id') == $branch->id ? 'selected' : '' }}>
-                                                {{ $branch->branch_name }}
-                                            </option>
-                                        @endforeach
+                                        <option value="25" {{ old('location_id') == '25' ? 'selected' : '' }}>
+                                            Mg Cambodia Warehouse (MG)
+                                        </option>
+                                        <option value="23" {{ old('location_id') == '23' ? 'selected' : '' }}>
+                                            VIVe Warehouse (Leapmotor)
+                                        </option>
+                                        <option value="26" {{ old('location_id') == '26' ? 'selected' : '' }}>
+                                            IM Warehouse (IM)
+                                        </option>
+                                        <option value="27" {{ old('location_id') == '27' ? 'selected' : '' }}>
+                                            Royal Warehouse (Royal Enfield)
+                                        </option>
                                         
                                     </select>
                                 </div>
-                                @error('location_id') <div class="error-text"><i class="bx bx-error-circle me-1"></i>{{ $message }}</div> @enderror
+                                @error('location_id') 
+                                    <div class="error-text text-danger mt-1 small">
+                                        <i class="bx bx-error-circle me-1"></i>{{ $message }}
+                                    </div> 
+                                @enderror
                             </div>
-
                             <div class="col-xl-4 col-md-6 col-12">
                                 <label class="form-label fw-semibold text-muted">អ្នកដឹកជញ្ជូន (Transport Vendor)</label>
                                 <div class="input-group input-group-merge shadow-none border rounded">

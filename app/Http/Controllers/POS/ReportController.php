@@ -4,7 +4,7 @@ namespace App\Http\Controllers\POS;
 
 use App\Exports\DailySalesExport;
 use App\Http\Controllers\Controller;
-use App\Models\BranchModel; // ✅ ត្រូវប្រាកដថាមានជួរនេះ
+use App\Models\BranchModel;
 use App\Models\POS\Product;
 use App\Models\POS\ReceiveDetail;
 use Carbon\Carbon;
@@ -24,28 +24,31 @@ class ReportController extends Controller
         $branchId = $request->input('branch_id');
         $search = $request->input('search');
 
-        // ✅ បង្កើត Variable $products ឱ្យ View ដើម្បីកុំឱ្យលោត Undefined variable
+        // បង្កើត Variable $products ឱ្យ View ដើម្បីកុំឱ្យលោត Undefined variable
         $products = Product::orderBy('item_name', 'asc')->get();
-
-        $branches = BranchModel::all();
+        
+        // ✅ ទាញយកតែ ៤ សាខា
+        $branches = BranchModel::whereIn('id', [23, 24, 25, 26])->orderBy('id', 'asc')->get();
 
         // ១. បង្កើត Query សម្រាប់ទាញយក Header
         $salesQuery = DB::table('sales_headers as sh')
-        ->leftJoin('branches as b', 'sh.location_id', '=', 'b.id')
-        ->leftJoin('users as u', 'sh.user_id', '=', 'u.id')
-        ->select([
-            'sh.id',
-            'sh.invoice_no as document_no',
-            'sh.sale_date as date',
-            'b.branch_name as loc_id',
-            'sh.customer_name',
-            'sh.car_buyer_name',
-            'sh.car_invoice_no as reference',
-            'sh.reason',
-            'sh.grand_total', // ✅ ចាប់យកឈ្មោះដើមសិន
-            'sh.grand_total as total_cost', // ✅ ចាប់យក Alias
-            'u.username as by_user'
-        ])
+            ->leftJoin('branches as b', 'sh.location_id', '=', 'b.id')
+            ->leftJoin('users as u', 'sh.user_id', '=', 'u.id')
+            ->leftJoin('employees as e', 'sh.employee_id', '=', 'e.id') 
+            ->select([
+                'sh.id',
+                'sh.invoice_no as document_no',
+                'sh.sale_date as date',
+                'b.branch_name as loc_id',
+                DB::raw('COALESCE(e.full_name, sh.customer_name) as customer_name'), 
+                'sh.car_buyer_name',
+                'sh.car_invoice_no as reference',
+                'sh.reason',
+                'sh.remark', 
+                'sh.grand_total',
+                'sh.grand_total as total_cost',
+                'u.username as by_user'
+            ])
             ->whereBetween('sh.sale_date', [$fromDate.' 00:00:00', $toDate.' 23:59:59']);
 
         // បន្ថែមលក្ខខណ្ឌ Search
@@ -53,8 +56,18 @@ class ReportController extends Controller
             $salesQuery->where(function ($q) use ($search) {
                 $q->where('sh.invoice_no', 'like', "%{$search}%")
                     ->orWhere('sh.customer_name', 'like', "%{$search}%")
+                    ->orWhere('e.full_name', 'like', "%{$search}%") 
                     ->orWhere('sh.car_buyer_name', 'like', "%{$search}%")
-                    ->orWhere('sh.car_invoice_no', 'like', "%{$search}%");
+                    ->orWhere('sh.car_invoice_no', 'like', "%{$search}%")
+                    ->orWhereExists(function ($sub) use ($search) {
+                        $sub->select(DB::raw(1))
+                            ->from('sales_details as sd')
+                            ->whereColumn('sd.sales_header_id', 'sh.id')
+                            ->where(function($subQ) use ($search) {
+                                $subQ->where('sd.item_code', 'like', "%{$search}%")
+                                     ->orWhere('sd.item_name', 'like', "%{$search}%");
+                            });
+                    });
             });
         }
 
@@ -74,7 +87,6 @@ class ReportController extends Controller
         // ភ្ជាប់ Items ទៅកាន់ Header នីមួយៗ
         $sales->getCollection()->transform(function ($sale) use ($details) {
             $sale->items = $details->get($sale->id, collect());
-
             return $sale;
         });
 
@@ -113,7 +125,8 @@ class ReportController extends Controller
             'fromDate',
             'toDate',
             'branches',
-            'search'
+            'search',
+            'branchId'
         ));
     }
 
@@ -143,7 +156,9 @@ class ReportController extends Controller
             });
         }
         $products = $productQuery->orderBy('item_code', 'asc')->get();
-        $branches = BranchModel::all();
+        
+        // ✅ ទាញយកតែ ៤ សាខា
+        $branches = BranchModel::whereIn('id', [23, 24, 25, 26])->orderBy('id', 'asc')->get();
 
         $reportData = [];
         $grandTotalCost = 0;
@@ -175,8 +190,17 @@ class ReportController extends Controller
 
             $soldQty = (clone $saleQuery)->whereBetween('sales_headers.sale_date', [$fromDate.' 00:00:00', $toDate.' 23:59:59'])->sum('sales_details.qty');
             $outDetails = (clone $saleQuery)->whereBetween('sales_headers.sale_date', [$fromDate.' 00:00:00', $toDate.' 23:59:59'])
-                ->select('sales_headers.invoice_no', 'sales_headers.sale_date', 'sales_headers.customer_name', 'sales_headers.car_buyer_name', 'sales_details.qty', 'sales_headers.reason')
-                ->get();
+            ->leftJoin('employees as e', 'sales_headers.employee_id', '=', 'e.id') // ✅ Join Table បុគ្គលិក
+            ->select(
+                'sales_headers.invoice_no', 
+                'sales_headers.sale_date', 
+                DB::raw('COALESCE(e.full_name, sales_headers.customer_name) as customer_name'), // ✅ ទាញយកឈ្មោះបុគ្គលិក
+                'sales_headers.car_buyer_name', 
+                'sales_details.qty', 
+                'sales_headers.reason',
+                'sales_headers.remark'
+            )
+            ->get();
 
             $begSold = (clone $saleQuery)->where('sales_headers.sale_date', '<', $fromDate.' 00:00:00')->sum('sales_details.qty');
             $receivedQty = $getReceive('between', [$fromDate, $toDate]);
@@ -221,7 +245,8 @@ class ReportController extends Controller
         $branchId = $request->input('branch_id');
         $search = $request->input('search');
 
-        $branches = BranchModel::all();
+        // ✅ ទាញយកតែ ៤ សាខា
+        $branches = BranchModel::whereIn('id', [23, 24, 25, 26])->orderBy('id', 'asc')->get();
         $query = ReceiveDetail::with(['header.vendor', 'header.branch', 'product']);
 
         $query->whereHas('header', function ($q) use ($fromDate, $toDate, $branchId) {
@@ -306,44 +331,4 @@ class ReportController extends Controller
 
         return response()->stream($callback, 200, $headers);
     }
-
-
-    public function dailySales(Request $request)
-{
-    $fromDate = $request->input('from_date', date('Y-m-d'));
-    $toDate = $request->input('to_date', date('Y-m-d'));
-    $branchId = $request->input('branch_id');
-    $search = $request->input('search'); // ✅ ចាប់យកពាក្យដែលគេវាយស្វែងរក
-
-    $branches = BranchModel::all();
-
-    $query = Sale::with('items')
-        ->whereDate('date', '>=', $fromDate)
-        ->whereDate('date', '<=', $toDate);
-
-    if ($branchId) {
-        $query->where('loc_id', $branchId);
-    }
-
-    // ✅ កូដសម្រាប់ដំណើរការមុខងារ Search All
-    if ($search) {
-        $query->where(function($q) use ($search) {
-            $q->where('document_no', 'LIKE', "%{$search}%")
-              ->orWhere('customer_name', 'LIKE', "%{$search}%")
-              ->orWhere('car_buyer_name', 'LIKE', "%{$search}%")
-              ->orWhere('reference', 'LIKE', "%{$search}%")
-              ->orWhere('by_user', 'LIKE', "%{$search}%")
-              // ស្វែងរកដល់ក្នុងទំនិញ (Items) ទៀត
-              ->orWhereHas('items', function($subQuery) use ($search) {
-                  $subQuery->where('item_code', 'LIKE', "%{$search}%")
-                           ->orWhere('item_name', 'LIKE', "%{$search}%");
-              });
-        });
-    }
-
-    $sales = $query->orderBy('date', 'desc')->paginate(15);
-    $totalAmount = $query->sum('total_cost');
-
-    return view('POS.Reports.daily_sales', compact('sales', 'branches', 'fromDate', 'toDate', 'totalAmount'));
-}
 }

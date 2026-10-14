@@ -22,14 +22,14 @@ Route::post('/services/public-store', [ServiceBookingController::class, 'publicS
 
 Route::post('/auth/login-by-qr', [AuthController::class, 'loginByQr']);
 
-// 🌟 Update: គួរតែដាក់ការពារ Throttle លើការផ្ញើ OTP ដែរ ដើម្បីការពារកុំឱ្យគេបាញ់ផ្ញើសារលេង
+
 Route::post('/auth/send-otp', [AuthController::class, 'sendOtp'])->middleware('throttle:3,1');
 Route::post('/auth/verify-otp', [AuthController::class, 'verifyOtp']);
 
-// 🌟 ផ្លូវនេះប្រើសម្រាប់ទាញ History តាមលេខ VIN ដោយមិនបាច់ Login
+
 Route::post('/services/history-by-vin', [ServiceBookingController::class, 'getHistoryByVin']);
 
-// ផ្ទៀងផ្ទាត់ VIN និងចុះឈ្មោះឡាន
+
 Route::post('/verify-vehicle', [SaleReportController::class, 'verifyVehicleForRegistration']);
 
 

@@ -1,7 +1,7 @@
 @extends('layouts.homePages')
 
 @section('content')
-<!-- ទាញយក ApexCharts -->
+<!-- ApexCharts -->
 <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
@@ -18,9 +18,9 @@
         --saas-text-muted: #6B7280;
     }
 
-    .analytics-container { font-family: 'Inter', 'Battambang', sans-serif; }
+    .analytics-container { font-family: 'Inter', sans-serif; }
     
-    /* ស្ទីលកាត (Cards) */
+    /* Cards Style */
     .metric-card {
         background-color: var(--saas-card-bg);
         border: 1px solid var(--saas-border);
@@ -48,7 +48,7 @@
     .icon-warning { background-color: #FFFBEB; color: var(--saas-warning); }
     .icon-success { background-color: #ECFDF5; color: var(--saas-success); }
 
-    /* ស្ទីលកាត Chart */
+    /* Chart Card Style */
     .chart-card {
         background-color: var(--saas-card-bg);
         border: 1px solid var(--saas-border);
@@ -64,66 +64,66 @@
 
 <div class="container-fluid flex-grow-1 analytics-container py-4">
     
-    <!-- ចំណងជើង និង Filter -->
+    <!-- Header and Filter -->
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h4 class="fw-bold mb-0 text-secondary">
-            <span>វិភាគទិន្នន័យ /</span> <span style="color: #111827;">EXPENSE ANALYTICS</span>
+            <span>Analytics /</span> <span style="color: #111827;">EXPENSE DASHBOARD</span>
         </h4>
         <div>
             <select class="form-select form-select-sm shadow-sm" style="border-color: var(--saas-border); width: 150px; font-weight: 500;">
-                <option value="this_month">ខែនេះ</option>
-                <option value="last_month">ខែមុន</option>
-                <option value="this_year">ឆ្នាំនេះ</option>
+                <option value="this_month">This Month</option>
+                <option value="last_month">Last Month</option>
+                <option value="this_year">This Year</option>
             </select>
         </div>
     </div>
 
-    <!-- ១. របារកាតសង្ខេប (Top Metrics) -->
+    <!-- 1. Top Metrics -->
     <div class="row g-3">
-        <!-- ចំណាយសរុប -->
+        <!-- Total Expense -->
         <div class="col-xl-3 col-md-6">
             <div class="metric-card d-flex justify-content-between align-items-center">
                 <div>
-                    <div class="metric-title">ចំណាយសរុប (Total)</div>
+                    <div class="metric-title">Total Expenses</div>
                     <div class="metric-value">${{ number_format($totalExpense, 2) }}</div>
-                    <small class="text-danger fw-bold mt-2 d-block"><i class="bx bx-trending-up"></i> +12% ធៀបខែមុន</small>
+                    <small class="text-danger fw-bold mt-2 d-block"><i class="bx bx-trending-up"></i> +12% vs last month</small>
                 </div>
                 <div class="icon-box icon-danger"><i class="bx bx-wallet"></i></div>
             </div>
         </div>
         
-        <!-- ចំណាយច្រើនជាងគេ -->
+        <!-- Top Category -->
         <div class="col-xl-3 col-md-6">
             <div class="metric-card d-flex justify-content-between align-items-center">
                 <div>
-                    <div class="metric-title">ចំណាយច្រើនជាងគេ</div>
+                    <div class="metric-title">Top Category</div>
                     <div class="metric-value" style="font-size: 18px; margin-top: 14px;">{{ $topCategory }}</div>
-                    <small class="text-muted mt-2 d-block">ប្រភេទទំនិញ/សេវាកម្ម</small>
+                    <small class="text-muted mt-2 d-block">Highest spend area</small>
                 </div>
                 <div class="icon-box icon-primary"><i class="bx bx-pie-chart-alt-2"></i></div>
             </div>
         </div>
 
-        <!-- មធ្យមប្រចាំថ្ងៃ -->
+        <!-- Daily Average -->
         <div class="col-xl-3 col-md-6">
             <div class="metric-card d-flex justify-content-between align-items-center">
                 <div>
-                    <div class="metric-title">មធ្យមប្រចាំថ្ងៃ (Daily Avg)</div>
+                    <div class="metric-title">Daily Average</div>
                     <div class="metric-value">${{ number_format($dailyAvg, 2) }}</div>
-                    <small class="text-muted mt-2 d-block">គិតត្រឹមថ្ងៃនេះ</small>
+                    <small class="text-muted mt-2 d-block">Based on last 7 days</small>
                 </div>
                 <div class="icon-box icon-warning"><i class="bx bx-line-chart"></i></div>
             </div>
         </div>
 
-        <!-- ស្ថានភាព Budget -->
+        <!-- Budget Status -->
         <div class="col-xl-3 col-md-6">
             <div class="metric-card d-flex justify-content-between align-items-center">
                 <div class="w-100">
-                    <div class="metric-title mb-2">កញ្ចប់ថវិកា (Budget)</div>
+                    <div class="metric-title mb-2">Budget Status</div>
                     <div class="d-flex justify-content-between align-items-center mb-1">
                         <span class="fw-bold" style="font-size: 14px;">65%</span>
-                        <span class="text-muted small">សល់ 35%</span>
+                        <span class="text-muted small">35% Left</span>
                     </div>
                     <div class="progress" style="height: 8px; border-radius: 4px;">
                         <div class="progress-bar bg-success" role="progressbar" style="width: 65%;"></div>
@@ -134,20 +134,20 @@
         </div>
     </div>
 
-    <!-- ២. ផ្នែកគំនូសតាង (Charts Section) -->
+    <!-- 2. Charts Section -->
     <div class="row">
-        <!-- Area Chart: លំហូរចំណាយប្រចាំថ្ងៃ -->
+        <!-- Area Chart: Daily Trend -->
         <div class="col-xl-8 col-lg-7">
             <div class="chart-card shadow-sm">
-                <div class="chart-header">លំហូរចំណាយប្រចាំថ្ងៃ (7 Days Trend)</div>
+                <div class="chart-header">Daily Expense Trend (7 Days)</div>
                 <div id="trendChart"></div>
             </div>
         </div>
 
-        <!-- Donut Chart: ចំណាត់ថ្នាក់ការចំណាយ -->
+        <!-- Donut Chart: By Category -->
         <div class="col-xl-4 col-lg-5">
             <div class="chart-card shadow-sm">
-                <div class="chart-header">ការចំណាយតាមប្រភេទ (By Category)</div>
+                <div class="chart-header">Expenses by Category</div>
                 <div id="categoryChart" class="d-flex justify-content-center"></div>
             </div>
         </div>
@@ -155,16 +155,15 @@
 
 </div>
 
-<!-- ✅ Javascript សម្រាប់គូរ Chart ដោយទាញទិន្នន័យពី Controller -->
 <script>
     document.addEventListener("DOMContentLoaded", function() {
         
         // 1. Setup Trend Chart (Area Chart)
-        const trendData = @json($expenseTrend); // ទាញទិន្នន័យពី PHP
+        const trendData = @json($expenseTrend);
         
         var trendOptions = {
             series: [{
-                name: 'ចំនួនទឹកប្រាក់ ($)',
+                name: 'Amount ($)',
                 data: trendData.data
             }],
             chart: {
@@ -173,7 +172,7 @@
                 fontFamily: 'Inter, sans-serif',
                 toolbar: { show: false }
             },
-            colors: ['#4F46E5'], // ពណ៌ Primary SaaS
+            colors: ['#4F46E5'],
             fill: {
                 type: 'gradient',
                 gradient: {
@@ -195,14 +194,14 @@
             },
             grid: {
                 borderColor: '#E5E7EB',
-                strokeDashArray: 4, // ធ្វើឱ្យបន្ទាត់ Grid ជាចុចៗ
+                strokeDashArray: 4,
             }
         };
         var trendChart = new ApexCharts(document.querySelector("#trendChart"), trendOptions);
         trendChart.render();
 
         // 2. Setup Category Chart (Donut Chart)
-        const categoryData = @json($expenseByCategory); // ទាញទិន្នន័យពី PHP
+        const categoryData = @json($expenseByCategory);
         
         var categoryOptions = {
             series: categoryData.series,
@@ -210,7 +209,7 @@
             chart: {
                 type: 'donut',
                 height: 330,
-                fontFamily: 'Inter, Battambang, sans-serif',
+                fontFamily: 'Inter, sans-serif',
             },
             colors: ['#4F46E5', '#10B981', '#F59E0B', '#EF4444', '#6B7280'],
             plotOptions: {
@@ -223,7 +222,7 @@
                             value: { fontSize: '20px', fontWeight: 700, color: '#111827', formatter: (val) => "$" + val },
                             total: {
                                 show: true,
-                                label: 'សរុប',
+                                label: 'Total',
                                 formatter: function (w) {
                                     return "$" + w.globals.seriesTotals.reduce((a, b) => a + b, 0);
                                 }

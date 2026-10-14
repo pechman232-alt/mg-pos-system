@@ -277,8 +277,7 @@
                             
                             <!-- បន្លិចពណ៌បើមិនទាន់ដល់ថ្ងៃ -->
                             <td class="{{ $isUpcoming ? 'fw-bold text-primary' : '' }}">
-                                {{ $item->contract ? $item->contract->format('d-M-Y') : '---' }}
-                            </td>
+                                {{ $item->contract ? \Carbon\Carbon::parse($item->contract)->format('d-M-Y') : '---' }}
                             
                             <td><code style="color: #0f172a; background: transparent;">{{ $item->official_userid ?: '---' }}</code></td>
 

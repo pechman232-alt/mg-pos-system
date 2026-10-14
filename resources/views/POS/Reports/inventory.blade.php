@@ -1,43 +1,77 @@
 @extends('layouts.homePages')
 
 @section('content')
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
 <style>
     :root {
-        --primary-color: #CE181E;
-        --secondary-color: #0f172a;
-        --bg-light: #f8fafc;
-        --border-color: #e2e8f0;
+        --tbl-border: #dbe4eb; 
+        --tbl-header-bg: #f4f7f9; 
+        --tbl-header-text: #334155; 
+        --tbl-text-main: #1e293b;
+        --tbl-text-muted: #64748b;
+        --saas-primary: #4F46E5;
     }
 
-    .report-container { font-family: 'Plus Jakarta Sans', 'Battambang', sans-serif !important; }
-    .form-control:focus, .form-select:focus { border-color: var(--primary-color); box-shadow: 0 0 0 0.25rem rgba(206, 24, 30, 0.15); }
-    .input-group-text { background-color: #f8fafc; color: #64748b; }
-    
-    /* Quick Filter Cards */
-    .quick-filter-card { transition: all 0.3s ease; border-radius: 12px; cursor: pointer; border: 1px solid var(--border-color); }
-    .quick-filter-card:hover { transform: translateY(-3px); box-shadow: 0 5px 15px rgba(0,0,0,0.1) !important; }
+    .report-container { 
+        font-family: 'Inter', 'Battambang', sans-serif !important; 
+    }
 
-    .summary-card { border-left: 4px solid var(--primary-color); border-radius: 8px; }
+    .saas-input {
+        border: 1px solid var(--tbl-border);
+        border-radius: 6px;
+        font-size: 13px;
+        padding: 6px 12px;
+        color: var(--tbl-text-main);
+    }
+    
+    .branch-tabs {
+        display: flex; gap: 8px; overflow-x: auto; padding-bottom: 10px; margin-bottom: 15px;
+    }
+    .branch-tab-item {
+        padding: 8px 16px; background-color: white; border: 1px solid var(--tbl-border);
+        border-radius: 6px; font-size: 12px; font-weight: 600; color: var(--tbl-text-muted);
+        text-decoration: none; white-space: nowrap;
+    }
+    .branch-tab-item.active { background-color: var(--saas-primary); color: white; border-color: var(--saas-primary); }
+
+    .summary-card { border-left: 4px solid var(--saas-primary); border-radius: 8px; }
     .summary-card.bg-in { border-left-color: #059669; }
     .summary-card.bg-out { border-left-color: #dc2626; }
     .summary-card.bg-balance { border-left-color: #2563eb; }
     .summary-card.bg-value { border-left-color: #8b5cf6; }
 
-    .table-container { border-radius: 8px; overflow: hidden; border: 1px solid var(--border-color); }
-    .table-report { width: 100%; border-collapse: collapse; font-size: 0.85rem; white-space: nowrap; }
-    .table-report th { background-color: #f1f5f9; color: var(--secondary-color); font-weight: 800; text-align: center; padding: 12px; border: 1px solid var(--border-color); text-transform: uppercase; }
-    .table-report td { padding: 10px 12px; border: 1px solid var(--border-color); font-weight: 600; color: #334155; vertical-align: middle; }
-    .table-report tbody tr:nth-child(even) { background-color: #f8fafc; }
-    
-    .val-positive { color: #2563eb; }
+    /* Custom Table Header */
+    .table-custom-header th {
+        background-color: var(--tbl-header-bg) !important;
+        color: var(--tbl-header-text) !important;
+        font-weight: 700 !important;
+        font-size: 12px !important;
+        text-transform: uppercase;
+        vertical-align: middle;
+        white-space: nowrap;
+    }
+
+    .val-positive { color: #2563eb; font-weight: 600; }
     .val-negative { color: #dc2626; font-weight: 700; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
     .val-negative:hover { color: #a81116; }
-    .val-total { background-color: #f1f5f9; font-weight: 800 !important; }
 
-    .print-only-header { display: none; }
+    /* ✅ កូដធ្វើឱ្យ Column ចុងក្រោយ (Action ឬ Total Cost) ជាប់ស្អិតនឹងគែមស្តាំពេល Scroll */
+    .table-hover tr td:last-child, 
+    .table-custom-header th:last-child {
+        position: sticky;
+        right: 0;
+        background-color: #ffffff !important;
+        box-shadow: -2px 0 5px rgba(0, 0, 0, 0.05);
+        z-index: 5;
+    }
+    .table-hover tr:hover td:last-child {
+        background-color: #f8fafc !important;
+    }
+    .table-custom-header th:last-child {
+        background-color: var(--tbl-header-bg) !important;
+        z-index: 6;
+    }
 
     /* ============================================================
        ✅ កូដ Ultimate Print Hack
@@ -55,11 +89,10 @@
 
         .no-print, .no-print *, .modal, .modal-backdrop { display: none !important; visibility: hidden !important; height: 0 !important; }
 
-        .print-only-header { display: block !important; margin-bottom: 20px !important; }
-        .table-responsive, .table-container { overflow: visible !important; border: none !important; margin: 0 !important; }
-        .table-report { width: 100% !important; border-collapse: collapse !important; table-layout: auto; }
-        .table-report th, .table-report td { border: 1px solid #000 !important; padding: 6px !important; font-size: 9pt !important; color: black !important; word-wrap: break-word; white-space: normal !important;}
-        .table-report th, .val-total, .val-total td { background-color: #f2f2f2 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+        .table-responsive { overflow: visible !important; border: none !important; margin: 0 !important; }
+        .table { width: 100% !important; border-collapse: collapse !important; table-layout: auto; }
+        .table th, .table td { border: 1px solid #000 !important; padding: 6px !important; font-size: 10pt !important; color: black !important; word-wrap: break-word; white-space: normal !important;}
+        .table th, .val-total, .val-total td { background-color: #f2f2f2 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
         .val-negative { text-decoration: none !important; } 
         .d-print-flex { display: flex !important; }
     }
@@ -68,7 +101,6 @@
 @php
     if(!isset($branches)) { $branches = \App\Models\BranchModel::all(); }
     
-    // ច្រោះយកតែ ៤ សាខាថ្មីបំផុត
     $latestBranches = $branches->sortByDesc('id')->take(4);
 
     $selectedBranchName = "VIVE MOTORS CO., LTD";
@@ -92,7 +124,7 @@
             <span class="text-muted fw-light">របាយការណ៍ /</span> Inventory Balance Report
         </h4>
         <div class="mt-2 mt-md-0">
-            <span class="badge p-2 fs-6 shadow-sm" style="background-color: var(--primary-color); color: white;">
+            <span class="badge p-2 fs-6 shadow-sm" style="background-color: var(--saas-primary); color: white;">
                 <i class="bx bx-calendar me-1"></i> 
                 {{ date('d M, Y', strtotime($fromDate)) }} - {{ date('d M, Y', strtotime($toDate)) }}
             </span>
@@ -139,7 +171,6 @@
                     <label class="form-label fw-bold text-muted"><i class='bx bx-map-pin'></i> សាខា</label>
                     <select name="branch_id" class="form-select border rounded shadow-none">
                         <option value="">-- ទាំងអស់ --</option>
-                        {{-- ✅ ដូរមកប្រើ $latestBranches ដើម្បីបង្ហាញតែ ៤ សាខាក្នុង Dropdown នេះ --}}
                         @foreach($latestBranches as $b)
                             <option value="{{ $b->id }}" {{ request('branch_id') == $b->id ? 'selected' : '' }}>{{ $b->branch_name }}</option>
                         @endforeach
@@ -208,8 +239,8 @@
     <div class="card border-0 shadow-sm print-wrapper">
         
         <div class="card-header bg-white border-bottom p-4 no-print">
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <h5 class="mb-0 fw-bold" style="color: var(--primary-color);">
+            <div class="d-flex justify-content-between align-items-center mb-0">
+                <h5 class="mb-0 fw-bold text-dark">
                     <i class="bx bx-list-ul me-2"></i> ទិន្នន័យសមតុល្យស្តុកលម្អិត
                 </h5>
                 <div class="d-flex gap-2">
@@ -223,8 +254,8 @@
             </div>
         </div>
 
-        <div class="text-center print-only-header pt-4">
-            <h2 style="font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 800; color: var(--primary-color); margin: 0; text-transform: uppercase;">
+        <div class="text-center d-none d-print-block pt-4 mb-3">
+            <h2 style="font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 800; color: var(--saas-primary); margin: 0; text-transform: uppercase;">
                 {{ $selectedBranchName }}
             </h2>
             <h4 style="margin: 5px 0; text-decoration: underline; color: var(--secondary-color);">INVENTORY BALANCE REPORT</h4>
@@ -237,11 +268,11 @@
             </div>
         </div>
 
-        <div class="table-responsive table-container m-3 m-print-0 border-print-0">
-            <table class="table-report">
-                <thead>
-                    <tr>
-                        <th width="40">No</th>
+        <div class="table-responsive m-3 m-print-0 border-print-0">
+            <table class="table table-hover table-bordered mb-0 align-middle" style="min-width: 1200px;">
+                <thead class="table-light table-custom-header">
+                    <tr class="text-center">
+                        <th width="50">No</th>
                         <th>Item Code</th>
                         <th class="text-start">Description</th>
                         <th>Category</th>
@@ -259,16 +290,15 @@
                         <tr>
                             <td class="text-center text-muted">{{ $index + 1 }}</td>
                             <td class="text-center fw-bold text-dark">{{ $row->item_code }}</td>
-                            <td class="text-start text-wrap" style="min-width: 200px;">{{ $row->description }}</td>
+                            <td class="text-start text-wrap" style="min-width: 250px;">{{ $row->description }}</td>
                             <td class="text-center text-muted">{{ $row->category }}</td>
                             
                             <td class="text-center fw-bold text-secondary">{{ $row->loc_id }}</td>
                             
                             <td class="text-center">{{ $row->um }}</td>
                             <td class="text-center val-positive">{{ number_format($row->stock_beginning) }}</td>
-                            <td class="text-center" style="color: #059669;">{{ number_format($row->stock_received) }}</td>
+                            <td class="text-center fw-bold" style="color: #059669;">{{ number_format($row->stock_received) }}</td>
                             
-                            {{-- ✅ កន្លែងចុច Pop-up បង្ហាញមុខអ្នកទិញ --}}
                             <td class="text-center">
                                 @if($row->sold_out != 0)
                                     <span class="val-negative out-detail-btn" 
@@ -282,7 +312,7 @@
                                 @endif
                             </td>
                             
-                            <td class="text-center fw-bold" style="background-color: #fdf2f2; color: var(--primary-color);">
+                            <td class="text-center fw-bold" style="background-color: #fdf2f2; color: #dc2626;">
                                 {{ number_format($row->stock_ending) }}
                             </td>
                             <td class="text-end fw-bold text-dark">${{ number_format($row->total_cost, 2) }}</td>
@@ -297,13 +327,13 @@
                     @endforelse
                 </tbody>
                 @if(count($reportData) > 0)
-                    <tfoot>
-                        <tr class="val-total">
+                    <tfoot class="table-light">
+                        <tr class="val-total fw-bold">
                             <td colspan="6" class="text-end py-3 text-uppercase">Grand Total Balance:</td>
                             <td class="text-center text-primary fs-6">{{ number_format($sumBeginning) }}</td>
-                            <td class="text-center" style="color: #059669; font-size: 15px;">{{ number_format($sumReceived) }}</td>
+                            <td class="text-center text-success fs-6">{{ number_format($sumReceived) }}</td>
                             <td class="text-center text-danger fs-6">{{ number_format($sumSold) }}</td>
-                            <td class="text-center" style="color: var(--primary-color); font-size: 16px;">{{ number_format($totalEndingQty) }}</td>
+                            <td class="text-center fs-5 text-danger">{{ number_format($totalEndingQty) }}</td>
                             <td class="text-end text-success fs-6">${{ number_format($grandTotalCost, 2) }}</td>
                         </tr>
                     </tfoot>
@@ -331,7 +361,7 @@
 <div class="modal fade" id="stockOutModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-xl modal-dialog-centered">
         <div class="modal-content">
-            <div class="modal-header p-3" style="background-color: var(--primary-color);">
+            <div class="modal-header p-3 bg-dark">
                 <h5 class="modal-title text-white fw-bold">
                     <i class="bx bx-export me-2"></i> ព័ត៌មានទំនិញចេញ <span id="modalItemCode" class="badge bg-white text-dark ms-2"></span>
                 </h5>
@@ -368,11 +398,9 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
     document.addEventListener("DOMContentLoaded", function () {
-        // បើក Tooltip
         var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
         var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) { return new bootstrap.Tooltip(tooltipTriggerEl); });
 
-        // Function បាញ់ទិន្នន័យចូល Modal ពេលចុចលេខ Stock Out
         document.querySelectorAll('.out-detail-btn').forEach(btn => {
             btn.addEventListener('click', function() {
                 let itemCode = this.getAttribute('data-itemcode');
@@ -393,6 +421,10 @@
                         let dObj = new Date(d.sale_date);
                         let fDate = dObj.toLocaleDateString('en-GB') + ' ' + dObj.toLocaleTimeString('en-US', {hour: '2-digit', minute:'2-digit'});
                         
+                        let reasonHtml = d.reason ? `<div class="text-danger mb-1" style="font-size: 11px;"><i class="bx bx-error-circle"></i> <b>Reason:</b> ${d.reason}</div>` : '';
+                        let remarkHtml = d.remark ? `<div class="text-info" style="font-size: 11px;"><i class="bx bx-comment-detail"></i> <b>Remark:</b> ${d.remark}</div>` : '';
+                        let combinedNotes = (reasonHtml || remarkHtml) ? (reasonHtml + remarkHtml) : '<span class="text-muted">-</span>';
+
                         let tr = `
                             <tr style="font-size: 12px;">
                                 <td class="text-center text-muted">${fDate}</td>
@@ -400,7 +432,7 @@
                                 <td class="text-center fw-semibold">${d.customer_name || '-'}</td>
                                 <td class="text-center">${d.car_buyer_name || '-'}</td>
                                 <td class="text-center fw-bold text-danger">-${d.qty}</td>
-                                <td class="text-start text-muted">${d.reason || '-'}</td>
+                                <td class="text-start">${combinedNotes}</td>
                             </tr>
                         `;
                         tbody.innerHTML += tr;
@@ -409,7 +441,6 @@
                     tbody.innerHTML = `<tr><td colspan="6" class="text-center text-muted py-4">គ្មានទិន្នន័យលម្អិតទេ!</td></tr>`;
                 }
 
-                // បើក Modal
                 var myModal = new bootstrap.Modal(document.getElementById('stockOutModal'));
                 myModal.show();
             });

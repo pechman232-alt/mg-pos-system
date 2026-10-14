@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\POS\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB; // បន្ថែមសម្រាប់ការប្រើ Transaction
+use Illuminate\Support\Facades\DB;
 
 class ProductController extends Controller
 {
@@ -17,8 +17,8 @@ class ProductController extends Controller
     {
         $search = $request->input('search');
     
-        // Eager load 'user' ដើម្បីការពារ N+1 query problem
-        $query = Product::with('user'); 
+        // ✅ កែសម្រួលទីនេះ៖ ប្រើ 'branch' ឱ្យត្រូវនឹង Relationship ក្នុង Model Product របស់បង
+        $query = Product::with(['user', 'branch']); 
     
         if (!empty($search)) {
             $query->where(function($q) use ($search) {
@@ -55,6 +55,7 @@ class ProductController extends Controller
             'cost'        => 'required|numeric|min:0',
             'price'       => 'required|numeric|min:0',
             'category'    => 'nullable|string|max:255',
+            'location_id' => 'required', // Validate location_id (សាខា)
             'description' => 'nullable|string',
             'stock_qty'   => 'nullable|numeric|min:0',
         ]);
@@ -65,6 +66,7 @@ class ProductController extends Controller
             $product->item_name   = $request->item_name;
             $product->description = $request->description;
             $product->category    = $request->category;
+            $product->location_id = $request->location_id; 
             $product->cost        = $request->cost;
             $product->price       = $request->price;
             $product->stock_qty   = $request->stock_qty ?? 0;
@@ -83,41 +85,39 @@ class ProductController extends Controller
         return view('POS.Products.edit', compact('product'));
     }
 
-    /**
-     * កែប្រែទិន្នន័យ
-     */
     public function update(Request $request, $id)
     {
-        $product = Product::findOrFail($id);
-
+        // សម្រួលតម្លៃ price ឱ្យត្រូវជាមួយ validation
         $request->merge([
             'price' => $request->input('price') ?? $request->input('selling_price')
         ]);
 
         $request->validate([
-            'item_code'   => 'required|unique:products,item_code,' . $product->id,
+            'item_code'   => 'required|unique:products,item_code,' . $id,
             'item_name'   => 'required|string|max:255',
             'cost'        => 'required|numeric|min:0',
             'price'       => 'required|numeric|min:0',
             'category'    => 'nullable|string|max:255',
+            'location_id' => 'required',
             'description' => 'nullable|string',
             'stock_qty'   => 'nullable|numeric|min:0',
         ]);
 
         try {
+            $product = Product::findOrFail($id);
             $product->item_code   = $request->item_code;
             $product->item_name   = $request->item_name;
             $product->description = $request->description;
             $product->category    = $request->category;
+            $product->location_id = $request->location_id;
             $product->cost        = $request->cost;
             $product->price       = $request->price;
             $product->stock_qty   = $request->stock_qty ?? 0;
-            $product->user_id     = Auth::id(); // កត់ត្រាទុកអ្នកកែចុងក្រោយ
-            $product->save(); 
+            $product->save();
 
-            return redirect()->route('products.index')->with('success', 'កែប្រែព័ត៌មានទំនិញបានជោគជ័យ!');
+            return redirect()->route('products.index')->with('success', 'កែប្រែទិន្នន័យទំនិញបានជោគជ័យ!');
         } catch (\Exception $e) {
-            return back()->withInput()->with('error', 'មិនអាចកែប្រែបានទេ៖ ' . $e->getMessage());
+            return back()->withInput()->with('error', 'មានបញ្ហាបច្ចេកទេស៖ ' . $e->getMessage());
         }
     }
 
@@ -125,10 +125,9 @@ class ProductController extends Controller
     {
         $product = Product::findOrFail($id);
         
-        // បើបងចង់ការពារកុំឱ្យលុបទំនិញដែលមានក្នុង Stock ច្រើន ឬមានក្នុង Sales
-        // បងអាចឆែកលក្ខខណ្ឌនៅទីនេះបន្ថែម
-        
+        // អាចដាក់លក្ខខណ្ឌបន្ថែម បើមិនចង់ឱ្យលុបទំនិញដែលមានសកម្មភាពហើយ
         $product->delete();
+        
         return redirect()->route('products.index')->with('success', 'លុបទំនិញបានជោគជ័យ!');
     }
 }

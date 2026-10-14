@@ -3,363 +3,233 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <title>TF Motors | Operator Login</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Icons & Tailwind -->
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <script src="https://cdn.tailwindcss.com"></script>
 
-    <title>TF Motors | MG Cambodia — Operator Access</title>
-
     <style>
-        :root {
-            --midnight: #04060f;
-            --circuit: #4338ca;
-            --violet: #7c3aed;
-            --ignition-red: #e11d48;
-            --dash-amber: #fbbf24;
-        }
-
         body {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            background-color: var(--midnight);
-            overflow: hidden;
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
             margin: 0;
+            overflow: hidden;
             -webkit-font-smoothing: antialiased;
         }
 
-        .font-display { font-family: 'Sora', sans-serif; }
-        .font-mono { font-family: 'JetBrains Mono', monospace; }
+        .font-display { font-family: 'Plus Jakarta Sans', sans-serif; }
 
-        .bg-portal {
-            position: fixed; inset: 0;
-            background: linear-gradient(rgba(4, 6, 15, 0.88), rgba(4, 6, 15, 0.78)),
-                        url("{{ asset('/assets/images/mg_7.jpg') }}") center/cover no-repeat;
-            z-index: -2;
+        /* Left Side Background */
+        .bg-brand {
+            background-color: #0F172A;
+            background-image: url("{{ asset('/assets/images/mg_7.jpg') }}");
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            position: relative;
         }
 
-        /* BESPOKE AMBIENT BACKGROUND — light streaks instead of generic particles */
-        #ambient { position: fixed; inset: 0; z-index: -1; pointer-events: none; overflow: hidden; }
-        .streak {
+        .bg-brand::after {
+            content: '';
             position: absolute;
-            height: 1px;
-            width: 160px;
-            left: -200px;
-            background: linear-gradient(90deg, transparent, rgba(165,180,252,0.55), transparent);
-            animation: streak-move linear infinite;
-        }
-        @keyframes streak-move {
-            to { transform: translateX(160vw); }
+            inset: 0;
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.8) 0%, rgba(208, 38, 44, 0.4) 100%);
         }
 
-        /* HARDWARE ACCELERATED DRIVE-OUT */
-        .drive-out-sequence {
-            will-change: transform, opacity, filter;
-            animation: driveOut 0.6s cubic-bezier(0.4, 0, 1, 1) forwards;
-        }
-        @keyframes driveOut {
-            0% { transform: translate3d(0, 0, 0) scale(1); filter: blur(0); }
-            100% { transform: translate3d(2000px, 0, 0) scale(1.1); filter: blur(10px); opacity: 0; }
-        }
-
-        .glass-panel {
-            background: rgba(255, 255, 255, 0.04);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-        }
-
-        .btn-ignition {
-            background: linear-gradient(135deg, var(--circuit), var(--violet), var(--ignition-red));
-            background-size: 200% auto;
+        /* Smooth Input Fields */
+        .input-field {
+            width: 100%;
+            background-color: #f1f5f9;
+            border: 2px solid transparent;
+            color: #1e293b;
+            padding: 1rem 1.25rem 1rem 3.25rem;
+            border-radius: 0.75rem;
+            font-size: 0.95rem;
+            font-weight: 500;
             transition: all 0.3s ease;
         }
-        .btn-ignition:hover { background-position: right center; }
-        .btn-ignition:focus-visible {
-            outline: 2px solid #a5b4fc;
-            outline-offset: 3px;
+
+        .input-field:focus {
+            background-color: #ffffff;
+            border-color: #4F46E5; /* Indigo 600 */
+            outline: none;
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.1);
         }
 
-        input:focus-visible {
-            outline: 2px solid rgba(165, 180, 252, 0.6);
-            outline-offset: 2px;
+        .input-icon {
+            position: absolute;
+            left: 1.25rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #94a3b8;
+            font-size: 1.25rem;
+            transition: color 0.3s ease;
         }
 
-        /* DASH READOUT BAR */
-        .dash-readout {
-            display: flex; align-items: center; justify-content: space-between;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 10px; letter-spacing: 0.12em;
-            color: rgba(165, 180, 252, 0.55);
-            text-transform: uppercase;
+        .group:focus-within .input-icon {
+            color: #4F46E5;
         }
-        .status-dot {
-            width: 6px; height: 6px; border-radius: 50%;
-            background: #34d399;
-            box-shadow: 0 0 8px #34d399;
-            animation: pulse-dot 2s ease-in-out infinite;
-        }
-        @keyframes pulse-dot { 0%, 100% { opacity: 1; } 50% { opacity: 0.35; } }
 
-        /* AUTH GAUGE */
-        #needleGroup { transform-origin: 100px 100px; transform: rotate(-90deg); transition: transform 0.5s cubic-bezier(.34,1.56,.64,1); }
-        #gaugeFill { transition: stroke-dashoffset 0.5s cubic-bezier(.34,1.56,.64,1); }
-        .gauge-redline #needleGroup { filter: drop-shadow(0 0 6px var(--ignition-red)); }
-
-        /* TERMINAL STYLING */
-        #log-terminal {
-            font-family: 'JetBrains Mono', monospace;
-            background: rgba(0, 0, 0, 0.4);
-            border-radius: 12px;
-            height: 0;
+        /* Submit Button */
+        .btn-submit {
+            background-color: #0F172A;
+            color: #ffffff;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
             overflow: hidden;
-            transition: height 0.2s ease-out;
         }
-        #log-terminal.active { height: 100px; margin-top: 20px; border: 1px solid rgba(99, 102, 241, 0.2); padding: 10px; }
-        .log-entry {
-            font-size: 10px;
-            color: #a5b4fc;
-            margin-bottom: 2px;
+
+        .btn-submit:hover {
+            background-color: #1e293b;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(15, 23, 42, 0.2);
+        }
+
+        /* Loading Spinner */
+        .spinner {
+            display: none;
+            width: 20px; height: 20px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: #ffffff;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* Smooth Entry Animation */
+        .fade-in-up {
+            animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
             opacity: 0;
-            animation: logFade 0.1s forwards;
-        }
-        @keyframes logFade { to { opacity: 1; } }
-
-        #preloader {
-            position: fixed; inset: 0; background: var(--midnight);
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            z-index: 100;
+            transform: translateY(20px);
         }
 
-        /* PASSWORD VISIBILITY TOGGLE */
-        .pw-toggle { cursor: pointer; }
-        .pw-toggle:focus-visible { outline: 2px solid rgba(165, 180, 252, 0.6); border-radius: 4px; }
-
-        @media (prefers-reduced-motion: reduce) {
-            .streak { display: none; }
-            .drive-out-sequence { animation: none !important; opacity: 0; }
-            #needleGroup, #gaugeFill { transition: none !important; }
-            .status-dot { animation: none; }
+        @keyframes fadeInUp {
+            to { opacity: 1; transform: translateY(0); }
         }
+
+        .delay-100 { animation-delay: 100ms; }
+        .delay-200 { animation-delay: 200ms; }
+        .delay-300 { animation-delay: 300ms; }
     </style>
 </head>
-<body class="h-screen w-full flex items-center justify-center p-4">
+<body class="h-screen w-full flex">
 
-    <div id="ambient"></div>
-
-    <div id="preloader">
-        <img src="{{ asset('/assets/images/logo.png') }}" class="h-16 animate-pulse" alt="Logo">
-        <div class="mt-4 text-indigo-400 font-bold tracking-[8px] text-[9px] uppercase opacity-60 font-mono">Initializing...</div>
+    <!-- Left Side: Image Banner -->
+    <div class="hidden lg:flex lg:w-1/2 bg-brand relative flex-col justify-between p-12">
+        <div class="relative z-10">
+            <img src="{{ asset('/assets/images/logo.png') }}" class="h-12 drop-shadow-md" alt="TF Logo">
+        </div>
+        
+        <div class="relative z-10 text-white pb-8">
+            <h1 class="font-display text-4xl font-extrabold tracking-tight mb-4 leading-tight">
+                Streamline Your<br>Aftersales Operations.
+            </h1>
+            <p class="text-slate-300 text-lg font-medium max-w-md">
+                TF Motors Operator Portal provides real-time insights, service capacity management, and performance tracking.
+            </p>
+        </div>
     </div>
 
-    <div class="bg-portal"></div>
-
-    <main id="login-wrapper" class="w-full max-w-[420px] opacity-0 transition-all duration-700 translate-y-4">
-        <div class="dash-readout mb-3 px-2">
-            <span class="flex items-center gap-2"><span class="status-dot"></span>Systems Nominal</span>
-            <span id="real-time" class="font-mono">--:--</span>
-        </div>
-
-        <div class="glass-panel rounded-[40px] p-10 text-center" id="loginCard">
-            <div class="mb-6">
-                <img src="{{ asset('/assets/images/logo.png') }}" class="h-12 mx-auto mb-6" alt="TF Logo">
-                <h1 class="font-display text-3xl font-extrabold text-white italic tracking-tight">TF MOTORS</h1>
-                <p class="text-indigo-300/40 font-bold text-[10px] uppercase tracking-widest mt-2 font-mono">MG Cambodia · Operator Access</p>
+    <!-- Right Side: Clean Login Form -->
+    <div class="w-full lg:w-1/2 flex items-center justify-center p-8 bg-white relative z-10">
+        
+        <div class="w-full max-w-md">
+            
+            <!-- Mobile Logo (Hidden on Desktop) -->
+            <div class="text-center lg:hidden mb-8 fade-in-up">
+                <img src="{{ asset('/assets/images/logo.png') }}" class="h-12 mx-auto" alt="TF Logo">
             </div>
 
-            <!-- AUTH GAUGE -->
-            <div class="flex flex-col items-center -mt-2 mb-4" id="gaugeWrap">
-                <svg viewBox="0 0 200 110" class="w-40 h-auto">
-                    <defs>
-                        <linearGradient id="gaugeGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-                            <stop offset="0%" stop-color="#4338ca"/>
-                            <stop offset="55%" stop-color="#7c3aed"/>
-                            <stop offset="100%" stop-color="#e11d48"/>
-                        </linearGradient>
-                    </defs>
-                    <path d="M10,100 A90,90 0 0,1 190,100" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="10" stroke-linecap="round"/>
-                    <path id="gaugeFill" d="M10,100 A90,90 0 0,1 190,100" fill="none" stroke="url(#gaugeGrad)" stroke-width="10" stroke-linecap="round" stroke-dasharray="282.74" stroke-dashoffset="282.74"/>
-                    <!-- ticks -->
-                    <line x1="2" y1="100" x2="22" y2="100" stroke="rgba(255,255,255,0.25)" stroke-width="2"/>
-                    <line x1="30.7" y1="30.7" x2="44.8" y2="44.8" stroke="rgba(255,255,255,0.25)" stroke-width="2"/>
-                    <line x1="100" y1="2" x2="100" y2="22" stroke="rgba(255,255,255,0.25)" stroke-width="2"/>
-                    <line x1="169.3" y1="30.7" x2="155.2" y2="44.8" stroke="rgba(255,255,255,0.25)" stroke-width="2"/>
-                    <line x1="198" y1="100" x2="178" y2="100" stroke="rgba(255,255,255,0.25)" stroke-width="2"/>
-                    <g id="needleGroup">
-                        <line x1="100" y1="100" x2="100" y2="22" stroke="#f8fafc" stroke-width="3" stroke-linecap="round"/>
-                    </g>
-                    <circle cx="100" cy="100" r="6" fill="#f8fafc"/>
-                </svg>
-                <div class="font-mono text-[9px] uppercase tracking-[0.2em] text-indigo-300/50 -mt-1" id="gaugeState">Standby</div>
+            <!-- Form Header -->
+            <div class="mb-10 text-center lg:text-left fade-in-up delay-100">
+                <h2 class="font-display text-3xl font-extrabold text-slate-900 tracking-tight mb-2">Welcome Back</h2>
+                <p class="text-slate-500 text-sm font-medium">Please sign in to access your operator dashboard.</p>
             </div>
 
-            <form id="loginForm" action="{{ url('login') }}" method="POST" class="space-y-4">
+            <!-- The Form -->
+            <form id="loginForm" action="{{ route('login') }}" method="POST" class="space-y-5 fade-in-up delay-200">
                 @csrf
-                <div class="relative group">
-                    <i class="bx bx-id-card absolute left-5 top-1/2 -translate-y-1/2 text-slate-500"></i>
-                    <input type="text" id="username" name="username" placeholder="User Name" required autofocus autocomplete="username"
-                        class="w-full pl-12 pr-6 py-4 rounded-xl bg-white/5 border border-white/10 text-white outline-none focus:border-indigo-500/50 transition-all text-sm">
-                </div>
-                <div class="relative group">
-                    <i class="bx bx-lock-open-alt absolute left-5 top-1/2 -translate-y-1/2 text-slate-500"></i>
-                    <input type="password" id="password" name="password" placeholder="Password" required autocomplete="current-password"
-                        class="w-full pl-12 pr-12 py-4 rounded-xl bg-white/5 border border-white/10 text-white outline-none focus:border-indigo-500/50 transition-all text-sm">
-                    <i id="pwToggle" tabindex="0" role="button" aria-label="Show password" class="bx bx-show pw-toggle absolute right-5 top-1/2 -translate-y-1/2 text-slate-500"></i>
+                
+                <!-- Username -->
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wide mb-2">Username / Operator ID</label>
+                    <div class="relative group">
+                        <i class="bx bx-id-card input-icon"></i>
+                        <input type="text" id="username" name="username" placeholder="Enter your username" required autofocus autocomplete="username" class="input-field">
+                    </div>
                 </div>
 
-                <div class="flex items-center justify-between px-1 text-[11px] text-slate-400">
+                <!-- Password -->
+                <div>
+                    <div class="flex justify-between items-center mb-2">
+                        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wide">Password</label>
+                        <a href="#" class="text-xs font-bold text-indigo-600 hover:text-indigo-800 transition-colors">Forgot Password?</a>
+                    </div>
+                    <div class="relative group">
+                        <i class="bx bx-lock-alt input-icon"></i>
+                        <input type="password" id="password" name="password" placeholder="••••••••" required autocomplete="current-password" class="input-field" style="padding-right: 3rem;">
+                        <i id="pwToggle" role="button" class="bx bx-show absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700 cursor-pointer text-xl transition-colors"></i>
+                    </div>
+                </div>
+
+                <!-- Remember Me -->
+                <div class="flex items-center mt-2">
                     <label class="flex items-center gap-2 cursor-pointer select-none">
-                        <input type="checkbox" name="remember" class="rounded bg-white/5 border-white/20 accent-indigo-500">
-                        Remember me
+                        <input type="checkbox" name="remember" class="w-4 h-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500">
+                        <span class="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors">Keep me signed in</span>
                     </label>
-                    <a href="#" class="text-indigo-300/60 hover:text-indigo-300 transition-colors">Forgot access?</a>
                 </div>
 
-                <div class="pt-2">
-                    <button type="submit" id="submitBtn" class="btn-ignition w-full py-4 rounded-xl text-white font-black uppercase tracking-widest text-[11px] flex items-center justify-center gap-3">
-                        <span id="btnLabel">Start Ignition</span>
-                        <div id="nitro-loader" class="hidden w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin"></div>
+                <!-- Submit Button -->
+                <div class="pt-4 fade-in-up delay-300">
+                    <button type="submit" id="submitBtn" class="btn-submit w-full py-3.5 rounded-xl font-bold text-[15px] flex items-center justify-center gap-3">
+                        <span id="btnText">Sign In to Dashboard</span>
+                        <div id="spinner" class="spinner"></div>
                     </button>
                 </div>
             </form>
-
-            <div id="log-terminal">
-                <div id="log-container"></div>
+            
+            <!-- Footer -->
+            <div class="mt-12 text-center fade-in-up delay-300">
+                <p class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">© {{ date('Y') }} TF Motors Cambodia. All rights reserved.</p>
             </div>
         </div>
-    </main>
+    </div>
 
     <script>
-        // Clock — fires immediately, then keeps a light 30s refresh since only HH:MM is shown
-        const updateClock = () => {
-            document.getElementById('real-time').textContent = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
-        };
-        updateClock();
-        setInterval(updateClock, 30000);
-
-        // Entry sequence
-        window.addEventListener('load', () => {
-            setTimeout(() => {
-                document.getElementById('preloader').style.opacity = '0';
-                document.getElementById('login-wrapper').classList.remove('opacity-0', 'translate-y-4');
-                setTimeout(() => document.getElementById('preloader').remove(), 500);
-            }, 500);
-        });
-
-        // --- AUTH GAUGE ---
-        const ARC_LENGTH = 282.74;
-        const needleGroup = document.getElementById('needleGroup');
-        const gaugeFill = document.getElementById('gaugeFill');
-        const gaugeState = document.getElementById('gaugeState');
-        const gaugeWrap = document.getElementById('gaugeWrap');
-
-        function setGauge(value, instant) {
-            value = Math.max(0, Math.min(100, value));
-            const deg = -90 + (value / 100) * 180;
-            needleGroup.style.transition = instant ? 'none' : 'transform 0.5s cubic-bezier(.34,1.56,.64,1)';
-            needleGroup.style.transform = `rotate(${deg}deg)`;
-            gaugeFill.style.transition = instant ? 'none' : 'stroke-dashoffset 0.5s cubic-bezier(.34,1.56,.64,1)';
-            gaugeFill.style.strokeDashoffset = ARC_LENGTH * (1 - value / 100);
-            gaugeState.textContent = value < 10 ? 'Standby' : value < 90 ? 'Verifying' : 'Engaged';
-        }
-
-        function recalcGauge() {
-            const u = document.getElementById('username').value.length > 0;
-            const p = document.getElementById('password').value;
-            let v = 0;
-            if (u) v += 35;
-            v += Math.min(p.length * 8, 65);
-            setGauge(v);
-        }
-        document.getElementById('username').addEventListener('input', recalcGauge);
-        document.getElementById('password').addEventListener('input', recalcGauge);
-
-        function revEngine(callback) {
-            let ticks = 0;
-            const jitter = setInterval(() => {
-                setGauge(82 + Math.random() * 18, true);
-                ticks++;
-                if (ticks > 6) {
-                    clearInterval(jitter);
-                    setGauge(100);
-                    gaugeWrap.classList.add('gauge-redline');
-                    callback && callback();
-                }
-            }, 90);
-        }
-
-        // Password visibility toggle
+        // Password Visibility Toggle (Smooth & Simple)
         const pwInput = document.getElementById('password');
         const pwToggle = document.getElementById('pwToggle');
-        function togglePw() {
-            const show = pwInput.type === 'password';
-            pwInput.type = show ? 'text' : 'password';
-            pwToggle.className = show ? 'bx bx-hide pw-toggle absolute right-5 top-1/2 -translate-y-1/2 text-slate-500' : 'bx bx-show pw-toggle absolute right-5 top-1/2 -translate-y-1/2 text-slate-500';
-            pwToggle.setAttribute('aria-label', show ? 'Hide password' : 'Show password');
-        }
-        pwToggle.addEventListener('click', togglePw);
-        pwToggle.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); togglePw(); } });
-
-        // Terminal boot log
-        const logs = [
-            "> Reading key fob...",
-            "> Verifying chassis ID...",
-            "> ECU handshake OK.",
-            "> Immobilizer released.",
-            "> Diagnostics: 0 faults.",
-            "> Welcome aboard, Operator."
-        ];
-
-        function runTerminal(callback) {
-            const terminal = document.getElementById('log-terminal');
-            const container = document.getElementById('log-container');
-            terminal.classList.add('active');
-
-            logs.forEach((text, i) => {
-                setTimeout(() => {
-                    const div = document.createElement('div');
-                    div.className = 'log-entry';
-                    div.textContent = text;
-                    container.appendChild(div);
-                    if (i === logs.length - 1) setTimeout(callback, 200);
-                }, i * 120);
-            });
-        }
-
-        // Submit sequence
-        document.getElementById('loginForm').addEventListener('submit', function (e) {
-            e.preventDefault();
-            const btn = document.getElementById('submitBtn');
-            const nitro = document.getElementById('nitro-loader');
-
-            btn.style.pointerEvents = 'none';
-            btn.style.transform = 'scale(0.98)';
-            document.getElementById('btnLabel').innerText = 'IGNITING...';
-            nitro.classList.remove('hidden');
-
-            let done = 0;
-            const finishCheck = () => { done++; if (done === 2) finish(); };
-            const finish = () => {
-                document.getElementById('loginCard').classList.add('drive-out-sequence');
-                setTimeout(() => this.submit(), 400);
-            };
-
-            revEngine(finishCheck);
-            runTerminal(finishCheck);
+        
+        pwToggle.addEventListener('click', () => {
+            const isPassword = pwInput.type === 'password';
+            pwInput.type = isPassword ? 'text' : 'password';
+            pwToggle.className = isPassword 
+                ? 'bx bx-hide absolute right-4 top-1/2 -translate-y-1/2 text-slate-700 cursor-pointer text-xl transition-colors' 
+                : 'bx bx-show absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700 cursor-pointer text-xl transition-colors';
         });
 
-        // Ambient light streaks — bespoke, no external particle library
-        (function buildStreaks() {
-            const ambient = document.getElementById('ambient');
-            const rows = [12, 24, 38, 52, 68, 82];
-            rows.forEach((top, i) => {
-                const el = document.createElement('div');
-                el.className = 'streak';
-                el.style.top = top + '%';
-                el.style.animationDuration = (7 + i * 1.6) + 's';
-                el.style.animationDelay = (i * 1.1) + 's';
-                el.style.opacity = 0.25 + (i % 3) * 0.1;
-                ambient.appendChild(el);
-            });
-        })();
+        // Form Submit Loading State
+        document.getElementById('loginForm').addEventListener('submit', function() {
+            const btn = document.getElementById('submitBtn');
+            const btnText = document.getElementById('btnText');
+            const spinner = document.getElementById('spinner');
+            
+            // Prevent double click
+            btn.style.pointerEvents = 'none';
+            btn.style.opacity = '0.9';
+            
+            // Show Loading
+            btnText.textContent = 'Authenticating...';
+            spinner.style.display = 'block';
+        });
     </script>
 </body>
 </html>

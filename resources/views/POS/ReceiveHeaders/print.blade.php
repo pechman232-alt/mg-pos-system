@@ -5,30 +5,45 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Goods Receipt Note - {{ $receiveHeader->document_no }}</title>
     
-    <link href="https://fonts.googleapis.com/css2?family=Battambang:wght@400;700&family=Moul&display=swap" rel="stylesheet">
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Battambang:wght@400;700&family=Moul&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
     <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
     
     <style>
         /* -------------------------------------
            ១. ទម្រង់អេក្រង់ & ប៊ូតុងបញ្ជា
            ------------------------------------- */
+        :root {
+            --brand-dark: #1e293b;
+            --brand-red: #CE181E;
+            --brand-blue: #3b82f6;
+            --text-main: #334155;
+            --text-muted: #94a3b8;
+            --bg-soft: #f8fafc;
+            --border-color: #e2e8f0;
+            --success: #16a34a;
+        }
+
         body {
-            background-color: #525659; margin: 0;
-            font-family: 'Battambang', Arial, sans-serif;
+            background-color: #525659; 
+            margin: 0;
+            font-family: 'Plus Jakarta Sans', 'Battambang', Arial, sans-serif;
             display: flex; flex-direction: column; align-items: center;
         }
+        
         .control-bar {
             background-color: #2b2c40; padding: 15px; display: flex;
             justify-content: center; gap: 15px; position: sticky; top: 0;
             z-index: 999; box-shadow: 0 4px 10px rgba(0,0,0,0.3); width: 100%;
         }
+        
         .btn {
-            padding: 10px 25px; border-radius: 5px; text-decoration: none;
-            font-family: Arial, sans-serif; font-weight: bold; font-size: 14px;
+            padding: 10px 25px; border-radius: 6px; text-decoration: none;
+            font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; font-size: 14px;
             cursor: pointer; border: none; display: flex; align-items: center;
             gap: 8px; transition: 0.3s;
         }
-        .btn-print { background-color: #CE181E; color: white; }
+        .btn-print { background-color: var(--brand-red); color: white; }
         .btn-print:hover { background-color: #a81116; }
         .btn-back { background-color: #696cff; color: white; }
         .btn-back:hover { background-color: #5f61e6; }
@@ -36,102 +51,153 @@
         .preview-area { padding: 40px 0; }
 
         /* -------------------------------------
-           ២. ខ្នាតក្រដាស A4 ស្តង់ដារ (អេក្រង់)
+           ២. ខ្នាតក្រដាស A4 ស្តង់ដារ
            ------------------------------------- */
         .a4-paper {
-            background: #ffffff; width: 210mm; height: 296.5mm; max-height: 296.5mm;
+            background: #ffffff; width: 210mm; height: 296.5mm; 
             padding: 12mm 15mm; box-sizing: border-box; box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-            color: #000; font-size: 12px; display: flex; flex-direction: column; 
-            overflow: hidden; margin: 0 auto;
+            color: var(--brand-dark); font-size: 12px; display: flex; flex-direction: column; 
+            margin: 0 auto; position: relative; overflow: hidden;
         }
 
         /* -------------------------------------
            ៣. Header (Logo និង ព័ត៌មានក្រុមហ៊ុន)
            ------------------------------------- */
         .dn-header {
-            display: flex; justify-content: space-between; align-items: center;
-            border-bottom: 2px solid #333; padding-bottom: 12px; margin-bottom: 15px;
+            display: flex; justify-content: space-between; align-items: flex-start;
+            margin-bottom: 15px; position: relative;
         }
-        .dn-logo { width: 150px; text-align: left; }
-        .dn-logo img { max-width: 140px; max-height: 80px; object-fit: contain; }
-        .company-info-box { text-align: center; flex-grow: 1; }
-        .company-kh { font-family: 'Moul', cursive; font-size: 18px; margin-bottom: 6px; color: #000; letter-spacing: 0.5px; }
-        .company-en { font-weight: bold; font-size: 16px; margin-bottom: 6px; font-family: Arial; text-transform: uppercase; }
-        .company-info { font-size: 11px; line-height: 1.8; color: #222; }
-        .header-spacer { width: 150px; } 
-
-        .doc-title { text-align: center; margin: 5px 0 20px 0; }
-        .doc-title-kh { font-family: 'Moul', cursive; font-size: 18px; margin-bottom: 5px;}
-        .doc-title-en { font-weight: bold; font-size: 16px; font-family: Arial; text-decoration: underline;}
+        .dn-logo { width: 140px; text-align: left; }
+        .dn-logo img { max-width: 100%; max-height: 70px; object-fit: contain; }
+        
+        .company-info-box { text-align: center; flex-grow: 1; margin-top: 5px; }
+        .company-kh { font-family: 'Moul', cursive; font-size: 17px; margin-bottom: 5px; color: var(--brand-dark); }
+        .company-en { font-weight: 800; font-size: 15px; margin-bottom: 6px; letter-spacing: 0.5px; }
+        .company-info { font-size: 10.5px; line-height: 1.6; color: var(--text-main); font-family: 'Battambang'; }
+        
+        .header-spacer { width: 140px; display: flex; justify-content: flex-end; align-items: flex-start; } 
+        .qr-placeholder { 
+            width: 50px; height: 50px; border: 1px dashed #cbd5e1; border-radius: 6px;
+            display: flex; align-items: center; justify-content: center; font-size: 10px; color: var(--text-muted);
+        }
 
         /* -------------------------------------
-           ៤. ប្រអប់ព័ត៌មាន (Box Info ថ្មី)
+           Accent Line (បន្ទាត់ពណ៌ខាងក្រោម Header)
+           ------------------------------------- */
+        .accent-divider {
+            height: 3px; width: 100%; margin-bottom: 25px;
+            background: linear-gradient(to right, var(--brand-red) 25%, var(--border-color) 25%);
+        }
+
+        /* -------------------------------------
+           ចំណងជើងឯកសារ
+           ------------------------------------- */
+        .doc-title { text-align: center; margin-bottom: 25px; color: var(--brand-dark); }
+        .doc-title-kh { font-family: 'Moul', cursive; font-size: 17px; margin-bottom: 8px; }
+        .doc-title-en { font-weight: 800; font-size: 15px; text-transform: uppercase; border-bottom: 2px solid var(--brand-dark); display: inline-block; padding-bottom: 3px; letter-spacing: 0.5px;}
+
+        /* -------------------------------------
+           ៤. ប្រអប់ព័ត៌មាន (Info Boxes)
            ------------------------------------- */
         .info-container {
-            display: flex; justify-content: space-between; gap: 15px; margin-bottom: 15px;
+            display: flex; justify-content: space-between; gap: 20px; margin-bottom: 20px;
         }
         .info-box {
-            flex: 1; border: 1px solid #cbd5e1; border-radius: 6px; padding: 12px 15px;
-            background-color: #fff;
+            flex: 1; border: 1px solid var(--border-color); border-radius: 8px; padding: 15px 20px;
+            background-color: var(--bg-soft); position: relative; overflow: hidden;
         }
+        .info-box.box-left { border-top: 3px solid #6366f1; } /* Blue Accent */
+        .info-box.box-right { border-top: 3px solid var(--brand-red); } /* Red Accent */
+
         .info-table { width: 100%; border-collapse: collapse; font-size: 12px; }
-        .info-table td { padding: 5px 0; vertical-align: top; }
-        .info-label { width: 130px; font-weight: 600; color: #334155; }
-        .info-value { font-weight: bold; color: #0f172a; }
-        .text-red { color: #dc2626 !important; }
-        .text-blue { color: #2563eb !important; }
+        .info-table td { padding: 6px 0; vertical-align: middle; }
+        
+        .info-label-group { display: flex; flex-direction: column; width: 110px; }
+        .lbl-kh { font-weight: 700; color: var(--brand-dark); font-size: 11px; }
+        .lbl-en { font-size: 10px; color: var(--text-muted); font-weight: 500; }
+        
+        .info-value { font-weight: 700; color: var(--brand-dark); font-size: 12px; }
+        .text-red { color: var(--brand-red) !important; font-weight: 800; }
+        .text-blue { color: var(--brand-blue) !important; font-weight: 800; }
 
         /* -------------------------------------
            ៥. តារាងទំនិញ
            ------------------------------------- */
-        .items-table { width: 100%; border-collapse: collapse; border: 1.5px solid #000; }
+        .items-table { width: 100%; border-collapse: collapse; margin-bottom: 25px; }
         .items-table th { 
-            border: 1px solid #000; padding: 10px 5px; text-align: center; font-weight: bold; 
-            background-color: #f1f5f9 !important; text-transform: uppercase; font-size: 11px; 
+            background-color: #f1f5f9 !important; color: #64748b; font-size: 10px; 
+            font-weight: 800; text-transform: uppercase; padding: 12px 10px; border: none;
+            letter-spacing: 0.5px;
         }
+        /* ធ្វើឱ្យកែងតារាងមានរាងមូលបន្តិច */
+        .items-table th:first-child { border-top-left-radius: 6px; border-bottom-left-radius: 6px; text-align: center; }
+        .items-table th:last-child { border-top-right-radius: 6px; border-bottom-right-radius: 6px; text-align: right; }
+        
         .items-table td { 
-            border-left: 1px solid #000; border-right: 1px solid #000; 
-            padding: 8px 6px; vertical-align: middle; text-align: center; height: 28px; 
+            padding: 12px 10px; border-bottom: 1px solid #f1f5f9; font-size: 12px; 
+            color: var(--text-main); vertical-align: middle;
+        }
+        .items-table td:first-child { text-align: center; color: var(--text-muted); }
+        .items-table td:last-child { text-align: right; }
+
+        .item-code { font-weight: 800; color: var(--brand-dark); }
+        .item-qty { font-weight: 800; color: var(--success); }
+        .item-total { font-weight: 800; color: var(--brand-dark); }
+
+        /* -------------------------------------
+           ៦. សរុបប្រាក់ (Grand Total)
+           ------------------------------------- */
+        .total-section { display: flex; justify-content: flex-end; width: 100%; margin-bottom: 30px; }
+        .total-box { 
+            display: flex; border: 1.5px solid var(--brand-dark); border-radius: 6px; 
+            background: #fff; overflow: hidden; 
+        }
+        .total-label { 
+            padding: 10px 15px; font-weight: 800; color: var(--brand-dark); 
+            border-right: 1.5px solid var(--brand-dark); font-size: 12px;
+            display: flex; align-items: center;
+        }
+        .total-amount { 
+            padding: 10px 20px; font-weight: 800; color: var(--success); font-size: 15px; 
+            min-width: 100px; text-align: right;
         }
 
         /* -------------------------------------
-           ៦. សរុបប្រាក់
-           ------------------------------------- */
-        .total-section { width: 100%; margin-top: 10px; display: flex; justify-content: flex-end; }
-        .total-table { border-collapse: collapse; width: 40%; }
-        .total-table td { padding: 6px 12px; border: 1.5px solid #000; font-weight: bold; }
-        .total-label { text-align: right; background-color: #f1f5f9 !important; }
-        .total-amount { text-align: right; }
-
-        /* -------------------------------------
-           ៧. ហត្ថលេខា
+           ៧. ហត្ថលេខា (Signatures)
            ------------------------------------- */
         .signature-section { 
             display: flex; justify-content: space-between; margin-top: auto; 
-            padding-top: 25px; padding-bottom: 10px;
+            padding-bottom: 15px; width: 100%;
         }
-        .signature-box { text-align: center; width: 22%; }
-        .signature-title { font-weight: bold; font-size: 12px; margin-bottom: 70px; }
-        .signature-line { border-top: 2px dotted #000; width: 90%; margin: 0 auto 5px auto; }
-        .signature-date { font-size: 11px; color: #555; }
+        .sig-block { width: 22%; text-align: center; }
+        .sig-line { border-top: 1px dashed var(--text-muted); padding-top: 10px; margin-bottom: 5px; }
+        .sig-kh { font-family: 'Battambang'; font-weight: 700; font-size: 11px; color: var(--brand-dark); line-height: 1.4; }
+        .sig-en { font-weight: 700; font-size: 11px; color: var(--brand-dark); }
+        .sig-date { font-size: 10px; color: var(--text-muted); margin-top: 5px; }
 
         /* -------------------------------------
-           ៨. Print Settings
+           ៨. Footer Note
+           ------------------------------------- */
+        .page-footer {
+            display: flex; justify-content: space-between; font-size: 9px; 
+            color: #cbd5e1; border-top: 1px solid #f1f5f9; padding-top: 10px;
+        }
+
+        /* -------------------------------------
+           ៩. Print Settings
            ------------------------------------- */
         @media print {
-            @page { size: A4 portrait; margin: 0mm !important; }
+            @page { size: A4 portrait; margin: 0 !important; }
             html, body { background: #fff !important; margin: 0 !important; padding: 0 !important; }
             .control-bar { display: none !important; }
             .preview-area { padding: 0 !important; margin: 0 !important; }
             .a4-paper { 
                 box-shadow: none !important; width: 210mm !important; 
-                height: 296.5mm !important; max-height: 296.5mm !important;
-                padding: 10mm 15mm !important; margin: 0 !important; 
-                page-break-after: avoid !important; page-break-before: avoid !important;
-                page-break-inside: avoid !important;
+                height: 297mm !important; padding: 12mm 15mm !important; 
+                page-break-after: avoid; page-break-inside: avoid;
             }
-            .info-box { border: 1px solid #94a3b8 !important; } /* បង្ខំឱ្យចេញស៊ុមពេល Print */
-            .items-table th, .total-label { background-color: #f1f5f9 !important; }
+            .info-box { border: 1px solid var(--border-color) !important; }
+            .items-table th { background-color: #f1f5f9 !important; }
             * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
         }
     </style>
@@ -150,77 +216,120 @@
                 $company = $receiveHeader->branch->company ?? null;
             @endphp
 
+            <!-- 1. Header -->
             <div class="dn-header">
                 <div class="dn-logo">
                     @if($company && $company->logo)
                         <img src="{{ asset($company->logo) }}" alt="Logo">
                     @else
-                        <div style="font-weight:bold; font-size:24px; color:#198754; font-family: 'Times New Roman', serif;">
-                            {{ substr($company->company_name_en ?? 'LOGO', 0, 2) }}
-                        </div>
+                        <!-- Logo Placeholder ដដែលបើសិនគ្មាន Logo -->
+                        <div style="width:50px; height:50px; border:2px solid #000; border-radius:8px; display:flex; align-items:center; justify-content:center; font-weight:bold; font-size:20px;">/</div>
+                        <div style="font-weight:800; font-size:10px; margin-top:5px;">LEAPMOTOR</div>
                     @endif
                 </div>
+                
                 <div class="company-info-box">
-                    <div class="company-kh">{{ $company->company_name_kh ?? 'ឈ្មោះក្រុមហ៊ុន' }}</div>
-                    <div class="company-en">{{ $company->company_name_en ?? 'COMPANY NAME' }}</div>
+                    <div class="company-kh">{{ $company->company_name_kh ?? 'ក្រុមហ៊ុន វី ម៉ូទ័រ ឯ.ក' }}</div>
+                    <div class="company-en">{{ $company->company_name_en ?? 'VIVE MOTORS CO., LTD' }}</div>
                     <div class="company-info">
-                        @if($company && $company->vat_tin) លេខអត្តសញ្ញាណកម្មអាករ (VAT TIN): {{ $company->vat_tin }}<br> @endif
-                        @if($company && $company->address) អាសយដ្ឋានៈ {{ $company->address }}<br> @endif
-                        @if($company && $company->phone) ទូរស័ព្ទលេខ {{ $company->phone }} @endif
+                        លេខអត្តសញ្ញាណកម្មអាករ (VAT TIN): {{ $company->vat_tin ?? 'K007-902103674' }}<br>
+                        អាសយដ្ឋានៈ {{ $company->address ?? 'អគារលេខ ១៦៤, ១៦៥, ១៦៦ និង ១៦៧ ផ្លូវ ឧកញ៉ា ម៉ុង ឫទ្ធី ភូមិ បាយ៉ាប សង្កាត់ភ្នំពេញថ្មី ខណ្ឌសែនសុខ រាជធានីភ្នំពេញ' }} <br>
+                        ទូរស័ព្ទលេខ: {{ $company->phone ?? '010 882 316' }}
                     </div>
                 </div>
-                <div class="header-spacer"></div>
+                
+                <div class="header-spacer">
+                    <div class="qr-placeholder">QR</div>
+                </div>
             </div>
 
+            <!-- Accent Divider -->
+            <div class="accent-divider"></div>
+
+            <!-- 2. Document Title -->
             <div class="doc-title">
                 <div class="doc-title-kh">ប័ណ្ណទទួលទំនិញចូលស្តុក</div>
                 <div class="doc-title-en">GOODS RECEIPT NOTE</div>
             </div>
 
+            <!-- 3. Info Boxes -->
             <div class="info-container">
-                <div class="info-box">
+                <!-- Left Box (Blue) -->
+                <div class="info-box box-left">
                     <table class="info-table">
                         <tr>
-                            <td class="info-label">អ្នកផ្គត់ផ្គង់ <br><small class="text-muted fw-normal">( Vendor ):</small></td>
+                            <td>
+                                <div class="info-label-group">
+                                    <span class="lbl-kh">អ្នកផ្គត់ផ្គង់</span>
+                                    <span class="lbl-en">Vendor</span>
+                                </div>
+                            </td>
                             <td class="info-value">{{ $receiveHeader->vendor->vendor_name ?? '-' }}</td>
                         </tr>
                         <tr>
-                            <td class="info-label">អ្នកដឹកជញ្ជូន <br><small class="text-muted fw-normal">( Tran ):</small></td>
-                            <td class="info-value text-blue">{{ $receiveHeader->tran_vendor ?? '-' }}</td>
+                            <td>
+                                <div class="info-label-group">
+                                    <span class="lbl-kh">អ្នកដឹកជញ្ជូន</span>
+                                    <span class="lbl-en">Tran</span>
+                                </div>
+                            </td>
+                            <td class="info-value text-blue">{{ $receiveHeader->tran_vendor ?? 'Logistic' }}</td>
                         </tr>
                         <tr>
-                            <td class="info-label">ទទួលចូលសាខា <br><small class="text-muted fw-normal">( Branch ):</small></td>
+                            <td>
+                                <div class="info-label-group">
+                                    <span class="lbl-kh">ទទួលចូលសាខា</span>
+                                    <span class="lbl-en">Branch</span>
+                                </div>
+                            </td>
                             <td class="info-value">{{ $receiveHeader->branch->branch_name ?? '-' }}</td>
                         </tr>
                     </table>
                 </div>
 
-                <div class="info-box">
+                <!-- Right Box (Red) -->
+                <div class="info-box box-right">
                     <table class="info-table">
                         <tr>
-                            <td class="info-label">លេខឯកសារ <br><small class="text-muted fw-normal">( No ):</small></td>
+                            <td>
+                                <div class="info-label-group">
+                                    <span class="lbl-kh">លេខឯកសារ</span>
+                                    <span class="lbl-en">No</span>
+                                </div>
+                            </td>
                             <td class="info-value text-red">{{ $receiveHeader->document_no }}</td>
                         </tr>
                         <tr>
-                            <td class="info-label">កាលបរិច្ឆេទ <br><small class="text-muted fw-normal">( Date ):</small></td>
+                            <td>
+                                <div class="info-label-group">
+                                    <span class="lbl-kh">កាលបរិច្ឆេទ</span>
+                                    <span class="lbl-en">Date</span>
+                                </div>
+                            </td>
                             <td class="info-value">{{ \Carbon\Carbon::parse($receiveHeader->date)->format('d-M-Y H:i A') }}</td>
                         </tr>
                         <tr>
-                            <td class="info-label">យោង <br><small class="text-muted fw-normal">( Ref Inv ):</small></td>
+                            <td>
+                                <div class="info-label-group">
+                                    <span class="lbl-kh">លេខយោង</span>
+                                    <span class="lbl-en">Ref Inv</span>
+                                </div>
+                            </td>
                             <td class="info-value">{{ $receiveHeader->purchase_invoice_no ?? '-' }}</td>
                         </tr>
                     </table>
                 </div>
             </div>
 
+            <!-- 4. Items Table -->
             <table class="items-table">
                 <thead>
                     <tr>
                         <th width="5%">Nº</th>
-                        <th width="15%">Item Code</th>
-                        <th width="40%">Description</th>
-                        <th width="10%">Qty</th>
-                        <th width="15%">Unit Cost</th>
+                        <th width="15%" style="text-align: left;">Item Code</th>
+                        <th width="40%" style="text-align: left;">Description</th>
+                        <th width="10%" style="text-align: center;">Qty</th>
+                        <th width="15%" style="text-align: center;">Unit Cost</th>
                         <th width="15%">Total Cost</th>
                     </tr>
                 </thead>
@@ -236,54 +345,56 @@
                     @endphp
                     <tr>
                         <td>{{ $index + 1 }}</td>
-                        <td style="font-weight: bold;">{{ $item->product->item_code ?? $item->item_code ?? '' }}</td>
-                        <td style="text-align: left;">{{ $item->product->item_name ?? $item->item_name ?? '' }}</td>
-                        <td style="font-weight: bold; color: #198754;">{{ number_format($item->qty) }}</td>
-                        <td style="text-align: right;">${{ number_format($item->unit_cost ?? $item->cost ?? 0, 2) }}</td>
-                        <td style="text-align: right; font-weight: bold;">${{ number_format($itemTotal, 2) }}</td>
+                        <td class="item-code">{{ $item->product->item_code ?? $item->item_code ?? '' }}</td>
+                        <td>{{ $item->product->item_name ?? $item->item_name ?? '' }}</td>
+                        <td style="text-align: center;" class="item-qty">{{ number_format($item->qty) }}</td>
+                        <td style="text-align: center;">${{ number_format($item->unit_cost ?? $item->cost ?? 0, 2) }}</td>
+                        <td class="item-total">${{ number_format($itemTotal, 2) }}</td>
                     </tr>
                     @endforeach
-
-                    @for($i = 0; $i < (7 - count($receiveHeader->details)); $i++)
-                    <tr>
-                        <td style="color: transparent;">-</td>
-                        <td></td><td></td><td></td><td></td><td></td>
-                    </tr>
-                    @endfor
-                    <tr style="border-top: 1.5px solid #000;"><td colspan="6" style="height: 1px; padding: 0;"></td></tr>
                 </tbody>
             </table>
 
+            <!-- 5. Grand Total -->
             <div class="total-section">
-                <table class="total-table">
-                    <tr>
-                        <td class="total-label" style="font-size: 13px;">សរុបរួម / Grand Total:</td>
-                        <td class="total-amount" style="font-size: 15px; color: #198754;">${{ number_format($totalAmount, 2) }}</td>
-                    </tr>
-                </table>
+                <div class="total-box">
+                    <div class="total-label">សរុបរួម / Grand Total</div>
+                    <div class="total-amount">${{ number_format($totalAmount, 2) }}</div>
+                </div>
             </div>
 
+            <!-- 6. Signatures (Pushed to bottom automatically by flex) -->
             <div class="signature-section">
-                <div class="signature-box">
-                    <div class="signature-title">អ្នករៀបចំ<br>Prepared By</div>
-                    <div class="signature-line"></div>
-                    <div class="signature-date">Date: ...../...../.....</div>
+                <div class="sig-block">
+                    <div class="sig-line"></div>
+                    <div class="sig-kh">អ្នករៀបចំ</div>
+                    <div class="sig-en">Prepared by</div>
+                    <div class="sig-date">Date:......./......./.......</div>
                 </div>
-                <div class="signature-box">
-                    <div class="signature-title">អ្នកផ្គត់ផ្គង់<br>Delivered By (Vendor)</div>
-                    <div class="signature-line"></div>
-                    <div class="signature-date">Date: ...../...../.....</div>
+                <div class="sig-block">
+                    <div class="sig-line"></div>
+                    <div class="sig-kh">អ្នកផ្គត់ផ្គង់</div>
+                    <div class="sig-en">Delivered by (Vendor)</div>
+                    <div class="sig-date">Date:......./......./.......</div>
                 </div>
-                <div class="signature-box">
-                    <div class="signature-title">អ្នកត្រួតពិនិត្យ<br>Checked By</div>
-                    <div class="signature-line"></div>
-                    <div class="signature-date">Date: ...../...../.....</div>
+                <div class="sig-block">
+                    <div class="sig-line"></div>
+                    <div class="sig-kh">អ្នកត្រួតពិនិត្យ</div>
+                    <div class="sig-en">Checked by</div>
+                    <div class="sig-date">Date:......./......./.......</div>
                 </div>
-                <div class="signature-box">
-                    <div class="signature-title">អ្នកទទួលចូលស្តុក<br>Received By</div>
-                    <div class="signature-line"></div>
-                    <div class="signature-date">Date: ...../...../.....</div>
+                <div class="sig-block">
+                    <div class="sig-line"></div>
+                    <div class="sig-kh">អ្នកទទួលចូលស្តុក</div>
+                    <div class="sig-en">Received by</div>
+                    <div class="sig-date">Date:......./......./.......</div>
                 </div>
+            </div>
+
+            <!-- 7. Footer Page Info -->
+            <div class="page-footer">
+                <div>Generated by system on {{ \Carbon\Carbon::now()->format('d-M-Y H:i') }}</div>
+                <div>Page 1 of 1</div>
             </div>
 
         </div>

@@ -2,186 +2,172 @@
 @section('content')
 
     <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
-    /* ====== GLOBAL BRAND REFINEMENT ====== */
+    /* =========================================================
+       CLEAN SaaS DESIGN SYSTEM 
+       ========================================================= */
     :root {
-        --brand-indigo: #4f46e5;
-        --brand-purple: #7c3aed;
-        --brand-pink: #ec4899;
-        --brand-red: #ef4444;
-        --brand-success: #71dd37;
-        --bg-body: #f8fafc;
-        --font-family: 'Plus Jakarta Sans', sans-serif !important;
-        --radius: 12px;
+        --primary: #4F46E5;      /* Indigo 600 */
+        --primary-hover: #4338CA;
+        --surface: #FFFFFF;
+        --bg-body: #F8FAFC;      /* Slate 50 */
+        --text-main: #111827;    /* Gray 900 */
+        --text-muted: #6B7280;   /* Gray 500 */
+        --border-color: #E5E7EB; /* Gray 200 */
+        --input-bg: #F9FAFB;
+        
+        --font-body: 'Inter', sans-serif;
+        --font-display: 'Plus Jakarta Sans', sans-serif;
     }
 
-    body {
-        background-color: var(--bg-body);
-        font-family: var(--font-family);
-        color: #1e293b;
-        margin: 0;
-    }
+    body { font-family: var(--font-body); background-color: var(--bg-body); color: var(--text-main); margin: 0; -webkit-font-smoothing: antialiased; }
 
     /* ====== 100% FIT SCREEN WRAPPER ====== */
-    .fluid-form-container {
-        width: 100% !important;
-        max-width: 100% !important;
-        padding: 1.5rem !important;
-        animation: slideUp 0.5s ease-out;
+    .fluid-form-container { width: 100% !important; max-width: 100% !important; padding: 24px 32px !important; animation: slideUp 0.4s ease-out; }
+    @keyframes slideUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* --- FORM CARD --- */
+    .form-card {
+        background: var(--surface); border: 1px solid var(--border-color);
+        border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        overflow: hidden; width: 100%;
     }
 
-    /* Full Width Card Styling */
-    .card-custom {
-        border: none !important;
-        border-radius: var(--radius) !important;
-        box-shadow: 0 10px 30px 0 rgba(79, 70, 229, 0.08) !important;
-        background-color: #fff;
-        overflow: hidden;
-        width: 100%; 
+    /* Clean Header */
+    .card-header-clean {
+        padding: 20px 24px; border-bottom: 1px solid var(--border-color);
+        display: flex; justify-content: space-between; align-items: center;
+        background: #FFFFFF;
     }
 
-    /* Branded Gradient Header */
-    .card-header-gradient {
-        background: linear-gradient(90deg, var(--brand-indigo) 0%, var(--brand-purple) 50%, var(--brand-pink) 100%) !important;
-        color: #ffffff !important;
-        padding: 1.5rem 2rem !important;
-        font-size: 18px !important;
-        font-weight: 800;
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        border: none;
+    .header-title {
+        font-family: var(--font-display); font-size: 1.1rem; font-weight: 700;
+        color: var(--text-main); margin: 0; display: flex; align-items: center; gap: 8px;
     }
 
-    /* ====== ENLARGED FORM STYLING ====== */
-    .card-body {
-        padding: 3rem !important; /* Increased padding for wide screens */
+    .btn-back-clean {
+        background: #FFFFFF; color: var(--text-muted); border: 1px solid var(--border-color);
+        font-size: 0.875rem; font-weight: 600; padding: 8px 16px; border-radius: 8px;
+        text-decoration: none; transition: all 0.2s ease; display: inline-flex; align-items: center; gap: 6px;
+    }
+    .btn-back-clean:hover { background: #F3F4F6; color: var(--text-main); }
+
+    /* ====== FORM STYLING ====== */
+    .card-body-custom { padding: 32px 40px !important; }
+
+    .form-label {
+        font-weight: 600; font-size: 0.8rem; color: #4B5563;
+        margin-bottom: 8px; display: flex; align-items: center; gap: 6px;
+    }
+    .form-label i { color: #9CA3AF; font-size: 0.9rem; }
+
+    /* Premium Input Field */
+    .form-control-custom {
+        height: 48px; padding: 12px 16px; border-radius: 8px;
+        border: 1px solid var(--border-color); font-size: 0.9rem;
+        background-color: var(--input-bg); color: var(--text-main);
+        transition: all 0.2s ease; width: 100%; font-weight: 500;
     }
 
-    label.form-label {
-        font-weight: 700;
-        color: #64748b;
-        font-size: 14px !important;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        margin-bottom: 1rem;
-        display: block;
+    .form-control-custom:focus {
+        background-color: #FFFFFF; border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1); outline: none;
     }
 
-    /* Larger, Premium Input Field */
-    .form-control-lg-custom {
-        border-radius: 10px;
-        border: 1.5px solid #e2e8f0;
-        padding: 16px 24px; /* Larger padding */
-        font-size: 16px !important;
-        font-weight: 600;
-        transition: all 0.3s ease;
-        background-color: #f8fafc;
-        color: #1e293b;
-        width: 100%;
-    }
+    .form-control-custom::placeholder { color: #9CA3AF; font-weight: 400; }
+    
+    .is-invalid { border-color: #EF4444 !important; background-color: #FEF2F2 !important; }
 
-    .form-control-lg-custom:focus {
-        background-color: #fff;
-        border-color: var(--brand-indigo) !important;
-        box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1) !important;
-        outline: none;
+    .text-error-custom {
+        color: #EF4444; font-size: 0.8rem; font-weight: 500;
+        margin-top: 6px; display: flex; align-items: center; gap: 4px;
     }
 
     /* ====== ACTION BUTTONS ====== */
     .btn-save {
-        background: linear-gradient(135deg, var(--brand-indigo), var(--brand-purple)) !important;
-        border: none !important;
-        color: #fff !important;
-        font-weight: 700;
-        padding: 14px 50px !important; /* Wider buttons */
-        border-radius: 10px;
-        transition: 0.3s;
-        cursor: pointer;
+        background-color: var(--primary); color: white; border: none;
+        font-weight: 600; padding: 12px 24px; border-radius: 8px;
+        font-size: 0.9rem; cursor: pointer; transition: all 0.2s ease;
+        display: inline-flex; align-items: center; justify-content: center; gap: 8px;
     }
-
-    .btn-save:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 20px rgba(124, 58, 237, 0.3);
-    }
+    .btn-save:hover { background-color: var(--primary-hover); transform: translateY(-1px); box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.2); }
 
     .btn-cancel {
-        border: 1.5px solid #e2e8f0 !important;
-        background-color: #fff;
-        color: #64748b !important;
-        font-weight: 700;
-        padding: 14px 35px !important;
-        border-radius: 10px;
-        text-decoration: none;
-        display: inline-flex;
-        align-items: center;
-        transition: 0.2s;
+        background: #FFFFFF; color: var(--text-muted); border: 1px solid var(--border-color);
+        font-weight: 600; padding: 12px 24px; border-radius: 8px; font-size: 0.9rem;
+        text-decoration: none; display: inline-flex; align-items: center; transition: 0.2s; gap: 8px;
     }
-
-    .btn-cancel:hover {
-        background-color: #f1f5f9;
-        color: var(--brand-red) !important;
-        border-color: var(--brand-red) !important;
-    }
-
-    @keyframes slideUp {
-        from { opacity: 0; transform: translateY(20px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
-
-    .text-error-custom {
-        color: var(--brand-red);
-        font-size: 13px;
-        font-weight: 600;
-        margin-top: 10px;
-        display: flex;
-        align-items: center;
-        gap: 5px;
-    }
+    .btn-cancel:hover { background: #F9FAFB; color: var(--text-main); }
+    
     </style>
 
     <div class="fluid-form-container">
-        <div class="card-custom">
-            <div class="card-header-gradient">
-                <i class='bx bx-plus-circle' style="font-size: 24px;"></i> 
-                CAR MODEL REGISTRY: NEW ENTRY
+        <div class="form-card">
+            
+            <!-- Clean Header -->
+            <div class="card-header-clean">
+                <h5 class="header-title">
+                    <i class="fas fa-layer-group text-muted"></i> NEW MODEL REGISTRY
+                </h5>
+                <a href="{{ url('/car-models') }}" class="btn-back-clean">
+                    <i class="fas fa-arrow-left"></i> Back to Repository
+                </a>
             </div>
             
-            <div class="card-body">
-                <form action="{{ url('/car-models/store') }}" method="POST" enctype="multipart/form-data">
+            <div class="card-body-custom">
+                <form action="{{ url('/car-models/store') }}" method="POST" id="modelForm">
                     @csrf
                     
                     <div class="row">
-                        <div class="mb-5 col-12">
-                            <label class="form-label" for="model_name">Official Model Designation</label>
-                            <input type="text" 
-                                   id="model_name"
-                                   placeholder="Type model name here... (e.g., MG ZS 2026 Premium)" 
-                                   class="form-control-lg-custom @error('model_name') is-invalid @enderror" 
-                                   name="model_name" 
-                                   value="{{ old('model_name') }}"
-                                   required>
+                        <div class="col-md-8 col-lg-6 mb-4">
+                            <label class="form-label" for="model_name">
+                                <i class="fas fa-car"></i> Official Model Designation
+                            </label>
+                            <input type="text" id="model_name" name="model_name" 
+                                   placeholder="e.g., MG ZS 2026 Premium" 
+                                   class="form-control-custom @error('model_name') is-invalid @enderror" 
+                                   value="{{ old('model_name') }}" required autofocus autocomplete="off">
                         
                             @error('model_name')
                                 <div class="text-error-custom">
-                                    <i class='bx bx-error-alt'></i> {{ $message }}
+                                    <i class="fas fa-exclamation-circle"></i> {{ $message }}
                                 </div>
                             @enderror
                         </div>
                     </div>
 
+                    <!-- Action Footer -->
                     <div class="mt-4 pt-4 border-top d-flex gap-3">
-                        <button type="submit" class="btn-save shadow-sm">
-                            <i class='bx bx-check-double me-1'></i> SAVE RECORD
+                        <button type="submit" class="btn-save" id="btnSubmit">
+                            <i class="fas fa-check-circle"></i> SAVE MODEL RECORD
                         </button>
-                        <a href="{{ url('/car-models') }}" class="btn btn-cancel">
-                            CANCEL & EXIT
+                        <a href="{{ url('/car-models') }}" class="btn-cancel">
+                            CANCEL
                         </a>
                     </div>
                 </form>
             </div>
         </div>
     </div>
+
+    <!-- Optional: SweetAlert2 for loading state -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        document.getElementById('modelForm').onsubmit = function() {
+            Swal.fire({
+                title: 'Saving Model...',
+                text: 'Adding nomenclature to system registry.',
+                allowOutsideClick: false,
+                showConfirmButton: false,
+                didOpen: () => { Swal.showLoading(); },
+                customClass: { popup: 'rounded-4 shadow-sm border-0', title: 'font-weight-bold' }
+            });
+            const btn = document.getElementById('btnSubmit');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> PROCESSING...';
+        };
+    </script>
 @endsection

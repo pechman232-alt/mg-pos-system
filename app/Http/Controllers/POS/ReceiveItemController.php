@@ -10,9 +10,7 @@ use Illuminate\Support\Facades\DB;
 
 class ReceiveItemController extends Controller
 {
-    /**
-     * បង្ហាញទំព័របញ្ចូលទំនិញលម្អិត
-     */
+    
     public function index(Request $request)
     {
         $header_id = $request->header_id;
@@ -20,49 +18,86 @@ class ReceiveItemController extends Controller
             return redirect()->route('receive-headers.index')->with('error', 'សូមជ្រើសរើសវិក្កយបត្រជាមុនសិន!');
         }
 
-        // ទាញយកព័ត៌មានក្បាលវិក្កយបត្រ និងទំនិញដែលបានបញ្ចូលរួច
+        // ១. ទាញយកព័ត៌មានក្បាលវិក្កយបត្រ និងសាខារបស់វា
         $header = ReceiveHeader::with(['vendor', 'branch', 'details.product'])->findOrFail($header_id);
-        $products = Product::orderBy('item_name', 'asc')->get();
-        $details = $header->details; // ទាញយក Items ទាំងអស់
+
+        // ២. ✅ ទាញយកតែទំនិញណាដែលមាន location_id ស្មើនឹង location_id របស់វិក្កយបត្រនេះ
+        $products = Product::where('location_id', $header->location_id)
+                           ->orderBy('item_name', 'asc')
+                           ->get();
+
+        // (ជាជម្រើស៖ បើសាខាខ្លះចង់ឱ្យបង្ហាញទំនិញដែលគ្មាន location_id ផង អាចប្រើ orWhereNull បាន)
+
+        $details = $header->details;
 
         return view('POS.ReceiveItems.index', compact('header', 'products', 'details'));
     }
-
-    /**
-     * រក្សាទុកទំនិញចូលក្នុងវិក្កយបត្រ និង បូកស្តុក
-     */
     public function store(Request $request)
     {
         $request->validate([
             'receive_header_id' => 'required',
             'product_id'        => 'required',
-            'qty'               => 'required|numeric|min:1',
-            'cost'              => 'required|numeric|min:0',
+            'qty'               => 'required|numeric|min:0.01',
+            'cost'              => 'required|numeric',
         ]);
 
         DB::beginTransaction();
         try {
-            $total_cost = $request->qty * $request->cost;
+            $headerId = $request->receive_header_id;
+            $productId = $request->product_id;
+            $inputQty = $request->qty;
+            $inputCost = $request->cost;
 
-            // ១. បញ្ចូលទិន្នន័យទៅក្នុងតារាង Receive Details (ប្រយ័ត្ន៖ បើបងប្រើតារាងឈ្មោះផ្សេង សូមដូរទីនេះ)
-            DB::table('receive_details')->insert([
-                'receive_header_id' => $request->receive_header_id,
-                'product_id'        => $request->product_id,
-                'qty'               => $request->qty,
-                'cost'              => $request->cost,
-                'total_cost'        => $total_cost,
-                'created_at'        => now(),
-                'updated_at'        => now(),
-            ]);
+            $product = Product::findOrFail($productId);
+            
+            // កត់ត្រាស្តុកដើមមុនពេលបូក
+            $oldStock = $product->stock_qty;
 
-            // ២. ធ្វើបច្ចុប្បន្នភាពស្តុកទំនិញ (បូកបន្ថែមស្តុក និង តម្លៃទិញចូលចុងក្រោយ)
-            $product = Product::findOrFail($request->product_id);
-            $product->stock_qty += $request->qty;
-            $product->cost = $request->cost; // Update last cost
+            // ១. ឆែកមើលថាតើទំនិញនេះធ្លាប់បានបញ្ចូលក្នុងវិក្កយបត្រនេះហើយឬនៅ?
+            $existingDetail = DB::table('receive_details')
+                                ->where('receive_header_id', $headerId)
+                                ->where('product_id', $productId)
+                                ->first();
+
+            if ($existingDetail) {
+                // បើមានហើយ គឺយើងគ្រាន់តែ Update ចំនួន (បូកថែម) និងគណនាតម្លៃសរុបឡើងវិញ
+                $newQty = $existingDetail->qty + $inputQty;
+                DB::table('receive_details')
+                    ->where('id', $existingDetail->id)
+                    ->update([
+                        'qty'        => $newQty,
+                        'cost'       => $inputCost, // យកតម្លៃចុងក្រោយ
+                        'total_cost' => $newQty * $inputCost,
+                        'updated_at' => now()
+                    ]);
+            } else {
+                // បើមិនទាន់មានទេ ទើបយើងបង្កើតជួរថ្មី (Insert)
+                DB::table('receive_details')->insert([
+                    'receive_header_id' => $headerId,
+                    'product_id'        => $productId,
+                    'item_code'         => $product->item_code,
+                    'qty'               => $inputQty,
+                    'cost'              => $inputCost,
+                    'total_cost'        => $inputQty * $inputCost,
+                    'created_at'        => now(),
+                    'updated_at'        => now()
+                ]);
+            }
+
+            // ២. បូកស្តុកចូលទៅក្នុង Table Products
+            $product->stock_qty += $inputQty;
             $product->save();
 
             DB::commit();
-            return back()->with('success', 'បន្ថែមទំនិញ និងបូកស្តុកជោគជ័យ!');
+            
+            // ៣. រៀបចំសារបង្ហាញពីព័ត៌មានស្តុក
+            $message = "បន្ថែមទំនិញ ({$product->item_code}) ជោគជ័យ! " .
+                       "ស្តុកមុន: {$oldStock} | " .
+                       "បូកបន្ថែម: +{$inputQty} | " .
+                       "ស្តុកចុងក្រោយសល់: {$product->stock_qty}";
+
+            // ✅ កែសម្រួលទីនេះ៖ ពេល Save រួច ឱ្យវាលោតមកកាន់បញ្ជីវិក្កយបត្រ (receive-headers.index) វិញ
+            return redirect()->route('receive-headers.index')->with('success', $message);
 
         } catch (\Exception $e) {
             DB::rollBack();
@@ -71,28 +106,44 @@ class ReceiveItemController extends Controller
     }
 
     /**
-     * លុបទំនិញចេញពីវិក្កយបត្រ និង ដកស្តុកចេញវិញ
+     * លុបទំនិញចេញពីវិក្កយបត្រ និង ដកស្តុកចេញវិញ (បង្ហាញព័ត៌មានស្តុកច្បាស់លាស់)
      */
     public function destroy($id)
     {
         DB::beginTransaction();
         try {
+            // ទាញយកទិន្នន័យ Detail តាម ID ដែលចុចលុប
             $detail = DB::table('receive_details')->where('id', $id)->first();
             
-            if ($detail) {
-                // ១. ដកស្តុកចេញពី Product វិញ
-                $product = Product::findOrFail($detail->product_id);
-                $product->stock_qty -= $detail->qty;
-                // ការពារកុំឱ្យស្តុកធ្លាក់ក្រោមសូន្យ
-                if($product->stock_qty < 0) $product->stock_qty = 0; 
-                $product->save();
-
-                // ២. លុបទិន្នន័យក្នុងតារាង Details
-                DB::table('receive_details')->where('id', $id)->delete();
+            if (!$detail) {
+                return back()->with('error', 'មិនមានទិន្នន័យនេះទេ!');
             }
 
+            $product = Product::findOrFail($detail->product_id);
+            
+            // កត់ត្រាស្តុកដើមមុនពេលកាត់ចេញ
+            $oldStock = $product->stock_qty;
+            $qtyToRemove = $detail->qty;
+
+            // ១. ដកស្តុកចេញវិញ តាមចំនួនដែលធ្លាប់បានបញ្ចូល
+            $product->stock_qty -= $qtyToRemove;
+            if ($product->stock_qty < 0) {
+                $product->stock_qty = 0; // ការពារកុំឱ្យស្តុកជាប់អវិជ្ជមាន
+            }
+            $product->save();
+
+            // ២. លុបទិន្នន័យចេញពីតារាង
+            DB::table('receive_details')->where('id', $id)->delete();
+
             DB::commit();
-            return back()->with('success', 'លុបទំនិញ និងដកស្តុកវិញជោគជ័យ!');
+
+            // ៣. បោះសារប្រាប់ពីស្តុកដើម ចំនួនដក និងស្តុកចុងក្រោយយ៉ាងច្បាស់
+            $message = "បានលុបទំនិញ ({$product->item_code}) ចេញ! " .
+                       "ស្តុកមុន: {$oldStock} | " .
+                       "កាត់ចេញ: -{$qtyToRemove} | " .
+                       "ស្តុកចុងក្រោយសល់: {$product->stock_qty}";
+
+            return back()->with('success', $message);
 
         } catch (\Exception $e) {
             DB::rollBack();

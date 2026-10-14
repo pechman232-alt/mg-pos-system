@@ -34,7 +34,9 @@ class ReceiveHeaderController extends Controller
         }
 
         $headers = $query->orderBy('id', 'desc')->paginate(15);
-        $branches = BranchModel::all();
+        
+        // ទាញយកតែសាខា ID 23, 24, 25, 27 សម្រាប់ Filter
+        $branches = BranchModel::whereIn('id', [23, 24, 25, 27])->get();
 
         return view('POS.ReceiveHeaders.index', compact('headers', 'branches'));
     }
@@ -44,7 +46,9 @@ class ReceiveHeaderController extends Controller
      */
     public function create()
     {
-        $branches = BranchModel::all();
+        // ទាញយកតែសាខា ID 23, 24, 25, 27
+        $branches = BranchModel::whereIn('id', [23, 24, 25, 27])->get();
+        
         $vendors = Vendor::all();
         $products = Product::orderBy('item_name', 'asc')->get();
 
@@ -55,7 +59,7 @@ class ReceiveHeaderController extends Controller
     }
 
     /**
-     * ៣. រក្សាទុកទិន្នន័យ (Store)
+     * ៣. រក្សាទុកទិន្នន័យ (Store) - ✅ បានកែប្រែកន្លែង Redirect មិនឱ្យចេញ 404
      */
     public function store(Request $request)
     {
@@ -82,8 +86,8 @@ class ReceiveHeaderController extends Controller
 
             DB::commit();
 
-            // បញ្ជូនទៅកាន់ទំព័របញ្ចូលទំនិញ ដោយ Encrypt ID
-            return redirect()->route('receive-items.index', ['header_id' => Crypt::encrypt($header->id)])
+            // ✅ កែសម្រួលទីនេះ៖ ប្រើប្រាស់ Plain ID ឬ Direct ID ដើម្បីបញ្ជូនទៅ Query String ត្រឹមត្រូវ មិនឱ្យ 404
+            return redirect()->route('receive-items.index', ['header_id' => $header->id])
                 ->with('success', 'បង្កើតក្បាលវិក្កយបត្រជោគជ័យ! សូមបញ្ចូលមុខទំនិញបន្ត។');
         } catch (\Exception $e) {
             DB::rollBack();
@@ -100,7 +104,8 @@ class ReceiveHeaderController extends Controller
             $realId = Crypt::decrypt($id);
             $header = ReceiveHeader::findOrFail($realId);
             
-            $branches = BranchModel::all();
+            // ទាញយកតែសាខា ID 23, 24, 25, 27
+            $branches = BranchModel::whereIn('id', [23, 24, 25, 27])->get();
             $vendors = Vendor::all();
 
             return view('POS.ReceiveHeaders.edit', compact('header', 'branches', 'vendors'));
@@ -145,7 +150,6 @@ class ReceiveHeaderController extends Controller
     {
         try {
             $realId = is_numeric($id) ? $id : Crypt::decrypt($id);
-            // ✅ បន្ថែម 'branch.company' ដើម្បីទាញយកក្រុមហ៊ុនអូតូ
             $header = ReceiveHeader::with(['vendor', 'branch.company', 'details.product'])->findOrFail($realId);
         } catch (\Exception $e) {
             $header = ReceiveHeader::with(['vendor', 'branch.company', 'details.product'])->findOrFail($id);
@@ -163,13 +167,11 @@ class ReceiveHeaderController extends Controller
     {
         try {
             $realId = is_numeric($id) ? $id : Crypt::decrypt($id);
-            // ✅ បន្ថែម 'branch.company' សម្រាប់ Header លោត Logo និងឈ្មោះក្រុមហ៊ុន ៤ អូតូ
             $receiveHeader = ReceiveHeader::with(['vendor', 'branch.company', 'details.product'])->findOrFail($realId);
         } catch (\Exception $e) {
             $receiveHeader = ReceiveHeader::with(['vendor', 'branch.company', 'details.product'])->findOrFail($id);
         }
         
-        // ធានាថាឈ្មោះ View ត្រូវគ្នានឹងកូដ Print ដែលយើងបានធ្វើអម្បាញ់មិញ
         return view('POS.ReceiveHeaders.print', compact('receiveHeader'));
     }
 

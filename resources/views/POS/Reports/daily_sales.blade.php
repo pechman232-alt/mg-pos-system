@@ -48,7 +48,7 @@
     /* ✅ លក្ខណៈតារាង ១ជួរ (Flat Table) */
     .data-table {
         width: 100%;
-        min-width: 1700px; /* ពង្រីកឱ្យធំបន្តិច ព្រោះមាន ១៣ Columns */
+        min-width: 2000px; /* ពង្រីកឱ្យធំបន្តិច ព្រោះមាន ១៥ Columns */
         border-collapse: collapse;
         table-layout: fixed; 
     }
@@ -82,20 +82,22 @@
 
     .data-table tbody tr:hover td { background-color: #f8fafc; cursor: pointer; }
 
-    /* ✅ កំណត់ទំហំ Column ទាំង ១៣ */
+    /* ✅ កំណត់ទំហំ Column ទាំង ១៥ */
     .data-table th:nth-child(1) { width: 3%; text-align: center; } /* # */
     .data-table th:nth-child(2) { width: 8%; } /* INVOICE Nº */
-    .data-table th:nth-child(3) { width: 7%; text-align: center; } /* DATE */
-    .data-table th:nth-child(4) { width: 8%; text-align: center; } /* BRANCH */
-    .data-table th:nth-child(5) { width: 10%; } /* CUSTOMER */
-    .data-table th:nth-child(6) { width: 10%; } /* CAR BUYER */
-    .data-table th:nth-child(7) { width: 8%; text-align: center; } /* CAR INVOICE */
-    .data-table th:nth-child(8) { width: 9%; } /* ITEM CODE */
-    .data-table th:nth-child(9) { width: 14%; } /* DESCRIPTION */
-    .data-table th:nth-child(10) { width: 4%; text-align: center; } /* QTY */
-    .data-table th:nth-child(11) { width: 6%; text-align: right; } /* PRICE */
-    .data-table th:nth-child(12) { width: 6%; text-align: right; } /* TOTAL */
-    .data-table th:nth-child(13) { width: 7%; text-align: center; } /* SELLER */
+    .data-table th:nth-child(3) { width: 6%; text-align: center; } /* DATE */
+    .data-table th:nth-child(4) { width: 7%; text-align: center; } /* BRANCH */
+    .data-table th:nth-child(5) { width: 8%; } /* SALEMAN */
+    .data-table th:nth-child(6) { width: 8%; } /* CAR BUYER */
+    .data-table th:nth-child(7) { width: 7%; text-align: center; } /* CAR INVOICE */
+    .data-table th:nth-child(8) { width: 8%; } /* REASON */
+    .data-table th:nth-child(9) { width: 8%; } /* REMARK */
+    .data-table th:nth-child(10) { width: 8%; } /* ITEM CODE */
+    .data-table th:nth-child(11) { width: 12%; } /* DESCRIPTION */
+    .data-table th:nth-child(12) { width: 4%; text-align: center; } /* QTY */
+    .data-table th:nth-child(13) { width: 6%; text-align: right; } /* PRICE */
+    .data-table th:nth-child(14) { width: 6%; text-align: right; } /* TOTAL */
+    .data-table th:nth-child(15) { width: 6%; text-align: center; } /* SELLER */
 
     .badge-branch { background-color: #d1fae5; color: #065f46; padding: 3px 8px; border-radius: 4px; font-size: 11px; }
 </style>
@@ -176,7 +178,7 @@
     </form>
 </div>
 
-    <!-- ✅ តារាងទិន្នន័យ (រត់តែ ១ ជួរដេក មាន ១៣ Columns) -->
+    <!-- ✅ តារាងទិន្នន័យ (រត់តែ ១ ជួរដេក មាន ១៥ Columns) -->
     <div class="table-wrapper shadow-sm">
         <table class="data-table">
             <thead>
@@ -187,7 +189,9 @@
                     <th>BRANCH</th>
                     <th>SALEMAN</th>
                     <th>CAR BUYER</th>
-                    <th>CAR INVOICE</th> {{-- ថែម Column ទី៧ នេះចូលវិញ --}}
+                    <th>CAR INVOICE</th>
+                    <th>REASON</th>
+                    <th>REMARK</th>
                     <th>ITEM CODE</th>
                     <th>DESCRIPTION</th>
                     <th>QTY</th>
@@ -210,8 +214,10 @@
                                 <td title="{{ $item->customer_name }}">{{ strtoupper($item->customer_name) }}</td>
                                 <td title="{{ $item->car_buyer_name }}">{{ strtoupper($item->car_buyer_name ?? '-') }}</td>
                                 
-                                {{-- ទិន្នន័យ CAR INVOICE --}}
+                                {{-- ទិន្នន័យ CAR INVOICE, REASON, REMARK --}}
                                 <td class="text-center" title="{{ $item->reference }}">{{ $item->reference ?? '-' }}</td>
+                                <td class="text-danger" title="{{ $item->reason }}">{{ $item->reason ?? '-' }}</td>
+                                <td class="text-info" title="{{ $item->remark }}">{{ $item->remark ?? '-' }}</td>
                                 
                                 <td class="fw-bold text-dark" title="{{ $sub->item_code }}">{{ $sub->item_code }}</td>
                                 <td title="{{ $sub->item_name }}">{{ $sub->item_name }}</td>
@@ -233,8 +239,10 @@
                             <td title="{{ $item->customer_name }}">{{ strtoupper($item->customer_name) }}</td>
                             <td title="{{ $item->car_buyer_name }}">{{ strtoupper($item->car_buyer_name ?? '-') }}</td>
                             
-                            {{-- ទិន្នន័យ CAR INVOICE --}}
+                            {{-- ទិន្នន័យ CAR INVOICE, REASON, REMARK --}}
                             <td class="text-center" title="{{ $item->reference }}">{{ $item->reference ?? '-' }}</td>
+                            <td class="text-danger" title="{{ $item->reason }}">{{ $item->reason ?? '-' }}</td>
+                            <td class="text-info" title="{{ $item->remark }}">{{ $item->remark ?? '-' }}</td>
                             
                             <td colspan="5" class="text-center text-muted fst-italic">មិនមានទំនិញ</td>
                             
@@ -242,15 +250,15 @@
                         </tr>
                     @endif
                 @empty
-                    <tr><td colspan="13" class="text-center py-5 text-muted fw-bold">មិនមានទិន្នន័យទេ!</td></tr>
+                    <tr><td colspan="15" class="text-center py-5 text-muted fw-bold">មិនមានទិន្នន័យទេ!</td></tr>
                 @endforelse
             </tbody>
             
             @if($sales->count() > 0)
             <tfoot>
                 <tr style="background-color: #f8fafc;">
-                    {{-- Colspan 11 (ពី # រហូតដល់ PRICE) ដើម្បីឱ្យត្រូវជាមួយ TOTAL --}}
-                    <td colspan="11" class="text-end text-uppercase" style="font-size: 12px; font-weight: 600; color: #64748b;">Grand Total Summary (All Invoices):</td>
+                    {{-- Colspan 13 (ពី # រហូតដល់ PRICE) ដើម្បីឱ្យត្រូវជាមួយ TOTAL --}}
+                    <td colspan="13" class="text-end text-uppercase" style="font-size: 12px; font-weight: 600; color: #64748b;">Grand Total Summary (All Invoices):</td>
                     <td class="text-end text-success" style="font-size: 14px; font-weight: 700;">${{ number_format($totalAmount ?? 0, 2) }}</td>
                     <td></td>
                 </tr>

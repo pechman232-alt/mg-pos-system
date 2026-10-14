@@ -25,19 +25,20 @@ class DailySalesExport implements FromCollection, WithHeadings, WithMapping, Sho
     }
 
     /**
-     * ទាញយកទិន្នន័យពី Database
+     * ទាញយកទិន្នន័យពី Database (Join ជាមួយ employees និងទាញទាំង Reason និង Remark)
      */
     public function collection()
     {
         $query = DB::table('sales_headers as sh')
             ->leftJoin('branches as b', 'sh.location_id', '=', 'b.id')
             ->leftJoin('users as u', 'sh.user_id', '=', 'u.id')
+            ->leftJoin('employees as e', 'sh.employee_id', '=', 'e.id') // ✅ Join Table បុគ្គលិកលក់
             ->leftJoin('sales_details as sd', 'sh.id', '=', 'sd.sales_header_id')
             ->select(
                 'sh.invoice_no',
                 'sh.sale_date',
                 'b.branch_name',
-                'sh.customer_name',
+                DB::raw('COALESCE(e.full_name, sh.customer_name) as sale_person'), // ✅ ឈ្មោះបុគ្គលិកលក់ពិតប្រាកដ
                 'sh.car_buyer_name',
                 'sh.car_invoice_no',
                 'sd.item_code',
@@ -47,7 +48,8 @@ class DailySalesExport implements FromCollection, WithHeadings, WithMapping, Sho
                 'sd.unit_price',
                 'sd.total_price',
                 'u.username',
-                'sh.reason'
+                'sh.reason',  // ✅ មូលហេតុស្ទួន Invoice
+                'sh.remark'   // ✅ ចំណាំរបស់អ្នកដកអីវ៉ាន់
             )
             ->whereBetween('sh.sale_date', [$this->fromDate . ' 00:00:00', $this->toDate . ' 23:59:59']);
 
@@ -59,7 +61,7 @@ class DailySalesExport implements FromCollection, WithHeadings, WithMapping, Sho
     }
 
     /**
-     * ✅ បង្កើតចំណងជើងក្រុមហ៊ុន និង ក្បាលតារាង (ដូចក្នុងរូបភាព)
+     * ✅ បង្កើតចំណងជើងក្រុមហ៊ុន និង ក្បាលតារាង (បន្ថែម Column Remark ដាច់ដោយឡែក)
      */
     public function headings(): array
     {
@@ -86,6 +88,7 @@ class DailySalesExport implements FromCollection, WithHeadings, WithMapping, Sho
                 'Unit Price ($)',
                 'Total ($)',
                 'Created By',
+                'Reason (ស្ទួន)',
                 'Remark'
             ]
         ];
@@ -103,7 +106,7 @@ class DailySalesExport implements FromCollection, WithHeadings, WithMapping, Sho
             $row->invoice_no,
             date('d-M-Y H:i', strtotime($row->sale_date)),
             $row->branch_name,
-            $row->customer_name,
+            $row->sale_person, // ✅ បង្ហាញឈ្មោះបុគ្គលិកលក់
             $row->car_buyer_name ?? '-',
             $row->car_invoice_no ?? '-',
             $row->item_code,
@@ -113,7 +116,8 @@ class DailySalesExport implements FromCollection, WithHeadings, WithMapping, Sho
             $row->unit_price, 
             $row->total_price,
             $row->username,
-            $row->reason ?? '-'
+            $row->reason ?? '-',  // ✅ Reason ដាច់ដោយឡែក
+            $row->remark ?? '-'   // ✅ Remark ដាច់ដោយឡែក
         ];
     }
 

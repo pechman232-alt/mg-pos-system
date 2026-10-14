@@ -333,7 +333,7 @@
                                 <i class="fas fa-wrench"></i> ព័ត៌មានសេវាកម្ម & ទីតាំង
                             </div>
                             <div class="row g-3">
-                                <div class="col-lg-6">
+                                <div class="col-lg-4 col-md-6">
                                     <label class="saas-label">ប្រភេទសេវាកម្ម (Service Type)</label>
                                     <select name="service_type" class="saas-input saas-select {{ $isLocked ? 'locked-field' : '' }}" {{ $isLocked ? 'disabled' : 'required' }}>
                                         <option value="" disabled>--- ជ្រើសរើសសេវាកម្ម ---</option>
@@ -348,7 +348,21 @@
                                     @if($isLocked) <input type="hidden" name="service_type" value="{{ $booking->service_type }}"> @endif
                                 </div>
 
-                                <div class="col-lg-6">
+                                <!-- 🌟 ទីតាំងថ្មីសម្រាប់ប្រភពនៃការកក់ 🌟 -->
+                                <div class="col-lg-4 col-md-6">
+                                    <label class="saas-label">ប្រភពនៃការកក់ (Booking Source)</label>
+                                    <select name="booking_source" class="saas-input saas-select {{ $isLocked ? 'locked-field' : '' }}" {{ $isLocked ? 'disabled' : 'required' }}>
+                                        <option value="" {{ empty($booking->booking_source) ? 'selected' : '' }} disabled>--- ជ្រើសរើសប្រភព ---</option>
+                                        <option value="Hotline" {{ $booking->booking_source == 'Hotline' ? 'selected' : '' }}>☎️ ទូរស័ព្ទ (Hotline/Call Center)</option>
+                                        <option value="Telegram" {{ $booking->booking_source == 'Telegram' ? 'selected' : '' }}>💬 Telegram / Chat</option>
+                                        <option value="Facebook" {{ $booking->booking_source == 'Facebook' ? 'selected' : '' }}>🌐 Facebook Page</option>
+                                        <option value="Walk-in" {{ $booking->booking_source == 'Walk-in' ? 'selected' : '' }}>🚶‍♂️ ភ្ញៀវមកផ្ទាល់ (Walk-in)</option>
+                                        <option value="SA Direct" {{ $booking->booking_source == 'SA Direct' ? 'selected' : '' }}>👨‍🔧 កក់តាមរយៈ SA</option>
+                                    </select>
+                                    @if($isLocked) <input type="hidden" name="booking_source" value="{{ $booking->booking_source }}"> @endif
+                                </div>
+
+                                <div class="col-lg-4 col-md-12">
                                     <label class="saas-label">ស្ថានភាពការងារ (Job Status)</label>
                                     @if($isLocked)
                                         <div class="saas-input locked-field fw-bold text-success d-flex align-items-center gap-2">

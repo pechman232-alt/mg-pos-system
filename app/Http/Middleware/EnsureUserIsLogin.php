@@ -17,7 +17,10 @@ class EnsureUserIsLogin
     public function handle(Request $request, Closure $next, $guard= 'users'): Response
     {
         if (!auth()->guard($guard)->check()) {
-            return redirect('login');
+            
+            // 🌟 ប្រើប្រាស់ route() ជំនួសវិញ ដើម្បីឱ្យវាស្វ័យប្រវត្តិស្គាល់ URL ថ្មី (admin-portal)
+            return redirect()->route('login');
+            
         }
         return $next($request);
     }

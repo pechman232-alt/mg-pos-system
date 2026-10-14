@@ -5,229 +5,270 @@
 @push('styles')
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
 <style>
-    /* --- GLOBAL BRANDING --- */
+    /* =========================================================
+       CLEAN SaaS DESIGN SYSTEM FOR FORMS
+       ========================================================= */
     :root {
-        --brand-indigo: #4f46e5;
-        --brand-purple: #7c3aed;
-        --brand-pink: #ec4899;
-        --brand-red: #ef4444;
-        --bg-body: #f8fafc;
-        --font-family: 'Plus Jakarta Sans', sans-serif !important;
+        --primary: #4F46E5;      /* Indigo 600 */
+        --primary-hover: #4338CA;
+        --surface: #FFFFFF;
+        --bg-body: #F8FAFC;      
+        --text-main: #111827;    
+        --text-muted: #6B7280;   
+        --border-color: #E5E7EB; 
+        --input-bg: #F9FAFB;
+        
+        --font-body: 'Inter', sans-serif;
+        --font-display: 'Plus Jakarta Sans', sans-serif;
     }
 
     body, .container-xxl {
-        font-family: var(--font-family);
+        font-family: var(--font-body);
         background-color: var(--bg-body);
-        font-size: 0.85rem;
-        color: #1e293b;
+        color: var(--text-main);
     }
 
-    .container-xxl {
-        max-width: 100% !important;
-        width: 100% !important;
-        padding: 1.5rem 2rem !important;
-    }
+    .container-xxl { padding: 24px 32px !important; max-width: 100% !important; width: 100% !important; }
 
-    /* --- PREMIUM CARD STYLING --- */
-    .full-width-card {
-        width: 100% !important;
-        border: none;
-        border-radius: 16px;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.05);
-        background: #fff;
+    /* --- FORM CARD --- */
+    .form-card {
+        background: var(--surface);
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
         overflow: hidden;
     }
 
-    /* 4-Color Gradient Header */
-    .card-header-gradient {
-        background: linear-gradient(90deg, var(--brand-indigo) 0%, var(--brand-purple) 33%, var(--brand-pink) 66%, var(--brand-red) 100%) !important;
-        padding: 20px 25px;
-        border-bottom: none;
+    /* Clean Header */
+    .card-header-clean {
+        padding: 20px 24px;
+        border-bottom: 1px solid var(--border-color);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: #FFFFFF;
     }
 
     .header-title {
-        color: #ffffff !important;
-        font-weight: 800;
+        font-family: var(--font-display);
+        color: var(--text-main);
+        font-weight: 700;
         font-size: 1.1rem;
         margin: 0;
-        letter-spacing: -0.5px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
     }
 
-    /* --- FORM ELEMENTS --- */
+    .btn-back-clean {
+        background: #FFFFFF;
+        color: var(--text-muted);
+        border: 1px solid var(--border-color);
+        font-size: 0.875rem;
+        font-weight: 600;
+        padding: 8px 16px;
+        text-decoration: none;
+        border-radius: 8px;
+        transition: all 0.2s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+    .btn-back-clean:hover { background: #F3F4F6; color: var(--text-main); }
+
+    /* --- FORM INPUTS --- */
     .form-label {
-        font-weight: 700;
-        font-size: 0.75rem;
-        color: #475569;
-        text-transform: uppercase;
-        margin-bottom: 8px;
+        font-weight: 600;
+        font-size: 0.8rem;
+        color: #4B5563;
+        margin-bottom: 6px;
         display: flex;
         align-items: center;
         gap: 6px;
-        letter-spacing: 0.5px;
     }
+    /* ធ្វើឱ្យ Icon ពណ៌ប្រផេះដូចៗគ្នា កុំឱ្យរញ៉េរញ៉ៃ */
+    .form-label i { color: #9CA3AF; font-size: 0.9rem; }
 
     .form-control, .form-select {
-        height: 48px;
-        padding: 10px 16px;
-        border-radius: 10px;
-        border: 1.5px solid #e2e8f0;
-        font-size: 0.85rem;
-        background-color: #fcfdfe;
-        font-weight: 500;
+        height: 44px;
+        padding: 8px 16px;
+        border-radius: 8px;
+        border: 1px solid var(--border-color);
+        font-size: 0.875rem;
+        background-color: var(--input-bg);
+        color: var(--text-main);
         transition: all 0.2s ease;
     }
 
     .form-control:focus, .form-select:focus {
-        background-color: #ffffff;
-        border-color: var(--brand-indigo);
-        box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
+        background-color: #FFFFFF;
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
         outline: none;
     }
 
-    .is-invalid {
-        border-color: var(--brand-red) !important;
-        background-color: #fef2f2 !important;
-    }
+    .is-invalid { border-color: #EF4444 !important; background-color: #FEF2F2 !important; }
 
-    /* --- BUTTONS --- */
+    /* Password Input Group */
+    .input-group { position: relative; display: flex; align-items: stretch; width: 100%; }
+    .input-group .form-control { border-top-right-radius: 0; border-bottom-right-radius: 0; border-right: none; }
+    .input-group-text {
+        background: var(--input-bg);
+        border: 1px solid var(--border-color);
+        border-left: none;
+        border-radius: 0 8px 8px 0;
+        color: #9CA3AF;
+        padding: 0 16px;
+        display: flex;
+        align-items: center;
+        transition: all 0.2s ease;
+    }
+    .input-group:focus-within .input-group-text { background: #FFFFFF; border-color: var(--primary); }
+
+    /* --- UPLOAD SECTION --- */
+    .upload-area {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        padding: 20px;
+        border-radius: 8px;
+        border: 1px dashed #D1D5DB;
+        background: #F9FAFB;
+    }
+    #target {
+        width: 80px; height: 80px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 2px solid #FFFFFF;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .btn-upload {
+        background: #FFFFFF;
+        border: 1px solid var(--border-color);
+        color: #4B5563;
+        font-size: 0.8rem;
+        font-weight: 600;
+        padding: 8px 16px;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: inline-flex; align-items: center; gap: 6px;
+    }
+    .btn-upload:hover { background: #F3F4F6; color: var(--text-main); }
+
+    /* --- SUBMIT BUTTON --- */
     .btn-save {
-        background-color: #1e293b;
+        background-color: var(--primary);
         color: white;
         border: none;
-        font-weight: 800;
-        padding: 14px 30px;
-        border-radius: 12px;
-        font-size: 0.95rem;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        box-shadow: 0 4px 12px rgba(30, 41, 59, 0.2);
-        text-transform: uppercase;
-    }
-
-    .btn-save:hover { 
-        background-color: #000; 
-        transform: translateY(-2px); 
-        color: white; 
-    }
-
-    .btn-back {
-        background: rgba(255, 255, 255, 0.2);
-        color: #fff;
-        border: 1px solid rgba(255, 255, 255, 0.4);
-        font-size: 0.75rem;
-        font-weight: 700;
-        padding: 8px 18px;
-        text-decoration: none;
+        font-weight: 600;
+        padding: 12px 24px;
         border-radius: 8px;
-        transition: 0.2s;
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
     }
-    .btn-back:hover { background: rgba(255, 255, 255, 0.3); color: #fff; }
-
-    /* --- AVATAR PREVIEW --- */
-    #target {
-        border-radius: 16px;
-        object-fit: cover;
-        border: 4px solid #f8fafc;
-        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
-    }
+    .btn-save:hover { background-color: var(--primary-hover); transform: translateY(-1px); box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.2); }
 
     /* --- SELECT2 OVERRIDES --- */
     .select2-container .select2-selection--single {
-        height: 48px !important;
-        border: 1.5px solid #e2e8f0 !important;
-        border-radius: 10px !important;
-        background-color: #fcfdfe !important;
-        display: flex;
-        align-items: center;
+        height: 44px !important;
+        border: 1px solid var(--border-color) !important;
+        border-radius: 8px !important;
+        background-color: var(--input-bg) !important;
+        display: flex; align-items: center;
     }
     .select2-container--default .select2-selection--single .select2-selection__rendered {
-        padding-left: 15px !important;
-        font-weight: 500;
-        color: #1e293b !important;
+        padding-left: 16px !important; font-size: 0.875rem; color: var(--text-main) !important;
     }
-    .select2-container--default .select2-selection--single .select2-selection__arrow { height: 46px !important; }
-
-    .input-group-text {
-        background: #f8fafc;
-        border: 1.5px solid #e2e8f0;
-        border-radius: 0 10px 10px 0;
-        color: #94a3b8;
-    }
+    .select2-container--default .select2-selection--single .select2-selection__arrow { height: 42px !important; }
 
     /* Animation */
-    .animate-up {
-        opacity: 0;
-        transform: translateY(15px);
-        animation: fadeInUp 0.4s ease forwards;
+    .anim-fade-up {
+        animation: fadeUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        opacity: 0; transform: translateY(15px);
     }
-    @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
+    @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
 </style>
 @endpush
 
 <div class="container-xxl flex-grow-1 container-p-y">
     <div class="row">
         <div class="col-12">
-            <div class="card full-width-card animate-up">
-                <div class="card-header-gradient d-flex justify-content-between align-items-center">
+            <div class="form-card anim-fade-up">
+                
+                <div class="card-header-clean">
                     <h5 class="header-title">
-                        <i class="fas fa-user-plus me-2"></i>CREATING PERSONNEL ACCOUNT
+                        <i class="fas fa-user-plus text-muted"></i> Register New Personnel
                     </h5>
-                    <a href="{{ url('/users') }}" class="btn btn-back">
-                        <i class="fas fa-times me-1"></i> CANCEL
+                    <a href="{{ url('/users') }}" class="btn-back-clean">
+                        <i class="fas fa-arrow-left"></i> Back to List
                     </a>
                 </div>
 
-                <div class="card-body p-5">
+                <div class="card-body p-4 p-md-5">
                     <form action="{{ url('/users/store') }}" method="POST" enctype="multipart/form-data" id="mainForm">
                         @csrf
                         
                         <div class="row g-4">
+                            <!-- Section: Basic Info -->
+                            <div class="col-12 mb-2">
+                                <h6 class="text-muted fw-bold text-uppercase" style="font-size: 0.75rem; letter-spacing: 0.5px; border-bottom: 1px solid #E5E7EB; padding-bottom: 8px;">Basic Information</h6>
+                            </div>
+
                             <div class="col-md-4">
-                                <label class="form-label"><i class="fas fa-id-card text-primary"></i> Full Name</label>
-                                <input type="text" class="form-control @error('full_name') is-invalid @enderror"
-                                    name="full_name" value="{{ old('full_name') }}" placeholder="John Doe">
+                                <label class="form-label"><i class="far fa-id-card"></i> Full Name</label>
+                                <input type="text" class="form-control @error('full_name') is-invalid @enderror" name="full_name" value="{{ old('full_name') }}" placeholder="E.g. John Doe">
                                 @error('full_name') <small class="text-danger mt-1 d-block">{{ $message }}</small> @enderror
                             </div>
 
                             <div class="col-md-4">
-                                <label class="form-label"><i class="fas fa-user-tag text-purple"></i> Username</label>
-                                <input type="text" class="form-control @error('username') is-invalid @enderror"
-                                    name="username" value="{{ old('username') }}" placeholder="johndoe">
+                                <label class="form-label"><i class="far fa-user"></i> Username</label>
+                                <input type="text" class="form-control @error('username') is-invalid @enderror" name="username" value="{{ old('username') }}" placeholder="E.g. johndoe">
                                 @error('username') <small class="text-danger mt-1 d-block">{{ $message }}</small> @enderror
                             </div>
 
                             <div class="col-md-4">
-                                <label class="form-label"><i class="fas fa-fingerprint text-pink"></i> User-ID</label>
+                                <label class="form-label"><i class="fas fa-fingerprint"></i> User-ID</label>
                                 <input type="text" class="form-control" name="user_id" value="{{ old('user_id') }}" placeholder="EMP-XXX">
                             </div>
 
                             <div class="col-md-4">
-                                <label class="form-label"><i class="fas fa-venus-mars text-info"></i> Gender</label>
+                                <label class="form-label"><i class="fas fa-venus-mars"></i> Gender</label>
                                 <select name="gender" class="form-select">
-                                    <option value="" disabled selected>Choose Gender</option>
+                                    <option value="" disabled selected>Select Gender</option>
                                     <option value="Male" {{ old('gender') == 'Male' ? 'selected' : '' }}>Male</option>
                                     <option value="Female" {{ old('gender') == 'Female' ? 'selected' : '' }}>Female</option>
                                 </select>
                             </div>
 
                             <div class="col-md-4">
-                                <label class="form-label"><i class="fas fa-envelope text-danger"></i> Email Address</label>
-                                <input type="email" class="form-control @error('email') is-invalid @enderror"
-                                    name="email" value="{{ old('email') }}" placeholder="name@domain.com">
+                                <label class="form-label"><i class="far fa-envelope"></i> Email Address</label>
+                                <input type="email" class="form-control @error('email') is-invalid @enderror" name="email" value="{{ old('email') }}" placeholder="name@domain.com">
                                 @error('email') <small class="text-danger mt-1 d-block">{{ $message }}</small> @enderror
                             </div>
 
                             <div class="col-md-4">
-                                <label class="form-label"><i class="fas fa-phone text-success"></i> Phone Number</label>
+                                <label class="form-label"><i class="fas fa-phone-alt"></i> Phone Number</label>
                                 <input type="text" class="form-control" name="phone_number" value="{{ old('phone_number') }}" placeholder="+855 ...">
                             </div>
 
+                            <!-- Section: Assignment & Security -->
+                            <div class="col-12 mt-5 mb-2">
+                                <h6 class="text-muted fw-bold text-uppercase" style="font-size: 0.75rem; letter-spacing: 0.5px; border-bottom: 1px solid #E5E7EB; padding-bottom: 8px;">Assignment & Security</h6>
+                            </div>
+
                             <div class="col-md-4">
-                                <label class="form-label"><i class="fas fa-building text-warning"></i> Branch</label>
+                                <label class="form-label"><i class="far fa-building"></i> Branch</label>
                                 <select name="branch_id" class="form-select">
                                     <option value="" disabled selected>Select Branch</option>
                                     @foreach ($branchs as $item)
@@ -237,7 +278,7 @@
                             </div>
 
                             <div class="col-md-4">
-                                <label class="form-label"><i class="fas fa-sitemap text-secondary"></i> Department</label>
+                                <label class="form-label"><i class="fas fa-sitemap"></i> Department</label>
                                 <select name="department_id" class="form-select">
                                     <option value="" disabled selected>Select Department</option>
                                     @foreach ($departs as $item)
@@ -246,9 +287,8 @@
                                 </select>
                             </div>
 
-                            {{-- 🌟 កែសម្រួល៖ Position ប្រើ Loop ធម្មតា ជំនួសឱ្យ AJAX 🌟 --}}
                             <div class="col-md-4">
-                                <label class="form-label"><i class="fas fa-briefcase text-primary"></i> Position</label>
+                                <label class="form-label"><i class="fas fa-briefcase"></i> Position</label>
                                 <select id="position-select" class="form-select select2-init" name="position_id" style="width: 100%" required>
                                     <option value="" disabled selected>Select Position</option>
                                     @if(isset($positions))
@@ -262,22 +302,12 @@
                             </div>
 
                             <div class="col-md-4">
-                                <label class="form-label"><i class="fas fa-calendar-check text-success"></i> Date Start Work</label>
+                                <label class="form-label"><i class="far fa-calendar-check"></i> Date Start Work</label>
                                 <input type="date" class="form-control" name="start_work_date" value="{{ old('start_work_date') }}">
                             </div>
 
                             <div class="col-md-4">
-                                <label class="form-label"><i class="fas fa-lock text-danger"></i> Password Access</label>
-                                <div class="input-group">
-                                    <input type="password" name="password" class="form-control" id="show-password" placeholder="••••••••">
-                                    <span class="input-group-text" onclick="togglePasswordVisibility()" style="cursor: pointer;">
-                                        <i class="fas fa-eye-slash" id="toggle-icon"></i>
-                                    </span>
-                                </div>
-                            </div>
-
-                            <div class="col-md-4">
-                                <label class="form-label"><i class="fas fa-user-shield text-purple"></i> System Role</label>
+                                <label class="form-label"><i class="fas fa-shield-alt"></i> System Role</label>
                                 <select name="role_id" class="form-select">
                                     <option value="" disabled selected>Select Role</option>
                                     @foreach ($userRole as $item)
@@ -286,22 +316,33 @@
                                 </select>
                             </div>
 
+                            <div class="col-md-4">
+                                <label class="form-label"><i class="fas fa-lock"></i> Password Access</label>
+                                <div class="input-group">
+                                    <input type="password" name="password" class="form-control" id="show-password" placeholder="••••••••">
+                                    <span class="input-group-text" onclick="togglePasswordVisibility()" style="cursor: pointer;">
+                                        <i class="fas fa-eye-slash" id="toggle-icon"></i>
+                                    </span>
+                                </div>
+                            </div>
+
+                            <!-- Section: Profile Photo -->
                             <div class="col-12 mt-4">
-                                <div class="d-flex align-items-center gap-4 p-3 rounded-3" style="background: #f8fafc; border: 1px dashed #cbd5e1;">
-                                    <img src="{{ url('backend/assets/img/avatars/1.png') }}" id="target" width="100" height="100">
+                                <div class="upload-area">
+                                    <img src="{{ url('backend/assets/img/avatars/1.png') }}" id="target" alt="Profile Preview">
                                     <div>
-                                        <label for="select_image" class="btn btn-outline-primary btn-sm mb-2 fw-bold">
-                                            <i class="fas fa-upload me-1"></i> UPLOAD PROFILE PHOTO
+                                        <label for="select_image" class="btn-upload">
+                                            <i class="fas fa-cloud-upload-alt"></i> Upload Photo
                                             <input type="file" name="profile_pic" id="select_image" hidden onchange="selectImg()">
                                         </label>
-                                        <p class="text-muted mb-0 small">Supported formats: JPG, PNG. Recommended size: 500x500px.</p>
+                                        <p class="text-muted mt-2 mb-0" style="font-size: 0.75rem;">JPG or PNG. Recommended size: 500x500px.</p>
                                     </div>
                                 </div>
                             </div>
 
                             <div class="col-12 mt-5">
-                                <button type="submit" class="btn btn-save w-100" id="btnSubmit">
-                                    <i class="fas fa-user-check me-2"></i> INITIALIZE NEW ACCOUNT
+                                <button type="submit" class="btn-save" id="btnSubmit">
+                                    <i class="fas fa-check-circle"></i> Create User Account
                                 </button>
                             </div>
                         </div>
@@ -315,6 +356,7 @@
 @push('scripts')
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
+    // Image Preview
     function selectImg() {
         let input = document.getElementById("select_image");
         if (input.files && input.files[0]) {
@@ -326,31 +368,35 @@
         }
     }
 
+    // Password Toggle
     function togglePasswordVisibility() {
         let field = document.getElementById('show-password');
         let icon = document.getElementById('toggle-icon');
         if (field.type === 'password') {
             field.type = 'text';
             icon.classList.replace('fa-eye-slash', 'fa-eye');
+            icon.style.color = '#4F46E5'; // Highlight when visible
         } else {
             field.type = 'password';
             icon.classList.replace('fa-eye', 'fa-eye-slash');
+            icon.style.color = '#9CA3AF'; // Muted when hidden
         }
     }
 
     $(document).ready(function() {
-        // 🌟 កែសម្រួល៖ Initialize Select2 ជាលក្ខណៈធម្មតា លែងប្រើ AJAX
+        // Initialize Select2
         $('.select2-init').select2({
             placeholder: "Select Position",
             allowClear: true,
             width: '100%'
         });
 
-        // Effect ពេលចុចបញ្ជូនទិន្នន័យ
+        // Submit Button Loading State
         $('#mainForm').on('submit', function() {
             let btn = document.getElementById('btnSubmit');
             btn.disabled = true;
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> INITIALIZING...';
+            btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Processing...';
+            btn.style.opacity = '0.8';
         });
     });
 </script>

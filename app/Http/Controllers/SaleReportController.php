@@ -622,61 +622,66 @@ class SaleReportController extends Controller
         }
 
         return response()->json($reports->get());
+
     }
-
-
-public function verifyVehicleForRegistration(Request $request) 
-    {
-        $request->validate([
-            'vin_last_6' => 'required|string|min:6|max:6',
-        ]);
-
-        $vinLast6 = $request->input('vin_last_6');
-
-        try {
-            // ស្វែងរកទិន្នន័យឡានដែលបានលក់រួច (Close Deal) ដោយភ្ជាប់ជាមួយព័ត៌មានអតិថិជន
-            $vehicle = SaleReportModel::join('logistics', 'logistics.id', '=', 'sale_reports.logistics_id')
-                ->where(function($q) {
-                    $q->where('sale_reports.status', '!=', 0)->orWhereNull('sale_reports.status');
-                })
-                ->where('logistics.vin_number', 'LIKE', '%' . $vinLast6)
-                ->select(
-                    'sale_reports.customer_name',
-                    'sale_reports.phone_number',
-                    'logistics.model_name_id as car_model',
-                    'logistics.model_year',
-                    'logistics.vin_number',
-                    'logistics.engine_number'
-                )
-                ->first();
-
-            if ($vehicle) {
-                return response()->json([
-                    'success' => true,
-                    'found' => true,
-                    'customer_name' => $vehicle->customer_name,
-                    'phone_number' => $vehicle->phone_number,
-                    'car_model' => $vehicle->car_model,
-                    'model_year' => $vehicle->model_year,
-                    'vin_number' => $vehicle->vin_number,
-                    'engine_number' => $vehicle->engine_number,
-                    'message' => 'ទិន្នន័យរថយន្តត្រូវបានផ្ទៀងផ្ទាត់ជោគជ័យ!'
-                ], 200);
+        public function followUpTracking(Request $request)
+        {
+            $tab = $request->input('tab', 'pending'); 
+            $keyword = $request->input('keyword');
+            $branchId = $request->input('branch_id');
+    
+            $query = \App\Models\SaleReportModel::with(['employee', 'branch']);
+    
+            // Filter តាមសាខា
+            if (!empty($branchId)) {
+                $query->where('branch_id', $branchId);
             }
-
-            return response()->json([
-                'success' => true,
-                'found' => false,
-                'message' => 'រកមិនឃើញលេខតួឡាន ៦ខ្ទង់នេះ នៅក្នុងប្រព័ន្ធលក់ឡានឡើយ។'
-            ], 200);
-
-        } catch (\Exception $e) {
-            Log::error('API Verify VIN Error: ' . $e->getMessage());
-            return response()->json([
-                'success' => false,
-                'message' => 'កំហុសប្រព័ន្ធ៖ ' . $e->getMessage()
-            ], 500);
+    
+            if ($tab === 'completed') {
+                $query->where(function($q) {
+                    $q->whereNotNull('feedback_command')->where('feedback_command', '!=', '')
+                      ->orWhereNotNull('remark_sa')->where('remark_sa', '!=', '');
+                })->orderBy('updated_at', 'desc');
+            } else {
+                $query->where(function($q) {
+                    $q->where(function($subQ) {
+                        $subQ->whereNull('feedback_command')->orWhere('feedback_command', '');
+                    })->where(function($subQ) {
+                        $subQ->whereNull('remark_sa')->orWhere('remark_sa', '');
+                    });
+                })->orderBy('delivery_date', 'desc');
+            }
+    
+            if (!empty($keyword)) {
+                $query->where(function($q) use ($keyword) {
+                    $q->where('customer_name', 'like', "%{$keyword}%")
+                      ->orWhere('phone_number', 'like', "%{$keyword}%")
+                      ->orWhere('invoice_no', 'like', "%{$keyword}%");
+                });
+            }
+    
+            $reports = $query->paginate(20);
+    
+            // 🌟 ប្រើប្រាស់ Array ដើម្បីទាញយកតែ Branch ID 4, 5, 9, 20 ប៉ុណ្ណោះ 🌟
+            $branches = \App\Models\BranchModel::whereIn('id', [4, 5, 9, 20])->get();
+    
+            $baseCountQuery = \App\Models\SaleReportModel::query();
+            if (!empty($branchId)) {
+                $baseCountQuery->where('branch_id', $branchId);
+            }
+    
+            $completedCount = (clone $baseCountQuery)->where(function($q) {
+                $q->whereNotNull('feedback_command')->where('feedback_command', '!=', '')
+                  ->orWhereNotNull('remark_sa')->where('remark_sa', '!=', '');
+            })->count();
+                                
+            $totalReports = (clone $baseCountQuery)->count();
+            $pendingCount = $totalReports - $completedCount;
+    
+            return view('SaleReports.follow_up_tracking', compact(
+                'reports', 'tab', 'keyword', 'branchId', 'branches', 'pendingCount', 'completedCount'
+            ));
         }
-    }
+
 
 }

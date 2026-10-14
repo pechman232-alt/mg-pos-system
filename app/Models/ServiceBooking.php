@@ -13,13 +13,13 @@ class ServiceBooking extends Model
     // ១. បញ្ជាក់ឈ្មោះ Table ក្នុង Database
     protected $table = 'service_bookings';
 
-    // ២. បញ្ជាក់ Column ដែលអនុញ្ញាតឱ្យបញ្ចូលទិន្នន័យ (Mass Assignment)
+   
     protected $fillable = [
         'customer_name',
         'contact',
         'model',
         'plate',
-        'mileage',         // ✅ ត្រឹមត្រូវ! វាអនុញ្ញាតឱ្យ Save ចូល Database ហើយ
+        'mileage',         
         'service_type',
         'location',
         'branch_id',
@@ -30,32 +30,30 @@ class ServiceBooking extends Model
         'arrival_time',
         'start_time',
         'end_time',
-        'sa_name',
+        'sa_name',      
         'remark' ,
         'technician_name',
         'est_finish_date',
         'mechanic_remark',
         'total_seconds',
         'paused_duration',
-        'is_walk_in'  , 
-        'note'    // 🌟 ថែម Field ថ្មីនេះ ដើម្បីឱ្យវាអនុញ្ញាតការ Save ពី Controller
+        'is_walk_in'  ,  
+        'booking_source',
+        'note'    
     ];
 
-    // ៣. បំប្លែងទិន្នន័យអូតូ (Casting)
     protected $casts = [
         'booking_date' => 'date',
-        'mileage'      => 'integer', // 🌟 បន្ថែមទីនេះ ដើម្បីប្រាកដថាទិន្នន័យដែលចូលទៅ DB គឺជាទម្រង់លេខ (INT) ជានិច្ច
-        'is_walk_in'   => 'integer', // 🌟 ប្រាកដថាវាជាលេខ 0 ឬ 1
+        'mileage'      => 'integer', 
+        'is_walk_in'   => 'integer',
         'estimation_history' => 'array',
     ];
 
-    /**
-     * Accessor: បង្ហាញឈ្មោះទីតាំងពេញជាភាសាខ្មែរ
-     */
+   
     public function getLocationKhAttribute()
     {
         $locations = [
-            // ឈ្មោះពេញ (សម្រាប់ទិន្នន័យថ្មី)
+            
             'Service Sr (siem Reap)'                   => 'សាខាសៀមរាប (ខេត្តសៀមរាប)',
             'Service Btb (battambang)'                 => 'សាខាបាត់ដំបង (ខេត្តបាត់ដំបង)',
             'Service Hq (head Office)'                 => 'សាខាការិយាល័យកណ្តាល (រាជធានីភ្នំពេញ)',
@@ -66,26 +64,23 @@ class ServiceBooking extends Model
             'Mg Service Hq (head Office)'              => 'សាខាការិយាល័យកណ្តាល (រាជធានីភ្នំពេញ)',
             'Mg Service 50m (street 50m - Phnom Penh)' => 'សាខាផ្លូវលេខ ៥០ម៉ែត្រ (រាជធានីភ្នំពេញ)',
             
-            // សាខាចាស់ (អក្សរកាត់)
+       
             'SR'  => 'សាខាសៀមរាប (ខេត្តសៀមរាប)',
             'BTB' => 'សាខាបាត់ដំបង (ខេត្តបាត់ដំបង)',
             'HQ'  => 'សាខាការិយាល័យកណ្តាល (រាជធានីភ្នំពេញ)',
             '50M' => 'សាខាផ្លូវលេខ ៥០ម៉ែត្រ (រាជធានីភ្នំពេញ)',
             'MC'  => 'មជ្ឈមណ្ឌលសេវាកម្មយានដ្ឋានសេវាកម្ម',
 
-            // 🌟 ទិន្នន័យចាស់ៗដែលជាប់ជាលេខ ID ក្នុង Database
-            '10' => 'សាខាបាត់ដំបង (ខេត្តបាត់ដំបង)',         // លេខ 10 ផ្អែកតាម Database របស់បង
-            '11' => 'សាខាសៀមរាប (ខេត្តសៀមរាប)',            // (បើលេខ 11 ជាសាខាផ្សេង សូមបងជួយកែឈ្មោះត្រង់នេះ)
-            '12' => 'សាខាការិយាល័យកណ្តាល (រាជធានីភ្នំពេញ)',  // (បើលេខ 12 ជាសាខាផ្សេង សូមបងជួយកែឈ្មោះត្រង់នេះ)
-            '13' => 'សាខាផ្លូវលេខ ៥០ម៉ែត្រ (រាជធានីភ្នំពេញ)',  // (បើលេខ 13 ជាសាខាផ្សេង សូមបងជួយកែឈ្មោះត្រង់នេះ)
+         
+            '10' => 'សាខាបាត់ដំបង (ខេត្តបាត់ដំបង)',        
+            '11' => 'សាខាសៀមរាប (ខេត្តសៀមរាប)',           
+            '12' => 'សាខាការិយាល័យកណ្តាល (រាជធានីភ្នំពេញ)', 
+            '13' => 'សាខាផ្លូវលេខ ៥០ម៉ែត្រ (រាជធានីភ្នំពេញ)',  
         ];
 
         return $locations[$this->location] ?? $this->location;
     }
 
-    /**
-     * Mutator: បំប្លែងស្លាកលេខឱ្យទៅជាអក្សរធំជានិច្ចមុននឹង Save ចូល Database
-     */
     public function setPlateAttribute($value)
     {
         $this->attributes['plate'] = strtoupper($value);

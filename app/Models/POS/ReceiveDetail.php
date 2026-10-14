@@ -6,11 +6,11 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Models\POS\ReceiveHeader; // 👈 ត្រូវប្រាកដថាបានហៅ Model នេះមកប្រើ
 use App\Models\POS\Product;       // 👈 ត្រូវប្រាកដថាបានហៅ Model នេះមកប្រើ
-
+use App\Traits\Auditable;
 class ReceiveDetail extends Model
 {
     use HasFactory;
-
+    use Auditable;
     protected $table = 'receive_details';
 
     protected $fillable = [

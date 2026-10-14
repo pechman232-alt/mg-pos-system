@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\BranchModel;
 use App\Models\POS\Product;
 use App\Models\POS\SalesHeader;
+use App\Models\AuditLog; // Added AuditLog
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -14,14 +15,16 @@ use Illuminate\Support\Facades\Log;
 class CheckoutController extends Controller
 {
     /**
-     * បង្ហាញទំព័រសម្រាប់បង្កើតវិក្កយបត្រ (POS)
+     * Show the POS Checkout Page
      */
     public function index()
     {
         $products = Product::where('stock_qty', '>', 0)->orderBy('item_name', 'asc')->get();
-        $branches = BranchModel::all();
+        $branches = BranchModel::whereIn('id', [23, 24, 25, 26])->orderBy('id', 'asc')->get();
         
-        // ប្រើ max('id') ដើម្បីបង្កើត Invoice No បណ្តោះអាសន្ន
+        // Fetch employees using full_name
+        $employees = DB::table('employees')->select('id', 'full_name')->orderBy('full_name', 'asc')->get();
+        
         $nextId = SalesHeader::max('id') + 1;
         $invoiceNo = 'INV-' . date('ymd') . '-' . str_pad($nextId, 4, '0', STR_PAD_LEFT);
 
@@ -30,26 +33,39 @@ class CheckoutController extends Controller
             ->orderBy('id', 'desc')
             ->get();
 
-        return view('POS.Sales.create', compact('products', 'branches', 'invoiceNo', 'purchaseInvoices'));
+        return view('POS.Sales.create', compact('products', 'branches', 'invoiceNo', 'purchaseInvoices', 'employees'));
     }
 
     /**
-     * ឆែកមើលថាតើលេខវិក្កយបត្រឡាន (Car Invoice) ស្ទួនដែរឬទេ
+     * Check if Car Invoice is duplicated
      */
     public function checkCarInvoice(Request $request)
     {
-        $carInvoiceNo = $request->input('car_invoice_no');
-        $exists = false;
+        $carInvoice = $request->car_invoice_no;
         
-        if (!empty($carInvoiceNo)) {
-            $exists = DB::table('sales_headers')->where('car_invoice_no', $carInvoiceNo)->exists();
+        // Find Sales Header using this car invoice number
+        $sales = DB::table('sales_headers')
+                    ->where('car_invoice_no', $carInvoice)
+                    ->pluck('id');
+        
+        if ($sales->isNotEmpty()) {
+            // If exists, fetch the items previously checked out
+            $items = DB::table('sales_details')
+                        ->whereIn('sales_header_id', $sales)
+                        ->select('item_code', 'item_name', 'qty')
+                        ->get();
+                        
+            return response()->json([
+                'exists' => true,
+                'items' => $items
+            ]);
         }
-
-        return response()->json(['exists' => $exists]);
+        
+        return response()->json(['exists' => false]);
     }
 
     /**
-     * ដំណើរការរក្សាទុកទិន្នន័យលក់ និងកាត់ស្តុក
+     * Process the sale and cut stock
      */
     public function process(Request $request)
     {
@@ -60,14 +76,16 @@ class CheckoutController extends Controller
 
         $carInvoiceNo = $request->input('car_invoice_no');
         $reason = $request->input('reason');
+        $remark = $request->input('remark'); // Header Remark
+        $buyerName = $request->input('car_buyer_name', 'General Customer');
         
-        // ការពារករណីលេខវិក្កយបត្រឡានស្ទួន តែអត់មាន Reason
+        // Prevent duplicate car invoice without a reason
         if (!empty($carInvoiceNo)) {
             $exists = DB::table('sales_headers')->where('car_invoice_no', $carInvoiceNo)->exists();
             if ($exists && empty($reason)) {
                 return response()->json([
                     'success' => false, 
-                    'message' => 'លេខវិក្កយបត្រឡានធ្លាប់បានបញ្ចេញកាដូរួចហើយ! សូមវាយបញ្ចូលមូលហេតុ (Reason)។'
+                    'message' => 'This Car Invoice has already been processed! Please provide a Reason.'
                 ], 422);
             }
         }
@@ -78,7 +96,7 @@ class CheckoutController extends Controller
             $nextId = SalesHeader::max('id') + 1;
             $invoiceNo = 'INV-' . date('ymd') . '-' . str_pad($nextId, 4, '0', STR_PAD_LEFT);
 
-            // គណនាទឹកប្រាក់
+            // Calculate totals
             $subtotal = collect($cart)->sum(fn($item) => (float)$item['qty'] * (float)$item['price']);
             $discount = (float)$request->input('discount_amount', 0);
             $taxPercent = (float)$request->input('tax_percent', 0);
@@ -87,17 +105,19 @@ class CheckoutController extends Controller
             $taxAmount = $afterDiscount * ($taxPercent / 100);
             $grandTotal = $afterDiscount + $taxAmount;
 
-            // ១. រក្សាទុកក្បាលវិក្កយបត្រ (Header)
+            // 1. Save Sales Header
             $saleId = DB::table('sales_headers')->insertGetId([
                 'invoice_no'          => $invoiceNo,
                 'sale_date'           => Carbon::now(),
                 'customer_name'       => $request->input('customer_name', 'General Customer'),
                 'location_id'         => $request->location_id,
-                'user_id'             => auth()->id(),
-                'car_buyer_name'      => $request->input('car_buyer_name'), 
+                'user_id'             => auth()->id(), 
+                'employee_id'         => $request->input('employee_id'), 
+                'car_buyer_name'      => $buyerName, 
                 'car_invoice_no'      => $carInvoiceNo, 
-                'purchase_invoice_id' => null, // ✅ លែងប្រើនៅ Header ទៀតហើយ
+                'purchase_invoice_id' => null,
                 'reason'              => $reason,
+                'remark'              => $remark, // Save Header Remark
                 'subtotal'            => $subtotal,
                 'discount_amount'     => $discount,
                 'tax_percent'         => $taxPercent,
@@ -106,13 +126,13 @@ class CheckoutController extends Controller
                 'updated_at'          => Carbon::now(),
             ]);
 
-            // ២. រៀបចំទិន្នន័យ Details និងកាត់ស្តុក
+            // 2. Prepare Details Data and Cut Stock
             $detailsData = [];
             foreach ($cart as $item) {
                 $product = Product::find($item['id']);
                 
                 if (!$product || $product->stock_qty < $item['qty']) {
-                    throw new \Exception("ទំនិញ [" . ($product->item_name ?? 'មិនស្គាល់') . "] មិនគ្រប់គ្រាន់ក្នុងស្តុក!");
+                    throw new \Exception("Insufficient stock for item: [" . ($product->item_name ?? 'Unknown') . "]!");
                 }
 
                 $detailsData[] = [
@@ -123,8 +143,8 @@ class CheckoutController extends Controller
                     'qty'                 => $item['qty'],
                     'unit_price'          => $item['price'],
                     'total_price'         => $item['qty'] * $item['price'],
-                    // ✅ ចាប់យកលេខ Purchase Invoice ប្រចាំមុខទំនិញនីមួយៗ (Item Level)
                     'purchase_invoice_no' => $item['purchase_invoice_no'] ?? null, 
+                    'remark'              => $item['remark'] ?? null, 
                     'created_at'          => Carbon::now(),
                     'updated_at'          => Carbon::now(),
                 ];
@@ -135,11 +155,22 @@ class CheckoutController extends Controller
             DB::table('sales_details')->insert($detailsData);
 
             DB::commit();
+
+            // 3. Record Audit Log (After successful commit)
+            if (class_exists(\App\Models\AuditLog::class)) {
+                \App\Models\AuditLog::record(
+                    'POS Checkout', 
+                    'Create', 
+                    "Created new sales invoice: {$invoiceNo} for {$buyerName}",
+                    null, 
+                    ['total' => $grandTotal, 'items_count' => count($cart)]
+                );
+            }
             
             return response()->json([
                 'success' => true, 
                 'sale_id' => encrypt($saleId),
-                'message' => 'រក្សាទុក និងកាត់ស្តុកជោគជ័យ!'
+                'message' => 'Checkout processed successfully!'
             ]);
 
         } catch (\Exception $e) {
@@ -150,22 +181,19 @@ class CheckoutController extends Controller
     }
 
     /**
-     * ==============================================================
-     * បង្ហាញទំព័រ Print (Dynamic: Invoice, Tax Invoice, Delivery Note)
-     * ==============================================================
+     * Show Print Document Page
      */
     public function printDocument(Request $request, $encryptedId)
     {
         try {
             $id = decrypt($encryptedId);
             
-            // បន្ថែម 'branch.company' ដើម្បីឱ្យវាស្គាល់ក្រុមហ៊ុន
+            // Load relationships including company
             $sale = SalesHeader::with(['branch.company', 'details.product'])->findOrFail($id);
             
-            // ចាប់យក type ពី URL (បើអត់មានទេ កំណត់ជា 'invoice')
+            // Get doc type from URL (default is 'invoice')
             $docType = $request->query('type', 'invoice'); 
 
-            // បញ្ជូនទៅកាន់ File View
             return view('POS.Sales.print_document', compact('sale', 'docType'));
             
         } catch (\Exception $e) {
@@ -173,37 +201,39 @@ class CheckoutController extends Controller
         }
     }
 
-   /**
-     * បង្ហាញទំព័រប្រវត្តិវិក្កយបត្រលក់ (Sales History)
+    /**
+     * View Sales History
      */
     public function history(Request $request)
     {
-        // ១. ទាញយកតែទិន្នន័យក្បាលវិក្កយបត្រ (Header)
+        // 1. Fetch header data and join related tables
         $query = DB::table('sales_headers as sh')
             ->leftJoin('branches as b', 'sh.location_id', '=', 'b.id')
             ->leftJoin('users as u', 'sh.user_id', '=', 'u.id')
+            ->leftJoin('employees as e', 'sh.employee_id', '=', 'e.id') 
             ->select(
                 'sh.id',
                 'sh.invoice_no as document_no',
                 'sh.sale_date as date',
                 'sh.created_at',
                 'b.branch_name as loc_id',
-                'sh.customer_name',
+                DB::raw('COALESCE(e.full_name, sh.customer_name) as customer_name'),
                 'sh.car_buyer_name',
                 'sh.car_invoice_no as reference',
                 'sh.reason',
-                'sh.grand_total', // ទាញយកលុយសរុបចេញពី Header
+                'sh.remark', 
+                'sh.grand_total',
                 'u.username as by_user' 
             );
 
-        // ២. មុខងារស្វែងរក
+        // 2. Search Functionality
         if ($request->filled('search')) {
             $search = $request->search;
             $query->where(function($q) use ($search) {
                 $q->where('sh.invoice_no', 'like', "%{$search}%")
                   ->orWhere('sh.customer_name', 'like', "%{$search}%")
+                  ->orWhere('e.full_name', 'like', "%{$search}%")
                   ->orWhere('sh.car_invoice_no', 'like', "%{$search}%")
-                  // ស្វែងរកចូលដល់កូដទំនិញ និងឈ្មោះទំនិញ
                   ->orWhereExists(function ($sub) use ($search) {
                       $sub->select(DB::raw(1))
                           ->from('sales_details as sd')
@@ -216,18 +246,23 @@ class CheckoutController extends Controller
             });
         }
 
-        if ($request->filled('date')) {
-            $query->whereDate('sh.sale_date', $request->date);
+        // 3. Date Range Filter
+        if ($request->filled('from_date') && $request->filled('to_date')) {
+            $query->whereBetween(DB::raw('DATE(sh.sale_date)'), [$request->from_date, $request->to_date]);
+        } elseif ($request->filled('from_date')) {
+            $query->whereDate('sh.sale_date', '>=', $request->from_date);
+        } elseif ($request->filled('to_date')) {
+            $query->whereDate('sh.sale_date', '<=', $request->to_date);
         }
 
         if ($request->filled('branch_id')) {
             $query->where('sh.location_id', $request->branch_id);
         }
 
-        // ៣. Paginate តាមចំនួនវិក្កយបត្រ (១ វិក្កយបត្រ = ១ ជួរ)
+        // 4. Paginate
         $sales = $query->orderBy('sh.id', 'desc')->paginate(15);
 
-        // ៤. ទាញយកមុខទំនិញ (Items) មកភ្ជាប់ជាមួយវិក្កយបត្រនីមួយៗ
+        // 5. Attach Item Details
         $saleIds = $sales->pluck('id')->toArray();
         $details = DB::table('sales_details')
                      ->whereIn('sales_header_id', $saleIds)
@@ -236,16 +271,17 @@ class CheckoutController extends Controller
 
         $sales->getCollection()->transform(function ($sale) use ($details) {
             $sale->encrypted_id = encrypt($sale->id);
-            $sale->items = $details->get($sale->id, collect()); // បញ្ចូល Items ទៅក្នុង Object Sale
+            $sale->items = $details->get($sale->id, collect());
             return $sale;
         });
 
-        $branches = BranchModel::all();
+        $branches = BranchModel::whereIn('id', [23, 24, 25, 26])->orderBy('id', 'asc')->get();
 
         return view('POS.Sales.index', compact('sales', 'branches'));
     }
+
     /**
-     * ទាញយកលេខ Purchase Invoice ចុងក្រោយគេបង្អស់របស់មុខទំនិញ
+     * Get Latest PI for Product
      */
     public function getLatestPI($product_id)
     {
@@ -258,10 +294,43 @@ class CheckoutController extends Controller
 
         $pi_no = '';
         if ($latestReceive) {
-            // បើមាន purchase_invoice_no យកអាហ្នឹង, បើអត់ទេ យកលេខឯកសារ (document_no)
             $pi_no = $latestReceive->purchase_invoice_no ? $latestReceive->purchase_invoice_no : $latestReceive->document_no;
         }
 
         return response()->json(['pi_no' => $pi_no]);
+    }
+    
+    /**
+     * Get Products with Stock by Branch
+     */
+    public function getItemsByBranch($branch_id)
+    {
+        try {
+            $items = \Illuminate\Support\Facades\DB::table('products')
+                ->where('stock_qty', '>', 0) 
+                ->whereExists(function ($query) use ($branch_id) {
+                    $query->select(\Illuminate\Support\Facades\DB::raw(1))
+                          ->from('receive_details')
+                          ->join('receive_headers', 'receive_details.receive_header_id', '=', 'receive_headers.id')
+                          ->whereColumn('receive_details.product_id', 'products.id') 
+                          ->where('receive_headers.location_id', $branch_id); 
+                })
+                ->select(
+                    'id',
+                    'item_code',
+                    'item_name',
+                    'price',
+                    'stock_qty as qty'
+                )
+                ->get();
+
+            return response()->json($items);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false, 
+                'message' => 'Database Error: ' . $e->getMessage()
+            ], 500);
+        }
     }
 }

@@ -5,11 +5,8 @@
 @php
     $user = auth()->user();
     $roleId = (int)($user->role_id ?? 0);
-    
-    // កំណត់សិទ្ធិ: 1=Admin, 6=IT, 11=Group Manager
     $isManager = in_array($roleId, [1, 6, 11]);
 
-    // ទាញឈ្មោះសាខាសម្រាប់អ្នកប្រើប្រាស់ធម្មតា
     $currentBranchName = 'សាខារបស់អ្នក';
     if (!$isManager && isset($branches)) {
         $myBranch = collect($branches)->firstWhere('id', $user->branch_id);
@@ -17,176 +14,166 @@
     }
 @endphp
 
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Noto+Sans+Khmer:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+Khmer:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.tailwindcss.com"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
 
 <style>
     /* ============================================================
-       DESIGN TOKENS
-       A restrained, meaningful color system:
-       navy = informational · teal = on-target/positive
-       amber = needs attention · rust = backlog/concern
-       brand red = reserved for true alerts (overtime)
+       CLEAN & PROFESSIONAL DESIGN TOKENS (SaaS STYLE)
        ============================================================ */
     :root {
-        --ink-navy: #0B2A52;
-        --navy-light: #123B6E;
-        --steel: #45566E;
-        --steel-tint: #EEF2F7;
-        --teal: #0E9C79;
-        --teal-tint: #E3F6F0;
-        --amber: #B9750F;
-        --amber-tint: #FBF1E1;
-        --rust: #C24A3B;
-        --rust-tint: #FBEAE8;
-        --brand-red: #D0262C;
-        --brand-red-tint: #FBEAEA;
-        --bg-main: #F5F7FA;
-        --border-light: #E4E9F0;
-        --text-dark: #16233B;
-        --text-muted: #5B6B84;
+        --text-main: #1e293b;
+        --text-muted: #64748b;
+        --text-light: #94a3b8;
+        
+        --primary: #0ea5e9; /* Professional Blue */
+        --primary-light: #e0f2fe;
+        
+        --success: #10b981;
+        --success-light: #d1fae5;
+        
+        --warning: #f59e0b;
+        --warning-light: #fef3c7;
+        
+        --danger: #ef4444;
+        --danger-light: #fee2e2;
 
-        /* legacy aliases kept so nothing referencing brand colors breaks */
-        --mg-blue: #0B2A52;
-        --mg-red: #D0262C;
+        --bg-body: #f8fafc;
+        --border-color: #e2e8f0;
+        
+        --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+        --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+        --shadow-card: 0 10px 15px -3px rgba(0, 0, 0, 0.03), 0 4px 6px -2px rgba(0, 0, 0, 0.02);
     }
 
-    /* 🌟 FIT SCREEN APP LAYOUT 🌟 */
     body {
-        margin: 0;
-        padding: 0;
+        background-color: var(--bg-body) !important;
+        font-family: 'Inter', 'Noto Sans Khmer', sans-serif !important;
+        color: var(--text-main);
         overflow: hidden !important;
-        background-color: var(--bg-main) !important;
-        font-family: 'Plus Jakarta Sans', 'Noto Sans Khmer', sans-serif !important;
-        color: var(--text-dark);
+        margin: 0; padding: 0;
     }
 
-    .content-fluid-wrapper {
-        height: 100vh;
-        max-height: 100vh;
-        display: flex;
-        flex-direction: column;
-        overflow: hidden;
-    }
+    .content-fluid-wrapper { height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
 
     /* 🌟 Header Section 🌟 */
     .dashboard-header { 
         background: #ffffff; 
-        border-bottom: 1px solid var(--border-light); 
-        padding: 0.85rem 1.5rem; 
-        display: flex; 
-        flex-wrap: wrap; 
-        justify-content: space-between; 
-        align-items: center; 
-        flex-shrink: 0;
-        z-index: 50;
-        box-shadow: 0 1px 2px rgba(16,24,40,0.04);
+        border-bottom: 1px solid var(--border-color); 
+        padding: 1rem 2rem; 
+        display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; 
+        z-index: 50; flex-shrink: 0;
     }
 
-    /* 🌟 Main Scrollable Area 🌟 */
-    .main-dashboard-content {
-        flex-grow: 1;
-        overflow-y: auto;
-        padding: 1.25rem 1.5rem;
-        padding-bottom: 2rem;
+    .main-dashboard-content { flex-grow: 1; overflow-y: auto; padding: 2rem; }
+
+    /* Custom Scrollbar - Refined */
+    .main-dashboard-content::-webkit-scrollbar, .custom-scrollbar::-webkit-scrollbar { width: 5px; height: 5px; }
+    .main-dashboard-content::-webkit-scrollbar-track, .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+    .main-dashboard-content::-webkit-scrollbar-thumb, .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+    .main-dashboard-content::-webkit-scrollbar-thumb:hover, .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+    .custom-scrollbar { overflow-y: auto; padding-right: 8px; min-height: 0; }
+
+    /* 🌟 Filters 🌟 */
+    .filter-wrapper {
+        background: #f1f5f9; border-radius: 8px; padding: 4px;
+        display: inline-flex; align-items: center; gap: 8px;
     }
-
-    /* 🌟 Custom Scrollbar for all areas 🌟 */
-    .main-dashboard-content::-webkit-scrollbar, 
-    .custom-scrollbar::-webkit-scrollbar { width: 4px; height: 4px; }
-    .main-dashboard-content::-webkit-scrollbar-track, 
-    .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
-    .main-dashboard-content::-webkit-scrollbar-thumb, 
-    .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
-    .main-dashboard-content::-webkit-scrollbar-thumb:hover, 
-    .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
-
-    /* 🌟 Filter Section 🌟 */
     .filter-group {
         display: flex; align-items: center; gap: 8px; 
-        background: #f8fafc; border: 1px solid #dde3ec; 
-        border-radius: 8px; padding: 4px 10px; 
+        background: #ffffff; border: 1px solid transparent; 
+        border-radius: 6px; padding: 6px 12px; 
         transition: all 0.2s ease;
+        box-shadow: var(--shadow-sm);
     }
-    .filter-group:focus-within, .filter-group:hover { border-color: var(--ink-navy); background: #ffffff; }
-    .filter-select { background: transparent; border: none; outline: none; font-size: 0.8rem; font-weight: 700; color: var(--text-dark); cursor: pointer; }
+    .filter-group:hover, .filter-group:focus-within { border-color: #cbd5e1; }
+    .filter-select { background: transparent; border: none; outline: none; font-size: 0.85rem; font-weight: 500; color: var(--text-main); cursor: pointer; }
 
-    /* 🌟 KPI Cards (Compact for Fit Screen) 🌟 */
-    .kpi-card {
-        background: #ffffff; border-radius: 12px; border: 1px solid var(--border-light);
-        padding: 0.9rem 1.05rem; transition: all 0.2s ease;
-        display: flex; flex-direction: column; justify-content: center;
-        box-shadow: 0 1px 2px rgba(16,24,40,0.03);
+    /* 🌟 Clean Cards 🌟 */
+    .card-clean {
+        background: #ffffff; border-radius: 12px; border: 1px solid var(--border-color);
+        box-shadow: var(--shadow-md); transition: transform 0.2s ease, box-shadow 0.2s ease;
+        overflow: hidden; display: flex; flex-direction: column;
     }
-    .kpi-card:hover { transform: translateY(-2px); box-shadow: 0 8px 16px rgba(16,24,40,0.06); }
-
-    /* 🌟 Clean Data Cards 🌟 */
-    .clean-card {
-        background: #ffffff; border-radius: 12px; border: 1px solid var(--border-light);
-        padding: 1.05rem; display: flex; flex-direction: column;
-        box-shadow: 0 1px 2px rgba(16,24,40,0.03);
-        height: 100%;
-        transition: all 0.2s ease;
-    }
-    .clean-card:hover { border-color: #d3dae4; box-shadow: 0 8px 20px rgba(16,24,40,0.05); }
+    .card-clean:hover { transform: translateY(-2px); box-shadow: var(--shadow-card); }
     
-    .card-header-title {
-        font-size: 0.9rem; font-weight: 800; color: var(--text-dark); margin-bottom: 0.85rem;
-        display: flex; align-items: center; gap: 9px; flex-shrink: 0;
-        letter-spacing: -0.01em;
+    .card-padding { padding: 1.5rem; }
+
+    /* KPI Top Cards */
+    .kpi-title { font-size: 0.75rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.5rem; }
+    .kpi-value { font-size: 2rem; font-weight: 700; color: var(--text-main); line-height: 1; margin: 0; }
+    .kpi-icon { width: 44px; height: 44px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.25rem; }
+
+    /* Card Headers */
+    .section-title { font-size: 1rem; font-weight: 700; color: var(--text-main); display: flex; align-items: center; gap: 10px; margin-bottom: 1.25rem; }
+    .section-icon { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 0.85rem; }
+
+    /* 🌟 Modern Tables 🌟 */
+    .table-clean { width: 100%; border-collapse: separate; border-spacing: 0; }
+    .table-clean th { 
+        position: sticky; top: 0; background-color: #f8fafc; z-index: 10;
+        color: var(--text-muted); font-size: 0.75rem; font-weight: 600; text-transform: uppercase; 
+        padding: 12px 16px; border-bottom: 1px solid var(--border-color); text-align: left;
     }
-    .icon-circle { width: 27px; height: 27px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; }
-
-    /* 🌟 Modern Soft Tables 🌟 */
-    .clean-table { width: 100%; text-align: left; border-collapse: separate; border-spacing: 0; }
-    .sticky-header th { position: sticky; top: 0; background-color: #ffffff; z-index: 10; box-shadow: 0 1px 0 var(--border-light); }
-    .clean-table th { color: var(--text-muted); font-size: 0.63rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.6px; padding: 6px 8px; }
-    .clean-table td { padding: 7px 8px; font-size: 0.8rem; color: #334155; border-bottom: 1px dashed #eef1f5; font-weight: 600; font-variant-numeric: tabular-nums; }
-    .clean-table tbody tr:hover td { background-color: #f8fafc; }
-
-    /* 🌟 QTY Badge Soft 🌟 */
-    .qty-pill { 
-        background: var(--steel-tint); color: var(--steel); padding: 2px 9px; border-radius: 6px; 
-        font-weight: 800; font-size: 0.75rem; display: inline-block; min-width: 32px; text-align: center; 
-        border: 1px solid #e2e8f0; font-variant-numeric: tabular-nums;
+    .table-clean td { 
+        padding: 16px; font-size: 0.875rem; color: var(--text-main); font-weight: 500;
+        border-bottom: 1px solid #f1f5f9; 
     }
-    .qty-pill.highlight { background: #EAF0F9; color: var(--ink-navy); border-color: #cbd9ec; }
+    .table-clean tbody tr:hover td { background-color: #f8fafc; }
 
-    /* 🌟 Progress & Leaderboard 🌟 */
-    .rank-badge { width: 24px; height: 24px; border-radius: 7px; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 11px; }
-    .rank-1 { background: #FBF1D2; color: #92660B; border: 1px solid #F1DD9C; }
-    .rank-2 { background: #EEF1F5; color: var(--steel); border: 1px solid #dbe1e9; }
-    .rank-3 { background: #F6E4DA; color: #9A4E28; border: 1px solid #edcdb8; }
-    .rank-other { background: transparent; color: #a1acbb; }
+    /* Badges */
+    .badge-pill { padding: 4px 12px; border-radius: 99px; font-size: 0.75rem; font-weight: 600; display: inline-flex; align-items: center; justify-content: center; min-width: 32px; }
+    .badge-gray { background: #f1f5f9; color: #475569; }
+    .badge-primary { background: var(--primary-light); color: #0284c7; }
     
-    .progress-bar-container { background: #eef1f5; border-radius: 99px; height: 4px; overflow: hidden; margin-top: 4px; }
-    .progress-bar-fill { height: 100%; border-radius: 99px; transition: width 1.5s cubic-bezier(0.4, 0, 0.2, 1); }
+    /* Leaderboard */
+    .rank-badge { width: 26px; height: 26px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.75rem; }
+    .rank-1 { background: #fef08a; color: #b45309; }
+    .rank-2 { background: #e2e8f0; color: #475569; }
+    .rank-3 { background: #fed7aa; color: #9a3412; }
+    .rank-other { background: #f1f5f9; color: #94a3b8; }
 
-    .custom-scrollbar { overflow-y: auto; padding-right: 4px; }
+    .progress-track { background: #f1f5f9; border-radius: 99px; height: 6px; overflow: hidden; margin-top: 8px; }
+    .progress-fill { height: 100%; border-radius: 99px; transition: width 1s ease-out; }
+
+    /* Tech KPI Card */
+    .tech-card { padding: 1.25rem; display: flex; flex-direction: column; justify-content: space-between; height: 100%; }
+    .tech-avatar { width: 40px; height: 40px; border-radius: 50%; background: #f1f5f9; color: #64748b; display: flex; align-items: center; justify-content: center; font-size: 1rem; border: 1px solid #e2e8f0; }
+
+    .btn-back {
+        background: #ffffff; border: 1px solid var(--border-color); color: var(--text-main);
+        padding: 8px 16px; border-radius: 8px; font-weight: 600; font-size: 0.85rem;
+        display: inline-flex; align-items: center; gap: 8px; transition: all 0.2s;
+    }
+    .btn-back:hover { background: #f8fafc; border-color: #cbd5e1; }
 </style>
 
-<!-- 🌟 MAIN CONTENT FLUID WRAPPER 🌟 -->
 <div class="content-fluid-wrapper">
     
-    <!-- 🌟 Compact Header & Filter (Fixed Top) 🌟 -->
+    <!-- 🌟 HEADER & FILTERS 🌟 -->
     <div class="dashboard-header animate__animated animate__fadeInDown">
         <div class="flex items-center gap-3">
-            <h1 class="text-[1.1rem] font-black tracking-tight m-0" style="color: var(--ink-navy);">
-                <i class="fas fa-chart-line mr-1" style="color: var(--brand-red);"></i> Performance Overview
-            </h1>
-            <div class="h-4 w-px bg-slate-200 hidden md:block"></div>
-            <p class="text-slate-400 text-[9px] font-bold uppercase tracking-[1.5px] m-0 hidden md:block">Daily Insights</p>
+            <div class="w-10 h-10 rounded-lg flex items-center justify-center text-white" style="background: var(--primary);">
+                <i class="fas fa-chart-line text-lg"></i>
+            </div>
+            <div>
+                <h1 class="text-lg font-bold m-0" style="color: var(--text-main);">Performance Overview</h1>
+                <p class="text-xs font-medium m-0 mt-0.5 text-slate-500">Analytics & KPI Metrics</p>
+            </div>
         </div>
 
-        <div class="d-flex flex-wrap align-items-center gap-2">
-            <form method="GET" action="{{ route('services.performance') }}" id="filterForm" class="m-0 d-flex flex-wrap align-items-center gap-2">
-                <div class="filter-group m-0 py-1 px-2">
+        <div class="flex flex-wrap items-center gap-4 mt-3 md:mt-0">
+            <form method="GET" action="{{ route('services.performance') }}" id="filterForm" class="m-0 filter-wrapper">
+                
+                <!-- Branch Filter -->
+                <div class="filter-group">
+                    <i class="fas fa-map-marker-alt text-slate-400 text-xs"></i>
                     @if($isManager)
-                        <i class="fas fa-map-marker-alt text-slate-400 text-[10px]"></i>
-                        <select name="branch" class="filter-select text-[11px]" onchange="document.getElementById('filterForm').submit();" style="width: 120px;">
-                            <option value="all">គ្រប់សាខាទាំងអស់</option>
+                        <select name="branch" class="filter-select" onchange="document.getElementById('filterForm').submit();">
+                            <option value="all">All Branches</option>
                             @if(isset($branches))
                                 @foreach($branches as $b)
                                     @if(stripos($b->branch_name, 'service') !== false)
@@ -198,393 +185,319 @@
                             @endif
                         </select>
                     @else
-                        <i class="fas fa-map-marker-alt text-[10px]" style="color: var(--brand-red);"></i>
-                        <span class="text-[11px] font-bold px-1" style="color: var(--ink-navy);">{{ $currentBranchName }}</span>
+                        <span class="font-semibold text-sm" style="color: var(--primary);">{{ $currentBranchName }}</span>
                         <input type="hidden" name="branch" value="{{ $user->branch_id }}">
                     @endif
                 </div>
 
-                <!-- 🌟 From Date Filter 🌟 -->
-                <div class="filter-group m-0 py-1 px-2">
-                    <span class="text-[10px] font-bold text-slate-400">FROM:</span>
-                    <input type="date" name="from_date" value="{{ $fromDate ?? date('Y-m-01') }}" onchange="document.getElementById('filterForm').submit();" class="filter-select text-[11px]" style="color: var(--ink-navy);">
-                </div>
-
-                <!-- 🌟 To Date Filter 🌟 -->
-                <div class="filter-group m-0 py-1 px-2">
-                    <span class="text-[10px] font-bold text-slate-400">TO:</span>
-                    <input type="date" name="to_date" value="{{ $toDate ?? date('Y-m-d') }}" onchange="document.getElementById('filterForm').submit();" class="filter-select text-[11px]" style="color: var(--ink-navy);">
+                <!-- Date Range -->
+                <div class="filter-group">
+                    <i class="far fa-calendar-alt text-slate-400 text-xs"></i>
+                    <input type="date" name="from_date" value="{{ $fromDate ?? date('Y-m-01') }}" onchange="document.getElementById('filterForm').submit();" class="filter-select">
+                    <span class="text-slate-300 mx-1">→</span>
+                    <input type="date" name="to_date" value="{{ $toDate ?? date('Y-m-d') }}" onchange="document.getElementById('filterForm').submit();" class="filter-select">
                 </div>
 
                 @if(request()->has('from_date') || request()->has('to_date') || (request()->has('branch') && request('branch') !== 'all'))
-                    <a href="{{ route('services.performance') }}" class="text-slate-400 hover:text-[color:var(--brand-red)] transition-colors text-sm ml-1" title="Clear Filter"><i class="fas fa-undo-alt"></i></a>
+                    <a href="{{ route('services.performance') }}" class="w-7 h-7 rounded bg-white text-slate-400 hover:text-red-500 flex items-center justify-center transition-colors shadow-sm" title="Clear Filters">
+                        <i class="fas fa-times text-xs"></i>
+                    </a>
                 @endif
             </form>
 
-            <a href="{{ route('services.index') }}" class="btn text-white shadow-sm d-flex align-items-center gap-2" style="background: var(--ink-navy); border-radius: 8px; padding: 5px 12px; font-weight: 700; font-size: 0.75rem; margin-left: 4px;">
-                <i class="fas fa-arrow-left"></i> Back
+            <a href="{{ route('services.index') }}" class="btn-back shadow-sm">
+                <i class="fas fa-arrow-left text-xs"></i> Back
             </a>
         </div>
     </div>
 
-    <!-- 🌟 Main Dashboard Area (Scrollable internally) 🌟 -->
-    <div class="main-dashboard-content animate__animated animate__fadeInUp">
+    <!-- 🌟 MAIN DASHBOARD CONTENT 🌟 -->
+    <div class="main-dashboard-content">
         
-        <div class="mb-3">
-            <h3 class="m-0 font-black text-[1rem] tracking-tight text-slate-800">Daily Statistics <span class="text-slate-400 text-xs font-normal ms-2 border-l border-slate-300 pl-2">{{ date('d M, Y', strtotime($selectedDate)) }}</span></h3>
+        <div class="flex items-center justify-between mb-5">
+            <h2 class="text-base font-bold text-slate-800 m-0">Daily Snapshot <span class="text-slate-400 font-medium ms-2 text-sm">{{ date('d M, Y', strtotime($selectedDate ?? date('Y-m-d'))) }}</span></h2>
         </div>
 
-        <!-- 🌟 Row 1: Top KPI Cards 🌟 -->
-        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 mb-4">
-            <div class="kpi-card border-none text-white" style="background: linear-gradient(120deg, var(--ink-navy), var(--navy-light)); box-shadow: 0 4px 14px rgba(11,42,82,0.25);">
+        <!-- 🌟 ROW 1: TOP KPI CARDS 🌟 -->
+        <div class="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
+            <!-- Throughput (Hero Card) -->
+            <div class="card-clean card-padding" style="background: var(--primary); color: white; border: none;">
                 <div class="flex justify-between items-start">
                     <div>
-                        <p class="text-[9px] font-bold uppercase tracking-wide mb-1" style="color:#B9C7DC;">Total Throughput</p>
-                        <h3 class="text-xl font-black m-0 tabular-nums">{{ number_format($totalThroughput ?? 0) }}</h3>
+                        <p class="kpi-title" style="color: rgba(255,255,255,0.8);">Total Throughput</p>
+                        <h3 class="kpi-value text-white">{{ number_format($totalThroughput ?? 0) }}</h3>
                     </div>
-                    <div class="w-7 h-7 rounded-md bg-white/10 flex items-center justify-center text-xs" style="color:#B9C7DC;"><i class="fas fa-check-double"></i></div>
+                    <div class="kpi-icon" style="background: rgba(255,255,255,0.2);"><i class="fas fa-layer-group"></i></div>
                 </div>
             </div>
-            <div class="kpi-card" style="border-left: 3px solid var(--steel);">
+
+            <!-- Cars In -->
+            <div class="card-clean card-padding">
                 <div class="flex justify-between items-start">
                     <div>
-                        <p class="text-[9px] font-bold text-slate-400 uppercase tracking-wide mb-1">Total Cars In</p>
-                        <h3 class="text-xl font-black text-slate-800 m-0 tabular-nums">{{ number_format($carsIn ?? 0) }}</h3>
+                        <p class="kpi-title">Total Cars In</p>
+                        <h3 class="kpi-value">{{ number_format($carsIn ?? 0) }}</h3>
                     </div>
-                    <div class="w-7 h-7 rounded-md flex items-center justify-center text-xs" style="background: var(--steel-tint); color: var(--steel);"><i class="fas fa-arrow-right"></i></div>
+                    <div class="kpi-icon" style="background: var(--primary-light); color: var(--primary);"><i class="fas fa-sign-in-alt"></i></div>
                 </div>
             </div>
-            <div class="kpi-card" style="border-left: 3px solid var(--teal);">
+
+            <!-- Delivery -->
+            <div class="card-clean card-padding">
                 <div class="flex justify-between items-start">
                     <div>
-                        <p class="text-[9px] font-bold text-slate-400 uppercase tracking-wide mb-1">Cars Delivery</p>
-                        <h3 class="text-xl font-black text-slate-800 m-0 tabular-nums">{{ number_format($carsDelivery ?? 0) }}</h3>
+                        <p class="kpi-title">Cars Delivery</p>
+                        <h3 class="kpi-value">{{ number_format($carsDelivery ?? 0) }}</h3>
                     </div>
-                    <div class="w-7 h-7 rounded-md flex items-center justify-center text-xs" style="background: var(--teal-tint); color: var(--teal);"><i class="fas fa-check-circle"></i></div>
+                    <div class="kpi-icon" style="background: var(--success-light); color: var(--success);"><i class="fas fa-check-circle"></i></div>
                 </div>
             </div>
-            <div class="kpi-card" style="border-left: 3px solid var(--amber);">
+
+            <!-- Pending Today -->
+            <div class="card-clean card-padding">
                 <div class="flex justify-between items-start">
                     <div>
-                        <p class="text-[9px] font-bold text-slate-400 uppercase tracking-wide mb-1">Today Pending</p>
-                        <h3 class="text-xl font-black text-slate-800 m-0 tabular-nums">{{ number_format($todayPending ?? 0) }}</h3>
+                        <p class="kpi-title">Today Pending</p>
+                        <h3 class="kpi-value">{{ number_format($todayPending ?? 0) }}</h3>
                     </div>
-                    <div class="w-7 h-7 rounded-md flex items-center justify-center text-xs" style="background: var(--amber-tint); color: var(--amber);"><i class="fas fa-calendar-day"></i></div>
+                    <div class="kpi-icon" style="background: var(--warning-light); color: var(--warning);"><i class="fas fa-hourglass-half"></i></div>
                 </div>
             </div>
-            <div class="kpi-card" style="border-left: 3px solid var(--rust);">
+
+            <!-- Total Backlog -->
+            <div class="card-clean card-padding">
                 <div class="flex justify-between items-start">
                     <div>
-                        <p class="text-[9px] font-bold text-slate-400 uppercase tracking-wide mb-1">Total Backlog</p>
-                        <h3 class="text-xl font-black text-slate-800 m-0 tabular-nums">{{ number_format($totalPending ?? 0) }}</h3>
+                        <p class="kpi-title">Total Backlog</p>
+                        <h3 class="kpi-value">{{ number_format($totalPending ?? 0) }}</h3>
                     </div>
-                    <div class="w-7 h-7 rounded-md flex items-center justify-center text-xs" style="background: var(--rust-tint); color: var(--rust);"><i class="fas fa-clock"></i></div>
+                    <div class="kpi-icon" style="background: var(--danger-light); color: var(--danger);"><i class="fas fa-exclamation-triangle"></i></div>
                 </div>
             </div>
         </div>
 
-        <!-- 🌟 Row 2: Booking Breakdown & Parts 🌟 -->
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-3 mb-3">
-            <div class="lg:col-span-2 clean-card" style="height: 220px;">
-                <div class="card-header-title">
-                    <div class="icon-circle" style="background: var(--steel-tint); color: var(--steel);"><i class="fas fa-users"></i></div>
-                    <span>SA Booking vs Walk-In Summary</span>
+        <!-- 🌟 ROW 2: BOOKING vs WALK-IN & PARTS 🌟 -->
+        <div class="grid grid-cols-1 xl:grid-cols-3 gap-6 mb-6">
+            <!-- SA Booking vs Walk-In -->
+            <div class="xl:col-span-2 card-clean" style="height: 320px;">
+                <div class="card-padding border-b border-slate-100 bg-slate-50">
+                    <div class="section-title m-0">
+                        <div class="section-icon bg-white border border-slate-200 text-slate-600"><i class="fas fa-users-cog"></i></div>
+                        SA Booking vs Walk-In
+                    </div>
                 </div>
                 <div class="flex-grow custom-scrollbar">
-                    <table class="clean-table sticky-header">
+                    <table class="table-clean">
                         <thead>
                             <tr>
-                                <th>Service Advisor Name</th>
-                                <th class="text-center w-20"><i class="fas fa-globe text-slate-400"></i> Booking</th>
-                                <th class="text-center w-20"><i class="fas fa-walking text-slate-400"></i> Walk-In</th>
-                                <th class="text-center w-20">Total</th>
+                                <th>Service Advisor</th>
+                                <th class="text-center w-24">Booking</th>
+                                <th class="text-center w-24">Walk-In</th>
+                                <th class="text-center w-24">Total</th>
                             </tr>
                         </thead>
                         <tbody>
                             @php $totBooking = 0; $totWalkin = 0; $grandTotal = 0; @endphp
-                            @if(isset($saDailyStats) && count($saDailyStats) > 0)
-                                @foreach($saDailyStats as $sa => $stats)
-                                    @php 
-                                        $totBooking += $stats['booking']; 
-                                        $totWalkin += $stats['walkin']; 
-                                        $grandTotal += ($stats['booking'] + $stats['walkin']);
-                                    @endphp
-                                    <tr>
-                                        <td>{{ $sa }}</td>
-                                        <td class="text-center"><span class="qty-pill">{{ $stats['booking'] ?: '-' }}</span></td>
-                                        <td class="text-center"><span class="qty-pill">{{ $stats['walkin'] ?: '-' }}</span></td>
-                                        <td class="text-center font-black text-slate-800">{{ ($stats['booking'] + $stats['walkin']) }}</td>
-                                    </tr>
-                                @endforeach
-                            @else
-                                <tr><td colspan="4" class="text-center py-4 text-slate-400 text-xs">មិនមានទិន្នន័យ</td></tr>
-                            @endif
+                            @forelse($saDailyStats ?? [] as $sa => $stats)
+                                @php 
+                                    $totBooking += $stats['booking']; $totWalkin += $stats['walkin']; 
+                                    $subTotal = $stats['booking'] + $stats['walkin']; $grandTotal += $subTotal;
+                                @endphp
+                                <tr>
+                                    <td class="font-semibold">{{ $sa }}</td>
+                                    <td class="text-center"><span class="badge-pill badge-gray">{{ $stats['booking'] ?: '-' }}</span></td>
+                                    <td class="text-center"><span class="badge-pill badge-gray">{{ $stats['walkin'] ?: '-' }}</span></td>
+                                    <td class="text-center font-bold text-slate-800">{{ $subTotal }}</td>
+                                </tr>
+                            @empty
+                                <tr><td colspan="4" class="text-center py-8 text-slate-400 text-sm">No data available</td></tr>
+                            @endforelse
                         </tbody>
                     </table>
                 </div>
                 @if($grandTotal > 0)
-                <div class="pt-2 mt-2 border-t border-slate-100 flex-shrink-0">
-                    <table class="clean-table m-0">
-                        <tr>
-                            <td class="text-end font-black text-slate-400 uppercase text-[9px] border-none py-0">Total</td>
-                            <td class="text-center w-20 border-none py-0"><span class="qty-pill highlight">{{ $totBooking ?: 0 }}</span></td>
-                            <td class="text-center w-20 border-none py-0"><span class="qty-pill highlight">{{ $totWalkin ?: 0 }}</span></td>
-                            <td class="text-center w-20 border-none py-0 font-black text-[13px]" style="color: var(--ink-navy);">{{ $grandTotal }}</td>
-                        </tr>
-                    </table>
+                <div class="p-3 border-t border-slate-200 bg-slate-50">
+                    <div class="flex justify-end items-center gap-8 pe-6">
+                        <span class="text-xs font-bold text-slate-400 uppercase">Grand Total</span>
+                        <span class="badge-pill badge-primary w-12">{{ $totBooking }}</span>
+                        <span class="badge-pill" style="background: var(--success-light); color: var(--success); width: 48px;">{{ $totWalkin }}</span>
+                        <span class="font-bold text-lg text-slate-800 w-12 text-center">{{ $grandTotal }}</span>
+                    </div>
                 </div>
                 @endif
             </div>
 
-            <div class="lg:col-span-1 clean-card" style="height: 220px;">
-                <div class="card-header-title">
-                    <div class="icon-circle" style="background: var(--steel-tint); color: var(--steel);"><i class="fas fa-box-open"></i></div>
-                    <span>Parts Order Summary</span>
+            <!-- Parts Summary -->
+            <div class="card-clean" style="height: 320px;">
+                <div class="card-padding border-b border-slate-100 bg-slate-50">
+                    <div class="section-title m-0">
+                        <div class="section-icon bg-white border border-slate-200 text-slate-600"><i class="fas fa-boxes"></i></div>
+                        Parts Order Status
+                    </div>
                 </div>
-                <div class="flex-grow custom-scrollbar">
-                    <table class="clean-table">
-                        <tbody>
-                            <tr><td>Order Part (Local)</td><td class="text-end w-16"><span class="qty-pill">{{ $totalOrderPartLocal ?? 0 }}</span></td></tr>
-                            <tr><td>Order Part (Sea)</td><td class="text-end"><span class="qty-pill">{{ $totalOrderPartSea ?? 0 }}</span></td></tr>
-                            <tr><td>Warranty Order</td><td class="text-end"><span class="qty-pill">{{ $totalPartWarranty ?? 0 }}</span></td></tr>
-                            <tr><td>Retail Order</td><td class="text-end"><span class="qty-pill">{{ $totalPartRetail ?? 0 }}</span></td></tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-
-        <!-- 🌟 Row 3: Pending Details (3 Columns) 🌟 -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-3">
-            <div class="clean-card" style="height: 200px;">
-                <div class="card-header-title">
-                    <div class="icon-circle" style="background: var(--amber-tint); color: var(--amber);"><i class="fas fa-exclamation-circle"></i></div>
-                    <span>Pending Description</span>
-                </div>
-                <div class="flex-grow custom-scrollbar">
-                    <table class="clean-table sticky-header">
-                        <thead><tr><th>Description</th><th class="text-center w-16">QTY</th></tr></thead>
-                        <tbody>
-                            @if(isset($pendingDescStats) && count(array_filter($pendingDescStats)) > 0)
-                                @foreach($pendingDescStats as $desc => $qty)
-                                    @if($qty > 0)
-                                    <tr><td>{{ $desc }}</td><td class="text-center"><span class="qty-pill">{{ $qty }}</span></td></tr>
-                                    @endif
-                                @endforeach
-                            @else
-                                <tr><td colspan="2" class="text-center py-4 text-slate-400 text-xs">គ្មានទិន្នន័យ</td></tr>
-                            @endif
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <div class="clean-card" style="height: 200px;">
-                <div class="card-header-title">
-                    <div class="icon-circle" style="background: var(--amber-tint); color: var(--amber);"><i class="fas fa-user-clock"></i></div>
-                    <span>SA Pending</span>
-                </div>
-                <div class="flex-grow custom-scrollbar">
-                    <table class="clean-table sticky-header">
-                        <thead><tr><th>SA Name</th><th class="text-center w-16">QTY</th></tr></thead>
-                        <tbody>
-                            @if(isset($saPendingStats) && count($saPendingStats) > 0)
-                                @foreach($saPendingStats as $sa => $qty)
-                                    <tr><td>{{ $sa }}</td><td class="text-center"><span class="qty-pill">{{ $qty }}</span></td></tr>
-                                @endforeach
-                            @else
-                                <tr><td colspan="2" class="text-center py-4 text-slate-400 text-xs">គ្មានទិន្នន័យ</td></tr>
-                            @endif
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <div class="clean-card" style="height: 200px;">
-                <div class="card-header-title">
-                    <div class="icon-circle" style="background: var(--amber-tint); color: var(--amber);"><i class="fas fa-store-alt"></i></div>
-                    <span>Branch Pending</span>
-                </div>
-                <div class="flex-grow custom-scrollbar">
-                    <table class="clean-table sticky-header">
-                        <thead><tr><th>Branch Name</th><th class="text-center w-16">QTY</th></tr></thead>
-                        <tbody>
-                            @if(isset($branchPendingStats) && count($branchPendingStats) > 0)
-                                @foreach($branchPendingStats as $branch => $qty)
-                                    <tr><td class="font-bold text-slate-700">{{ strtoupper($branch) }} WS</td><td class="text-center"><span class="qty-pill">{{ $qty }}</span></td></tr>
-                                @endforeach
-                            @else
-                                <tr><td colspan="2" class="text-center py-4 text-slate-400 text-xs">គ្មានទិន្នន័យ</td></tr>
-                            @endif
-                        </tbody>
-                    </table>
+                <div class="p-5 flex flex-col justify-center h-full gap-4">
+                    <div class="flex justify-between items-center pb-3 border-b border-slate-100">
+                        <span class="font-medium text-slate-600 text-sm">Order Part (Local)</span>
+                        <span class="font-bold text-lg text-slate-800">{{ $totalOrderPartLocal ?? 0 }}</span>
+                    </div>
+                    <div class="flex justify-between items-center pb-3 border-b border-slate-100">
+                        <span class="font-medium text-slate-600 text-sm">Order Part (Sea)</span>
+                        <span class="font-bold text-lg text-slate-800">{{ $totalOrderPartSea ?? 0 }}</span>
+                    </div>
+                    <div class="flex justify-between items-center pb-3 border-b border-slate-100">
+                        <span class="font-medium text-emerald-600 text-sm">Warranty Order</span>
+                        <span class="font-bold text-lg text-emerald-600">{{ $totalPartWarranty ?? 0 }}</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="font-medium text-blue-600 text-sm">Retail Order</span>
+                        <span class="font-bold text-lg text-blue-600">{{ $totalPartRetail ?? 0 }}</span>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- 🌟 Row 4: Leaderboards 🌟 -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4">
+        <!-- 🌟 ROW 3: LEADERBOARDS 🌟 -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
             <!-- Top SA -->
-            <div class="clean-card" style="height: 210px;">
-                <div class="flex items-center gap-2 mb-2">
-                    <div class="w-6 h-6 rounded flex items-center justify-center text-xs" style="background: var(--steel-tint); color: var(--ink-navy);"><i class="fas fa-trophy"></i></div>
-                    <h2 class="text-[0.85rem] font-black text-slate-800 m-0">Top Service Advisors</h2>
+            <div class="card-clean" style="height: 380px;">
+                <div class="card-padding border-b border-slate-100">
+                    <div class="section-title m-0">
+                        <div class="section-icon" style="background: var(--warning-light); color: var(--warning);"><i class="fas fa-trophy"></i></div>
+                        Top Service Advisors
+                    </div>
                 </div>
-                <div class="flex-grow custom-scrollbar">
-                    <div class="space-y-2 pe-1">
-                        @forelse($topSA as $index => $sa)
+                <div class="flex-grow custom-scrollbar p-5">
+                    <div class="space-y-5">
+                        @forelse($topSA ?? [] as $index => $sa)
                             @php
                                 $rankClass = 'rank-other';
-                                if($index == 0) $rankClass = 'rank-1';
-                                elseif($index == 1) $rankClass = 'rank-2';
-                                elseif($index == 2) $rankClass = 'rank-3';
-                                
-                                $maxTotal = $topSA[0]->total ?: 1;
-                                $percentage = ($sa->total / $maxTotal) * 100;
+                                if($index == 0) $rankClass = 'rank-1'; elseif($index == 1) $rankClass = 'rank-2'; elseif($index == 2) $rankClass = 'rank-3';
+                                $maxTotal = $topSA[0]->total ?: 1; $percentage = ($sa->total / $maxTotal) * 100;
                             @endphp
-                            <div class="flex items-center gap-2">
+                            <div class="flex items-center gap-4">
                                 <div class="rank-badge {{ $rankClass }}">#{{ $index + 1 }}</div>
                                 <div class="flex-grow">
                                     <div class="flex justify-between items-end mb-1">
-                                        <span class="font-bold text-slate-700 text-[0.75rem]">{{ $sa->sa_name }}</span>
-                                        <span class="font-black text-xs tabular-nums" style="color: var(--ink-navy);">{{ $sa->total }}</span>
+                                        <span class="font-semibold text-slate-800 text-sm">{{ $sa->sa_name }}</span>
+                                        <span class="font-bold text-sm" style="color: var(--primary);">{{ $sa->total }} <span class="text-[10px] text-slate-400 font-medium ml-0.5">CARS</span></span>
                                     </div>
-                                    <div class="progress-bar-container"><div class="progress-bar-fill" style="width: {{ $percentage }}%; background: var(--ink-navy);"></div></div>
+                                    <div class="progress-track"><div class="progress-fill" style="width: {{ $percentage }}%; background: var(--primary);"></div></div>
                                 </div>
                             </div>
                         @empty
-                            <div class="text-center py-4 text-slate-400"><p class="font-semibold text-[10px] m-0">No Data</p></div>
+                            <div class="text-center py-8 text-slate-400 text-sm">No data yet</div>
                         @endforelse
                     </div>
                 </div>
             </div>
 
             <!-- Top Tech -->
-            <div class="clean-card" style="height: 210px;">
-                <div class="flex items-center gap-2 mb-2">
-                    <div class="w-6 h-6 rounded flex items-center justify-center text-xs" style="background: var(--brand-red-tint); color: var(--brand-red);"><i class="fas fa-medal"></i></div>
-                    <h2 class="text-[0.85rem] font-black text-slate-800 m-0">Top Technicians</h2>
+            <div class="card-clean" style="height: 380px;">
+                <div class="card-padding border-b border-slate-100">
+                    <div class="section-title m-0">
+                        <div class="section-icon" style="background: var(--danger-light); color: var(--danger);"><i class="fas fa-medal"></i></div>
+                        Top Technicians
+                    </div>
                 </div>
-                <div class="flex-grow custom-scrollbar">
-                    <div class="space-y-2 pe-1">
-                        @forelse($topTech as $index => $tech)
+                <div class="flex-grow custom-scrollbar p-5">
+                    <div class="space-y-5">
+                        @forelse($topTech ?? [] as $index => $tech)
                             @php
                                 $rankClass = 'rank-other';
-                                if($index == 0) $rankClass = 'rank-1';
-                                elseif($index == 1) $rankClass = 'rank-2';
-                                elseif($index == 2) $rankClass = 'rank-3';
-                                
-                                $maxTotal = $topTech[0]->total ?: 1;
-                                $percentage = ($tech->total / $maxTotal) * 100;
+                                if($index == 0) $rankClass = 'rank-1'; elseif($index == 1) $rankClass = 'rank-2'; elseif($index == 2) $rankClass = 'rank-3';
+                                $maxTotal = $topTech[0]->total ?: 1; $percentage = ($tech->total / $maxTotal) * 100;
                             @endphp
-                            <div class="flex items-center gap-2">
+                            <div class="flex items-center gap-4">
                                 <div class="rank-badge {{ $rankClass }}">#{{ $index + 1 }}</div>
                                 <div class="flex-grow">
                                     <div class="flex justify-between items-end mb-1">
-                                        <span class="font-bold text-slate-700 text-[0.75rem]">{{ $tech->technician_name }}</span>
-                                        <span class="font-black text-xs tabular-nums" style="color: var(--brand-red);">{{ $tech->total }}</span>
+                                        <span class="font-semibold text-slate-800 text-sm">{{ $tech->technician_name }}</span>
+                                        <span class="font-bold text-sm" style="color: var(--danger);">{{ $tech->total }} <span class="text-[10px] text-slate-400 font-medium ml-0.5">JOBS</span></span>
                                     </div>
-                                    <div class="progress-bar-container"><div class="progress-bar-fill" style="width: {{ $percentage }}%; background: var(--brand-red);"></div></div>
+                                    <div class="progress-track"><div class="progress-fill" style="width: {{ $percentage }}%; background: var(--danger);"></div></div>
                                 </div>
                             </div>
                         @empty
-                            <div class="text-center py-4 text-slate-400"><p class="font-semibold text-[10px] m-0">No Data</p></div>
+                            <div class="text-center py-8 text-slate-400 text-sm">No data yet</div>
                         @endforelse
                     </div>
                 </div>
             </div>
         </div>
 
-    <!-- 🌟 Row 5: Technician Working Hours (KPI & OT Tracker) 🌟 -->
-    <div class="mb-2 mt-4">
-        <h3 class="m-0 font-black text-[1rem] tracking-tight text-slate-800">Technician KPI Tracker <span class="text-slate-400 text-xs font-normal ms-2 border-l border-slate-300 pl-2">Daily & Period Overtime</span></h3>
-    </div>
+        <!-- 🌟 ROW 4: TECH KPI TRACKER 🌟 -->
+        <div class="mb-4 mt-8 flex items-center justify-between">
+            <h2 class="text-base font-bold text-slate-800 m-0">Technician Time Tracking</h2>
+        </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-        @forelse($techPerformances ?? [] as $tech)
-            <div class="clean-card justify-between relative overflow-hidden" style="min-height: 160px;">
-                <!-- Badge សម្រាប់អ្នកធ្វើការលើសម៉ោង (OT) ប្រចាំថ្ងៃ -->
-                @if($tech->daily_ot_hours > 0 || $tech->daily_ot_minutes > 0)
-                    <div class="absolute top-0 right-0 text-white text-[9px] font-black uppercase px-2 py-1 rounded-bl-lg shadow-sm" style="background: var(--brand-red);">
-                        <i class="fas fa-fire-alt mr-1"></i> Daily OT
-                    </div>
-                @endif
+        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 pb-8">
+            @forelse($techPerformances ?? [] as $tech)
+                <div class="card-clean tech-card relative">
+                    <!-- Overtime Indicator -->
+                    @if($tech->daily_ot_hours > 0 || $tech->daily_ot_minutes > 0)
+                        <div class="absolute top-3 right-3 text-[10px] font-bold px-2 py-1 rounded bg-red-50 text-red-600 border border-red-100">
+                            OT: {{ $tech->daily_ot_hours }}h {{ $tech->daily_ot_minutes }}m
+                        </div>
+                    @endif
 
-                <div class="flex items-center gap-3 mb-3">
-                    <div class="w-9 h-9 rounded-full flex items-center justify-center font-bold text-sm shadow-inner" style="background: var(--steel-tint); color: var(--ink-navy); border: 1px solid #dbe4f0;">
-                        <i class="fas fa-user-wrench"></i>
-                    </div>
-                    <div class="flex-grow truncate pe-6">
-                        <h3 class="text-[13px] font-bold text-slate-800 m-0 truncate" title="{{ $tech->name }}">{{ $tech->name }}</h3>
-                        <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Technician</span>
-                    </div>
-                </div>
-
-                <!-- របាយការណ៍ថ្ងៃនេះ (Daily) -->
-                <div class="mb-3">
-                    <div class="flex justify-between text-[10px] font-bold text-slate-500 mb-1">
-                        <span>Today Target: 8h</span>
-                        <span class="tabular-nums" style="color: var(--ink-navy);">{{ $tech->daily_actual_hours }}h {{ $tech->daily_actual_minutes }}m</span>
-                    </div>
-                    
-                    <div class="w-full bg-slate-100 rounded-full h-1.5 mb-1 relative">
-                        <div class="h-1.5 rounded-full progress-bar-fill"
-                             style="width: {{ $tech->daily_bar_percent }}%; background: linear-gradient(90deg, var(--navy-light), var(--ink-navy));">
+                    <!-- Header -->
+                    <div class="flex items-center gap-3 mb-5">
+                        <div class="tech-avatar"><i class="fas fa-user-wrench text-sm"></i></div>
+                        <div class="flex-grow truncate pe-12">
+                            <h3 class="text-sm font-bold text-slate-800 m-0 truncate" title="{{ $tech->name }}">{{ $tech->name }}</h3>
+                            <span class="text-[10px] font-medium text-slate-500 uppercase">Technician</span>
                         </div>
                     </div>
-                    
-                    <div class="flex justify-between items-center mt-1">
-                        <span class="text-[10px] font-black tabular-nums" style="color: {{ $tech->daily_percent >= 100 ? 'var(--teal)' : '#94a3b8' }};">
-                            Daily: {{ number_format($tech->daily_percent, 1) }}%
-                        </span>
-                        
-                        @if($tech->daily_ot_hours > 0 || $tech->daily_ot_minutes > 0)
-                            <span class="text-[9px] font-bold px-1.5 py-0.5 rounded tabular-nums" style="color: var(--brand-red); background: var(--brand-red-tint); border: 1px solid #f3cdcf;">
-                                + {{ $tech->daily_ot_hours }}h {{ $tech->daily_ot_minutes }}m
-                            </span>
-                        @endif
-                    </div>
-                </div>
 
-                <!-- របាយការណ៍សរុបតាម Period / ១ ខែ (Total Time ជាក់ស្តែង) -->
-                <div class="pt-2 border-t border-slate-100 flex justify-between items-end mt-auto">
-                    <div>
-                        <span class="block text-[9px] font-bold text-slate-400 uppercase mb-0.5">Period KPI (Total)</span>
-                        <span class="text-xs font-black tabular-nums" style="color: {{ $tech->monthly_percent >= 100 ? 'var(--teal)' : 'var(--ink-navy)' }};">
-                            {{ number_format($tech->monthly_percent, 1) }}%
-                        </span>
+                    <!-- Daily Progress -->
+                    <div class="mb-5">
+                        <div class="flex justify-between text-xs font-semibold text-slate-600 mb-2">
+                            <span>Today (8h)</span>
+                            <span>{{ $tech->daily_actual_hours }}h {{ $tech->daily_actual_minutes }}m</span>
+                        </div>
+                        <div class="progress-track mb-1.5"><div class="progress-fill" style="width: {{ $tech->daily_bar_percent }}%; background: var(--primary);"></div></div>
+                        <div class="text-right text-[10px] font-bold" style="color: {{ $tech->daily_percent >= 100 ? 'var(--success)' : 'var(--text-muted)' }};">
+                            {{ number_format($tech->daily_percent, 1) }}%
+                        </div>
                     </div>
-                    <div class="text-right">
-                        <span class="text-sm font-black text-slate-700 leading-none block tabular-nums">
-                            {{ $tech->monthly_actual_hours }}<span class="text-[10px] text-slate-400 font-bold mx-0.5">h</span>
-                            {{ $tech->monthly_actual_minutes }}<span class="text-[10px] text-slate-400 font-bold">m</span>
-                        </span>
-                        <span class="text-[9px] font-bold text-slate-400 block mt-0.5">Actual Time</span>
+
+                    <!-- Monthly Stats -->
+                    <div class="pt-4 border-t border-slate-100 flex justify-between items-end">
+                        <div>
+                            <span class="block text-[10px] font-medium text-slate-400 uppercase mb-0.5">Month KPI</span>
+                            <span class="text-sm font-bold" style="color: {{ $tech->monthly_percent >= 100 ? 'var(--success)' : 'var(--text-main)' }};">
+                                {{ number_format($tech->monthly_percent, 1) }}%
+                            </span>
+                        </div>
+                        <div class="text-right">
+                            <span class="text-sm font-bold text-slate-800">
+                                {{ $tech->monthly_actual_hours }}<span class="text-[10px] text-slate-400 mx-0.5">h</span>{{ $tech->monthly_actual_minutes }}<span class="text-[10px] text-slate-400">m</span>
+                            </span>
+                            <span class="text-[10px] font-medium text-slate-400 block mt-0.5">Actual Time</span>
+                        </div>
                     </div>
                 </div>
-            </div>
-        @empty
-            <div class="col-span-full clean-card flex flex-col items-center justify-center py-8">
-                <div class="w-16 h-16 rounded-full flex items-center justify-center mb-3" style="background: var(--steel-tint);">
-                    <i class="fas fa-tools text-2xl" style="color: #aab6c6;"></i>
+            @empty
+                <div class="col-span-full card-clean flex flex-col items-center justify-center py-12 border-dashed border-2 border-slate-200 shadow-none">
+                    <div class="w-12 h-12 rounded-full bg-slate-50 flex items-center justify-center mb-3"><i class="fas fa-folder-open text-xl text-slate-300"></i></div>
+                    <p class="text-slate-500 font-medium text-sm m-0">មិនមានទិន្នន័យសម្រាប់បង្ហាញទេ</p>
                 </div>
-                <p class="text-slate-500 font-bold text-sm m-0">មិនទាន់មានទិន្នន័យការងារក្នុងចន្លោះកាលបរិច្ឆេទនេះទេ</p>
-            </div>
-        @endforelse
+            @endforelse
+        </div>
     </div>
-        
-    </div> <!-- End Main Dashboard Content -->
-</div> <!-- End Content Fluid Wrapper -->
+</div>
 
 <script>
     document.addEventListener("DOMContentLoaded", function() {
-        // Animation for all progress bars (Leaderboards & Tech Performance)
-        const progressBars = document.querySelectorAll('.progress-bar-fill');
-        progressBars.forEach(bar => {
-            const width = bar.style.width;
-            bar.style.width = '0%';
-            setTimeout(() => { bar.style.width = width; }, 200);
-        });
+        // Smooth load progress bars
+        setTimeout(() => {
+            const progressBars = document.querySelectorAll('.progress-fill');
+            progressBars.forEach(bar => {
+                const width = bar.style.width;
+                bar.style.width = '0%';
+                setTimeout(() => { bar.style.width = width; }, 50);
+            });
+        }, 100);
     });
 </script>
 @endsection
